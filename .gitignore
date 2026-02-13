@@ -1,0 +1,38 @@
+# Build outputs
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Maven
+.mvn/
+
+# Node modules (if any)
+node_modules/
+
+# Environment files
+.env
+.env.local
+
+# Uploads (if needed, uncomment)
+# public/uploads/
