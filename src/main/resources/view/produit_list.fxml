@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Vue principale affichant la liste des produits.
+    Cette version utilise une BorderPane pour structurer l'écran en trois sections :
+    une barre d'en‑tête en haut, le tableau au centre et la barre d'actions en bas.
+    Les styles sont définis dans le fichier css/style.css pour un rendu moderne.
+    Contrôleur : controller.ProduitController
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProduitController">
+    <!-- Barre d'en‑tête -->
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header">
+            <Label text="Gestion des Produits" styleClass="header-title" />
+        </HBox>
+    </top>
+
+    <!-- Tableau central -->
+    <center>
+        <TableView fx:id="produitTable">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                <TableColumn fx:id="nomColumn" text="Nom" prefWidth="200" />
+                <TableColumn fx:id="quantiteColumn" text="Quantité" prefWidth="100" />
+                <TableColumn fx:id="uniteColumn" text="Unité" prefWidth="100" />
+                <TableColumn fx:id="dateExpColumn" text="Date d'expiration" prefWidth="150" />
+            </columns>
+        </TableView>
+    </center>
+
+    <!-- Barre d'actions en bas -->
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+            <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+            <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+            <Button text="Voir matériels" onAction="#handleVoirMateriels" styleClass="info-button" />
+        </HBox>
+    </bottom>
+
+    <!-- Marges autour de tout le contenu -->
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MaterielController"
+            stylesheets="@../css/style.css">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header">
+            <Label text="Gestion des Produits" styleClass="header-title" />
+        </HBox>
+    </top>
+
+
+    <center>
+        <VBox spacing="16.0">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            </padding>
+
+            <!-- Titre -->
+            <Label text="Liste des matériels" styleClass="title-label"/>
+
+            <!-- Table des matériels -->
+            <TableView fx:id="materielTable" prefHeight="400.0">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="200"/>
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="120"/>
+                    <TableColumn fx:id="dateAchatColumn" text="Date d'achat" prefWidth="150"/>
+                    <TableColumn fx:id="coutColumn" text="Coût" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <!-- Barre d'actions -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button"/>
+                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button"/>
+                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

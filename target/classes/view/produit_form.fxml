@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Formulaire pour créer ou modifier un produit.
+    Contrôleur : controller.ProduitFormController
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProduitFormController">
+
+    <!-- En-tête -->
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label text="Formulaire Produit" styleClass="header-title"/>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <GridPane hgap="10" vgap="10">
+            <Label text="Nom :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Quantité :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="quantiteField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Unité :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="uniteField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Date d'expiration :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="dateExpirationPicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        </GridPane>
+    </center>
+
+    <!-- Actions -->
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button fx:id="saveButton"
+                    text="Enregistrer"
+                    onAction="#handleSave"
+                    styleClass="primary-button"/>
+            <Button fx:id="cancelButton"
+                    text="Annuler"
+                    onAction="#handleCancel"
+                    styleClass="secondary-button"/>
+        </HBox>
+    </bottom>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</BorderPane>

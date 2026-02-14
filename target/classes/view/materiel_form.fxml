@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MaterielFormController"
+            stylesheets="@../css/style.css">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label text="Nouveau matériel" styleClass="header-title"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER">
+            <VBox spacing="20" maxWidth="450" styleClass="card">
+
+                <Label text="Informations générales"
+                       styleClass="section-title"/>
+
+                <VBox spacing="15">
+
+                    <VBox spacing="5">
+                        <Label text="Nom du matériel" styleClass="field-label"/>
+                        <TextField fx:id="nomField"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="État" styleClass="field-label"/>
+                        <TextField fx:id="etatField"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Date d'achat" styleClass="field-label"/>
+                        <DatePicker fx:id="dateAchatPicker"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Coût" styleClass="field-label"/>
+                        <TextField fx:id="coutField"/>
+                    </VBox>
+
+                </VBox>
+
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <Button fx:id="cancelButton"
+                            text="Annuler"
+                            onAction="#handleCancel"
+                            styleClass="secondary-button"/>
+
+                    <Button fx:id="saveButton"
+                            text="Enregistrer"
+                            onAction="#handleSave"
+                            styleClass="primary-button"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+</BorderPane>
