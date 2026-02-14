@@ -7,63 +7,56 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielFormController"
+            styleClass="root"
             stylesheets="@../css/style.css">
 
+    <!-- En-tête -->
     <top>
-        <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label text="Nouveau matériel" styleClass="header-title"/>
+        <HBox alignment="CENTER_LEFT" styleClass="form-header">
+            <Label text="Formulaire Matériel" styleClass="form-title"/>
         </HBox>
     </top>
 
+    <!-- Contenu principal -->
     <center>
-        <VBox alignment="CENTER">
-            <VBox spacing="20" maxWidth="450" styleClass="card">
+        <VBox spacing="20" styleClass="form-container">
+            <GridPane hgap="15" vgap="15" styleClass="form-grid">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="120"/>
+                    <ColumnConstraints minWidth="250" prefWidth="300" hgrow="ALWAYS"/>
+                </columnConstraints>
 
-                <Label text="Informations générales"
-                       styleClass="section-title"/>
+                <Label text="Nom du matériel :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
 
-                <VBox spacing="15">
+                <Label text="État :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="etatField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
 
-                    <VBox spacing="5">
-                        <Label text="Nom du matériel" styleClass="field-label"/>
-                        <TextField fx:id="nomField"/>
-                    </VBox>
+                <Label text="Date d'achat :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
+                <DatePicker fx:id="dateAchatPicker" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
 
-                    <VBox spacing="5">
-                        <Label text="État" styleClass="field-label"/>
-                        <TextField fx:id="etatField"/>
-                    </VBox>
-
-                    <VBox spacing="5">
-                        <Label text="Date d'achat" styleClass="field-label"/>
-                        <DatePicker fx:id="dateAchatPicker"/>
-                    </VBox>
-
-                    <VBox spacing="5">
-                        <Label text="Coût" styleClass="field-label"/>
-                        <TextField fx:id="coutField"/>
-                    </VBox>
-
-                </VBox>
-
-                <HBox spacing="15" alignment="CENTER_RIGHT">
-                    <Button fx:id="cancelButton"
-                            text="Annuler"
-                            onAction="#handleCancel"
-                            styleClass="secondary-button"/>
-
-                    <Button fx:id="saveButton"
-                            text="Enregistrer"
-                            onAction="#handleSave"
-                            styleClass="primary-button"/>
-                </HBox>
-
-            </VBox>
+                <Label text="Coût :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="coutField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
+            </GridPane>
         </VBox>
     </center>
 
+    <!-- Actions -->
+    <bottom>
+        <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+            <Button fx:id="cancelButton"
+                    text="Annuler"
+                    onAction="#handleCancel"
+                    styleClass="secondary-button"/>
+            <Button fx:id="saveButton"
+                    text="Enregistrer"
+                    onAction="#handleSave"
+                    styleClass="primary-button"/>
+        </HBox>
+    </bottom>
+
     <padding>
-        <Insets top="40" right="40" bottom="40" left="40"/>
+        <Insets top="25" right="25" bottom="25" left="25"/>
     </padding>
 
 </BorderPane>

@@ -1,46 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielController"
+            styleClass="root"
             stylesheets="@../css/style.css">
+
+    <!-- Barre d'en-tête -->
     <top>
-        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header">
-            <Label text="Gestion des Produits" styleClass="header-title" />
-        </HBox>
-    </top>
+        <VBox>
+            <!-- Header principal avec logo et titre -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
+                <ImageView fitHeight="35" fitWidth="35" preserveRatio="true">
+                    <image>
+                        <Image url="@/images/farmtech-logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="FARMTECH" styleClass="app-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Backoffice Admin" styleClass="header-section" />
+                <Label text="Accueil" styleClass="header-section" />
+                <Button text="Se déconnecter" styleClass="logout-button" />
+            </HBox>
 
-
-    <center>
-        <VBox spacing="16.0">
-            <padding>
-                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
-            </padding>
-
-            <!-- Titre -->
-            <Label text="Liste des matériels" styleClass="title-label"/>
-
-            <!-- Table des matériels -->
-            <TableView fx:id="materielTable" prefHeight="400.0">
-                <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="200"/>
-                    <TableColumn fx:id="etatColumn" text="État" prefWidth="120"/>
-                    <TableColumn fx:id="dateAchatColumn" text="Date d'achat" prefWidth="150"/>
-                    <TableColumn fx:id="coutColumn" text="Coût" prefWidth="100"/>
-                </columns>
-            </TableView>
-
-            <!-- Barre d'actions -->
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button"/>
-                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button"/>
-                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button"/>
+            <!-- Navigation avec tabs -->
+            <HBox spacing="0" styleClass="navigation-bar">
+                <Button text="Produits" onAction="#handleVoirProduits" styleClass="nav-tab" />
+                <Button text="Matériels" styleClass="nav-tab, nav-tab-active" />
             </HBox>
         </VBox>
+    </top>
+
+    <!-- Contenu central -->
+    <center>
+        <VBox spacing="15" styleClass="content-area">
+            <!-- Titre et boutons d'action -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Gestion des Matériels" styleClass="page-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+            </HBox>
+
+            <!-- Tableau -->
+            <TableView fx:id="materielTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="150" />
+                    <TableColumn fx:id="dateAchatColumn" text="Date d'achat" prefWidth="200" />
+                    <TableColumn fx:id="coutColumn" text="Coût" prefWidth="150" />
+                </columns>
+            </TableView>
+        </VBox>
     </center>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
 </BorderPane>

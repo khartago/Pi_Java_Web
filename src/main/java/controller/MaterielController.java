@@ -125,6 +125,32 @@ public class MaterielController {
     }
 
     /**
+     * Navigates back to the products list view.
+     */
+    @FXML
+    private void handleVoirProduits() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/produit_list.fxml"));
+            Parent root = loader.load();
+
+            // Ajouter explicitement le CSS si nécessaire
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+            Stage stage = (Stage) materielTable.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Gestion des Produits et Matériels");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Erreur");
+            error.setHeaderText("Erreur de navigation");
+            error.setContentText("Impossible de charger la vue des produits.");
+            error.showAndWait();
+        }
+    }
+
+    /**
      * Opens the materiel form in a modal window. Passes along the selected
      * material (or null for creation) and the current product id.
      *
