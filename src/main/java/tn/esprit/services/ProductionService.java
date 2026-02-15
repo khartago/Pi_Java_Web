@@ -17,7 +17,7 @@ public class ProductionService {
 
     // ✅ ADD
     public void ajouter(Production p) throws SQLException {
-        String req = "INSERT INTO production (nomPlant, variete, quantite, datePlante, saison) VALUES (?, ?, ?, ?, ?)";
+        String req = "INSERT INTO plantation (nomPlant, variete, quantite, datePlante, saison) VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, p.getNomPlant());
@@ -29,10 +29,22 @@ public class ProductionService {
         ps.executeUpdate();
         System.out.println("✅ Production ajoutée !");
     }
+    public void updateEtat(int id, String etat) {
+        String sql = "UPDATE plantation SET etat=? WHERE id=?";
+
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, etat);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("❌ Erreur updateEtat: " + e.getMessage());
+        }
+    }
 
     // ✅ UPDATE
     public void modifier(Production p) throws SQLException {
-        String req = "UPDATE production SET nomPlant=?, variete=?, quantite=?, datePlante=?, saison=? WHERE id=?";
+        String req = "UPDATE plantation SET nomPlant=?, variete=?, quantite=?, datePlante=?, saison=? WHERE id=?";
 
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, p.getNomPlant());
@@ -48,7 +60,7 @@ public class ProductionService {
 
     // ✅ DELETE
     public void supprimer(int id) throws SQLException {
-        String req = "DELETE FROM production WHERE id=?";
+        String req = "DELETE FROM plantation WHERE id=?";
 
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, id);
@@ -61,7 +73,7 @@ public class ProductionService {
     public List<Production> afficher() throws SQLException {
         List<Production> list = new ArrayList<>();
 
-        String req = "SELECT * FROM production";
+        String req = "SELECT * FROM plantation";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
 
@@ -74,9 +86,13 @@ public class ProductionService {
             p.setDatePlante(rs.getDate("datePlante"));
             p.setSaison(rs.getString("saison"));
 
+            // ✅ IMPORTANT
+            p.setEtat(rs.getString("etat"));
+
             list.add(p);
         }
 
         return list;
     }
+
 }

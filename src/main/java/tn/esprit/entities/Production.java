@@ -10,6 +10,7 @@ public class Production {
     private int quantite;
     private Date datePlante;
     private String saison;
+    private String etat;
 
     // ✅ Constructor vide
     public Production() {
@@ -22,17 +23,21 @@ public class Production {
         this.quantite = quantite;
         this.datePlante = datePlante;
         this.saison = saison;
+        this.etat = "EN_ATTENTE";
     }
 
+
     // ✅ Constructor avec id (pour UPDATE / SELECT)
-    public Production(int id, String nomPlant, String variete, int quantite, Date datePlante, String saison) {
+    public Production(int id, String nomPlant, String variete, int quantite, Date datePlante, String saison, String etat) {
         this.id = id;
         this.nomPlant = nomPlant;
         this.variete = variete;
         this.quantite = quantite;
         this.datePlante = datePlante;
         this.saison = saison;
+        this.etat = etat;
     }
+
 
     // ✅ Getters / Setters
     public int getId() {
@@ -83,6 +88,14 @@ public class Production {
         this.saison = saison;
     }
 
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
     @Override
     public String toString() {
         return "Production{" +
@@ -92,6 +105,7 @@ public class Production {
                 ", quantite=" + quantite +
                 ", datePlante=" + datePlante +
                 ", saison='" + saison + '\'' +
+                ", etat='" + etat + '\'' +
                 '}';
     }
 }

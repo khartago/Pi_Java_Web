@@ -605,3 +605,24 @@
     -fx-text-alignment: center;
     -fx-line-spacing: 2px;
 }
+.tabs-bar {
+    -fx-background-color: transparent;
+}
+
+.tab {
+    -fx-background-color: #e8efe8;
+    -fx-text-fill: #0d2b1b;
+    -fx-font-size: 14px;
+    -fx-padding: 12 25;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-radius: 8 8 0 0;
+}
+
+.tab-active {
+    -fx-background-color: #0f3d24;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12 25;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-radius: 8 8 0 0;
+}

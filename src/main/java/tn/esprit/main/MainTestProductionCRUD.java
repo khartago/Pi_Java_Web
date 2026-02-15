@@ -12,9 +12,9 @@ public class MainTestProductionCRUD {
         try {
             ProductionService ps = new ProductionService();
 
-            // ✅ 1) ADD
+            // ✅ 1) ADD (etat auto = EN_ATTENTE)
             Production p = new Production(
-                    "tomate",
+                    "taha",
                     "savera",
                     5000,
                     Date.valueOf("2026-02-14"),
@@ -28,8 +28,18 @@ public class MainTestProductionCRUD {
 
             // ⚠️ For UPDATE and DELETE you need an existing id
             // Example:
-             Production p2 = new Production(1, "pomme", "golden", 8000, Date.valueOf("2026-02-10"), "winter");
-             ps.modifier(p2);
+            Production p2 = new Production(
+                    9,
+                    "pomme",
+                    "golden",
+                    8000,
+                    Date.valueOf("2026-02-10"),
+                    "winter",
+                    "EN_ATTENTE"   // ou COMPLETE
+            );
+
+            //ps.modifier(p2);
+
             // ps.supprimer(1);
 
         } catch (Exception e) {
