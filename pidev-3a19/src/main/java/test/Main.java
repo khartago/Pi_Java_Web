@@ -1,8 +1,8 @@
 package test;
 
-import Entites.Diagnostique;
-import Entites.Probleme;
-import Entites.User;
+import model.Diagnostique;
+import model.Probleme;
+import model.User;
 import Services.DiagnostiqueService;
 import Services.ProblemeService;
 import Services.UserService;

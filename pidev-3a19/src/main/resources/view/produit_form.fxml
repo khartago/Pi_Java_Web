@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Formulaire pour créer ou modifier un produit.
+    Contrôleur : controller.ProduitFormController
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProduitFormController"
+            styleClass="root"
+            stylesheets="@../css/style.css">
+
+    <!-- En-tête -->
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="form-header">
+            <Label text="Formulaire Produit" styleClass="form-title"/>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <VBox spacing="20" styleClass="form-container">
+            <GridPane hgap="15" vgap="15" styleClass="form-grid">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="120"/>
+                    <ColumnConstraints minWidth="250" prefWidth="300" hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Nom :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du produit"/>
+
+                <Label text="Quantité :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="quantiteField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Entrez la quantité"/>
+
+                <Label text="Unité :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="uniteField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Ex: kg, L, pièces"/>
+
+                <Label text="Date d'expiration :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
+                <DatePicker fx:id="dateExpirationPicker" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+            </GridPane>
+        </VBox>
+    </center>
+
+    <!-- Actions -->
+    <bottom>
+        <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+            <Button fx:id="cancelButton"
+                    text="Annuler"
+                    onAction="#handleCancel"
+                    styleClass="secondary-button"/>
+            <Button fx:id="saveButton"
+                    text="Enregistrer"
+                    onAction="#handleSave"
+                    styleClass="primary-button"/>
+        </HBox>
+    </bottom>
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+</BorderPane>

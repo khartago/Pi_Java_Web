@@ -1,6 +1,6 @@
 package Iservices;
 
-import Entites.personne;
+import model.personne;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package Services;
 
-import Entites.personne;
+import model.personne;
 import Iservices.IpersonneServices;
 import Utils.Mydatabase;
 

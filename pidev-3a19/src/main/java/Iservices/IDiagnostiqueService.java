@@ -1,6 +1,6 @@
 package Iservices;
 
-import Entites.Diagnostique;
+import model.Diagnostique;
 
 import java.util.List;
 

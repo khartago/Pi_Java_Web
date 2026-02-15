@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProblemeFormController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
+            <VBox spacing="20.0" alignment="TOP_LEFT">
+                <padding>
+                    <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
+                </padding>
+
+                <Label fx:id="titleLabel" text="Nouveau problème" styleClass="title-label"/>
+
+                <VBox spacing="6.0">
+                    <Label text="Type *" styleClass="field-label"/>
+                    <TextField fx:id="typeField" promptText="Ex: Maladie des cultures" styleClass="modern-input" prefHeight="44.0"/>
+                </VBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Description *" styleClass="field-label"/>
+                    <TextArea fx:id="descriptionArea" prefRowCount="5" promptText="Décrivez le problème en détail..." styleClass="modern-input"/>
+                </VBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Gravité *" styleClass="field-label"/>
+                    <ComboBox fx:id="graviteCombo" prefHeight="44.0" styleClass="modern-input"/>
+                </VBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Photos (chemin ou URL)" styleClass="field-label"/>
+                    <TextField fx:id="photosField" promptText="Séparez plusieurs photos par ;" styleClass="modern-input" prefHeight="44.0"/>
+                </VBox>
+
+                <Label fx:id="errorLabel" textFill="#DC2626" visible="false" 
+                       style="-fx-font-size: 13px; -fx-wrap-text: true; -fx-padding: 8 0;"/>
+
+                <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                    <Button text="Annuler" onAction="#handleCancel" styleClass="secondary-button" prefHeight="44.0" prefWidth="120.0"/>
+                    <Button text="Enregistrer" onAction="#handleSave" styleClass="primary-button" defaultButton="true" prefHeight="44.0" prefWidth="120.0"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

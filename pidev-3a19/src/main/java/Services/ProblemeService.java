@@ -1,6 +1,6 @@
 package Services;
 
-import Entites.Probleme;
+import model.Probleme;
 import Iservices.IProblemeService;
 import Utils.Mydatabase;
 

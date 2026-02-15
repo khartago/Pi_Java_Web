@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.ProduitController"
+      spacing="15" styleClass="content-area" VBox.vgrow="ALWAYS">
+    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="Produits &amp; Matériels" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button"/>
+        <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button"/>
+        <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button"/>
+        <Button text="Voir matériels" onAction="#handleVoirMateriels" styleClass="secondary-button"/>
+    </HBox>
+
+    <TableView fx:id="produitTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250"/>
+            <TableColumn fx:id="quantiteColumn" text="Quantité" prefWidth="150"/>
+            <TableColumn fx:id="uniteColumn" text="Unité" prefWidth="150"/>
+            <TableColumn fx:id="dateExpColumn" text="Date d'expiration" prefWidth="200"/>
+        </columns>
+    </TableView>
+</VBox>

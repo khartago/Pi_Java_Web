@@ -1,6 +1,6 @@
 package Services;
 
-import Entites.User;
+import model.User;
 import Iservices.IUserService;
 import Utils.Mydatabase;
 

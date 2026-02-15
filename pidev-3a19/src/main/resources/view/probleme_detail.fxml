@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProblemeDetailController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <VBox spacing="16.0">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            </padding>
+            <Label text="Détail du problème" styleClass="title-label"/>
+
+            <GridPane hgap="10.0" vgap="8.0">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="25.0"/>
+                    <ColumnConstraints percentWidth="75.0"/>
+                </columnConstraints>
+
+                <Label text="Type :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label fx:id="typeLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Description :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="descriptionLabel" wrapText="true"
+                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Gravité :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label fx:id="graviteLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Date détection :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label fx:id="dateLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="État :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label fx:id="etatLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            </GridPane>
+
+            <Separator/>
+
+            <Label text="Diagnostic" styleClass="section-title"/>
+            <VBox spacing="6.0">
+                <Label fx:id="diagnosticStatusLabel"/>
+                <Label text="Cause :" styleClass="field-label"/>
+                <Label fx:id="causeLabel" wrapText="true"/>
+
+                <Label text="Solution proposée :" styleClass="field-label"/>
+                <Label fx:id="solutionLabel" wrapText="true"/>
+
+                <Label text="Résultat :" styleClass="field-label"/>
+                <Label fx:id="resultatLabel"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

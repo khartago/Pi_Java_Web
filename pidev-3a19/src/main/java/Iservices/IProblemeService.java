@@ -1,6 +1,6 @@
 package Iservices;
 
-import Entites.Probleme;
+import model.Probleme;
 
 import java.util.List;
 

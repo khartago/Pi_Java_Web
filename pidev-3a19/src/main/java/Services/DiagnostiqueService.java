@@ -1,6 +1,6 @@
 package Services;
 
-import Entites.Diagnostique;
+import model.Diagnostique;
 import Iservices.IDiagnostiqueService;
 import Utils.Mydatabase;
 
