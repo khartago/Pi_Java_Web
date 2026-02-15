@@ -6,6 +6,9 @@ build/
 *.war
 *.ear
 
+# Cursor
+.cursorrules
+
 # IDE
 .idea/
 *.iml
