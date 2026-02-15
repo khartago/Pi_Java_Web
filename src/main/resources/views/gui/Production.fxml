@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.controllers.ProductionController"
+            stylesheets="@farmtech-theme.css"
+            prefWidth="900" prefHeight="600">
+
+    <!-- ===================== NAVBAR TOP ===================== -->
+    <top>
+        <VBox>
+
+            <!-- NAVBAR -->
+            <HBox styleClass="navbar" alignment="CENTER_LEFT" spacing="30.0">
+                <padding>
+                    <Insets top="16.0" right="40.0" bottom="16.0" left="40.0"/>
+                </padding>
+
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <ImageView fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
+                        <image>
+                            <Image url="@farmtech-logo.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="FARMTECH" styleClass="navbar-brand"/>
+                </HBox>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <Label text="Gestion Production" styleClass="navbar-title"/>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <Button text="Accueil" styleClass="navbar-link"/>
+                <Button text="Se déconnecter" styleClass="navbar-button"/>
+            </HBox>
+
+            <!-- ===================== TABPANE DASHBOARD ===================== -->
+            <TabPane fx:id="tabPane" styleClass="dashboard-tabs">
+                <tabs>
+
+                    <!-- TAB 1 : PRODUCTION (plantation) -->
+                    <Tab text="plantation" closable="false">
+
+                        <VBox spacing="15">
+                            <padding>
+                                <Insets top="20" right="20" bottom="20" left="20"/>
+                            </padding>
+
+                            <!-- FORM -->
+                            <GridPane hgap="12" vgap="12">
+
+                                <Label text="Nom Plant" styleClass="field-label"
+                                       GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                <TextField fx:id="tfNomPlant" styleClass="modern-input"
+                                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                                <Label text="Variété" styleClass="field-label"
+                                       GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                <TextField fx:id="tfVariete" styleClass="modern-input"
+                                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                                <Label text="Quantité" styleClass="field-label"
+                                       GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                <TextField fx:id="tfQuantite" styleClass="modern-input"
+                                           GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                                <Label text="Date Plantation" styleClass="field-label"
+                                       GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                <DatePicker fx:id="dpDatePlante"
+                                            GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                                <Label text="Saison" styleClass="field-label"
+                                       GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                                <TextField fx:id="tfSaison" styleClass="modern-input"
+                                           GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                                <!-- Buttons -->
+                                <HBox spacing="10" alignment="CENTER_RIGHT"
+                                      GridPane.rowIndex="5" GridPane.columnIndex="1">
+
+                                    <Button text="Ajouter" onAction="#ajouterProduction" styleClass="primary-button"/>
+                                    <Button text="Modifier" onAction="#modifierProduction" styleClass="secondary-button"/>
+                                    <Button text="Supprimer" onAction="#supprimerProduction" styleClass="danger-button"/>
+                                    <Button text="Refresh" onAction="#refreshTable" styleClass="secondary-button"/>
+
+                                </HBox>
+
+                            </GridPane>
+
+                            <!-- TABLE -->
+                            <TableView fx:id="tableProduction" prefHeight="350">
+                                <columns>
+                                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                                    <TableColumn fx:id="colNomPlant" text="Nom Plant" prefWidth="130"/>
+                                    <TableColumn fx:id="colVariete" text="Variété" prefWidth="130"/>
+                                    <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="90"/>
+                                    <TableColumn fx:id="colDatePlante" text="Date" prefWidth="120"/>
+                                    <TableColumn fx:id="colSaison" text="Saison" prefWidth="90"/>
+
+                                    <!-- ✅ NEW -->
+                                    <TableColumn fx:id="colEtat" text="Etat" prefWidth="110"/>
+
+                                    <!-- ✅ NEW -->
+                                    <TableColumn fx:id="colAction" text="Action" prefWidth="140"/>
+                                </columns>
+                            </TableView>
+
+                        </VBox>
+                    </Tab>
+
+                    <!-- TAB 2 : PRODUCTION PLANT -->
+                    <Tab text="Production Plant" closable="false">
+
+                        <!-- On va charger la page ProductionPlante.fxml dedans -->
+                        <AnchorPane fx:id="productionPlantContainer" prefHeight="500"/>
+
+                    </Tab>
+
+                </tabs>
+            </TabPane>
+
+        </VBox>
+    </top>
+
+</BorderPane>

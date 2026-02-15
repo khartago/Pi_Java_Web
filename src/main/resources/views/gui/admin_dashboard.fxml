@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.controllers.ProductionController"
+            stylesheets="@farmtech-theme.css">
+
+    <top>
+        <VBox>
+            <HBox styleClass="navbar" alignment="CENTER_LEFT" spacing="30.0">
+                <padding>
+                    <Insets top="16.0" right="40.0" bottom="16.0" left="40.0"/>
+                </padding>
+                
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <ImageView fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
+                        <image>
+                            <Image url="@farmtech-logo.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="FARMTECH" styleClass="navbar-brand"/>
+                </HBox>
+                
+                <Pane HBox.hgrow="ALWAYS"/>
+                
+                <Label text="Backoffice Admin" styleClass="navbar-title"/>
+                
+                <Pane HBox.hgrow="ALWAYS"/>
+                
+                <Button text="Accueil" onAction="#handleHome" styleClass="navbar-link"/>
+                <Button text="Se déconnecter" onAction="#handleLogout" styleClass="navbar-button"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="tabPane">
+            <tabs>
+                <Tab text="Utilisateurs" closable="false">
+                    <content>
+                        <fx:include source="admin_users.fxml"/>
+                    </content>
+                </Tab>
+                <Tab text="Problèmes &amp; Diagnostics" closable="false">
+                    <content>
+                        <fx:include source="admin_problemes.fxml"/>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>

@@ -36,6 +36,3 @@ node_modules/
 # Environment files
 .env
 .env.local
-
-# Uploads (if needed, uncomment)
-# public/uploads/
