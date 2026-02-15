@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 
-public class DiagnostiqueFormController {
+public class SupportDiagnosticFormController {
 
     @FXML
     private Label titleLabel;
@@ -33,10 +33,21 @@ public class DiagnostiqueFormController {
     private int problemeId = -1;
     private Diagnostique currentDiagnostique = null;
 
+    private static final int MAX_CAUSE_SOLUTION_LENGTH = 2000;
+
     @FXML
     private void initialize() {
         resultatCombo.getItems().addAll("Résolu", "En cours", "Échec", "En attente");
         resultatCombo.setValue("En attente");
+        applyMaxLength(causeArea, MAX_CAUSE_SOLUTION_LENGTH);
+        applyMaxLength(solutionArea, MAX_CAUSE_SOLUTION_LENGTH);
+    }
+
+    private void applyMaxLength(TextArea area, int max) {
+        area.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
+            if (change.getControlNewText().length() <= max) return change;
+            return null;
+        }));
     }
 
     public void setProblemeId(int id) {
@@ -59,12 +70,19 @@ public class DiagnostiqueFormController {
 
     @FXML
     private void handleSave(ActionEvent event) {
+        errorLabel.setVisible(false);
         String cause = causeArea.getText().trim();
         String solution = solutionArea.getText().trim();
         String resultat = resultatCombo.getValue();
 
         if (cause.isEmpty() || solution.isEmpty()) {
             errorLabel.setText("Veuillez remplir tous les champs");
+            errorLabel.setVisible(true);
+            return;
+        }
+
+        if (cause.length() > MAX_CAUSE_SOLUTION_LENGTH || solution.length() > MAX_CAUSE_SOLUTION_LENGTH) {
+            errorLabel.setText("La cause et la solution ne doivent pas dépasser " + MAX_CAUSE_SOLUTION_LENGTH + " caractères");
             errorLabel.setVisible(true);
             return;
         }
@@ -98,7 +116,7 @@ public class DiagnostiqueFormController {
                 currentDiagnostique.setDateDiagnostique(LocalDateTime.now());
                 diagnostiqueService.modifierDiagnostique(currentDiagnostique);
             }
-            
+
             Stage stage = getStage(event);
             stage.close();
         } catch (Exception e) {

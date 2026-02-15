@@ -14,7 +14,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.util.regex.Pattern;
+
 public class LoginController {
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final int MAX_EMAIL_LENGTH = 150;
+    private static final int MAX_PASSWORD_LENGTH = 100;
 
     @FXML
     private TextField emailField;
@@ -26,6 +33,18 @@ public class LoginController {
     private Label errorLabel;
 
     private UserService userService = new UserService();
+
+    @FXML
+    private void initialize() {
+        emailField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
+            if (change.getControlNewText().length() <= MAX_EMAIL_LENGTH) return change;
+            return null;
+        }));
+        passwordField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
+            if (change.getControlNewText().length() <= MAX_PASSWORD_LENGTH) return change;
+            return null;
+        }));
+    }
 
     private Stage getStage(ActionEvent event) {
         Node source = (Node) event.getSource();
@@ -46,11 +65,18 @@ public class LoginController {
 
     @FXML
     private void handleLogin(ActionEvent event) {
+        errorLabel.setVisible(false);
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
         if (email.isEmpty() || password.isEmpty()) {
             errorLabel.setText("Veuillez remplir tous les champs");
+            errorLabel.setVisible(true);
+            return;
+        }
+
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            errorLabel.setText("Veuillez saisir une adresse email valide");
             errorLabel.setVisible(true);
             return;
         }

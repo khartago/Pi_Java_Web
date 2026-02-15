@@ -10,13 +10,13 @@ import java.sql.SQLException;
  * <p>The connection parameters (URL, user and password) are defined as constants at the top of
  * this class. Adapt these values to match your local database configuration. By default the
  * database is expected to run on the same machine (localhost) with the default MySQL port
- * (3306) and a schema named {@code stockdb}. The default user is {@code root} with an
+ * (3306) and a schema named {@code 3a19}. The default user is {@code root} with an
  * empty password. If you run MySQL through XAMPP/phpMyAdmin the credentials might differ,
  * so please adjust them accordingly.</p>
  */
 public class DBConnection {
     /** JDBC URL pointing at the database. */
-    private static final String URL = "jdbc:mysql://localhost:3306/stockdb?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/3a19?useSSL=false&serverTimezone=UTC";
     /** Database user name. */
     private static final String USER = "root";
     /** Database password (empty by default). */

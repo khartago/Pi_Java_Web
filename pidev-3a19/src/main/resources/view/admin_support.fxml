@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.AdminProblemesController"
+            fx:controller="controller.AdminSupportController"
             stylesheets="@farmtech-theme.css">
 
     <center>
@@ -15,7 +15,7 @@
                 <Insets top="16.0" right="16.0" bottom="16.0" left="16.0"/>
             </padding>
             <HBox spacing="8.0" alignment="CENTER_LEFT">
-                <Label text="Gestion des problèmes" styleClass="section-title"/>
+                <Label text="Support — Problèmes &amp; diagnostics" styleClass="section-title"/>
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label text="Filtre état:"/>
                 <ComboBox fx:id="etatFilterCombo" onAction="#handleFilterEtat"/>

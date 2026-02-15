@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 
 import java.time.format.DateTimeFormatter;
 
-public class ProblemeDetailController {
+public class SupportIssueDetailController {
 
     @FXML
     private Label typeLabel;

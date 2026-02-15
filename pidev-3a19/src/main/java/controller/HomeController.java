@@ -57,28 +57,4 @@ public class HomeController {
         }
     }
 
-    @FXML
-    private void handleGetStarted(ActionEvent event) {
-        handleLogin(event);
     }
-
-    @FXML
-    private void handleProduitsMateriels(ActionEvent event) {
-        try {
-            Node source = (Node) event.getSource();
-            Stage stage = (Stage) source.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/view/produit_list.fxml"));
-            Scene scene = new Scene(root);
-            try {
-                String css = getClass().getResource("/css/style.css").toExternalForm();
-                scene.getStylesheets().add(css);
-            } catch (NullPointerException ignored) {}
-            stage.setScene(scene);
-            stage.setTitle("FARMTECH - Produits & Matériels");
-            stage.setMaximized(true);
-            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}

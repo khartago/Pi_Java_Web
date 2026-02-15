@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.ProblemeFormController"
+            fx:controller="controller.SupportIssueFormController"
             stylesheets="@farmtech-theme.css">
 
     <center>
@@ -38,7 +38,7 @@
                     <TextField fx:id="photosField" promptText="Séparez plusieurs photos par ;" styleClass="modern-input" prefHeight="44.0"/>
                 </VBox>
 
-                <Label fx:id="errorLabel" textFill="#DC2626" visible="false" 
+                <Label fx:id="errorLabel" textFill="#DC2626" visible="false"
                        style="-fx-font-size: 13px; -fx-wrap-text: true; -fx-padding: 8 0;"/>
 
                 <HBox spacing="12.0" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">

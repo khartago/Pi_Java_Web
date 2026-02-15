@@ -29,8 +29,6 @@
                 <Pane HBox.hgrow="ALWAYS"/>
                 
                 <Button text="Accueil" onAction="#handleHome" styleClass="navbar-link"/>
-                <Button text="Problèmes / Diagnostic" onAction="#handleGetStarted" styleClass="navbar-link"/>
-                <Button text="Produits / Matériels" onAction="#handleProduitsMateriels" styleClass="navbar-link"/>
                 <Button text="À propos" onAction="#handleAbout" styleClass="navbar-link"/>
                 <Button text="Contact" onAction="#handleContact" styleClass="navbar-link"/>
                 
@@ -67,8 +65,7 @@
                                styleClass="hero-description" wrapText="true"/>
                         
                         <HBox spacing="16.0" alignment="CENTER">
-                            <Button text="Commencer (Connexion)" onAction="#handleGetStarted" styleClass="hero-button"/>
-                            <Button text="Produits &amp; Matériels" onAction="#handleProduitsMateriels" styleClass="hero-button-secondary"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button"/>
                             <Button text="En savoir plus" onAction="#handleAbout" styleClass="hero-button-secondary"/>
                         </HBox>
                     </VBox>
@@ -88,9 +85,9 @@
                             </padding>
                             <Label text="🔍 Diagnostic" styleClass="feature-icon"/>
                             <Label text="Problèmes &amp; Diagnostic" styleClass="feature-title"/>
-                            <Label text="Connexion pour gérer problèmes et diagnostics agricoles" 
+                            <Label text="Gérez vos problèmes agricoles et obtenez des diagnostics experts." 
                                    styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleGetStarted" styleClass="hero-button-secondary"/>
+                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
                         
                         <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
@@ -99,20 +96,20 @@
                             </padding>
                             <Label text="👥 Utilisateurs" styleClass="feature-icon"/>
                             <Label text="Gestion utilisateurs" styleClass="feature-title"/>
-                            <Label text="Connexion admin pour gérer les comptes et rôles" 
+                            <Label text="Admin : gérez les comptes et rôles utilisateur." 
                                    styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleGetStarted" styleClass="hero-button-secondary"/>
+                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
                         
                         <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
                             <padding>
                                 <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
                             </padding>
-                            <Label text="📦 Produits" styleClass="feature-icon"/>
+                            <Label text="📦 Stock" styleClass="feature-icon"/>
                             <Label text="Produits &amp; Matériels" styleClass="feature-title"/>
-                            <Label text="Gestion du stock : produits et matériels" 
+                            <Label text="Gestion du stock : produits et matériels." 
                                    styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleProduitsMateriels" styleClass="hero-button-secondary"/>
+                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
                     </HBox>
                 </VBox>

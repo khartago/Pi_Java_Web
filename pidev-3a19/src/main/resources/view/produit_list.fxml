@@ -3,37 +3,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.ProduitController"
             styleClass="root">
-
-    <!-- Barre d'en-tête -->
-    <top>
-        <VBox>
-            <!-- Header principal avec logo et titre -->
-            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
-                <ImageView fx:id="logoImage" fitHeight="35" fitWidth="35" preserveRatio="true">
-                    <image>
-                        <Image url="@/images/farmtech-logo.png"/>
-                    </image>
-                </ImageView>
-                <Label text="FARMTECH" styleClass="app-title" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Label text="Backoffice Admin" styleClass="header-section" />
-                <Button text="Accueil" onAction="#handleRetourAccueil" styleClass="header-section" />
-                <Button text="Se déconnecter" styleClass="logout-button" />
-            </HBox>
-
-            <!-- Navigation avec tabs -->
-            <HBox spacing="0" styleClass="navigation-bar">
-                <Button text="Produits" styleClass="nav-tab, nav-tab-active" />
-                <Button text="Matériels" onAction="#handleVoirMateriels" styleClass="nav-tab" />
-            </HBox>
-        </VBox>
-    </top>
 
     <!-- Contenu central -->
     <center>

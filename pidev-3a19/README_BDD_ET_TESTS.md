@@ -56,6 +56,7 @@ Si vous avez défini un mot de passe pour `root` dans phpMyAdmin, modifiez la li
    `CREATE DATABASE IF NOT EXISTS 3a19;` puis Exécuter.
 4. Dans le menu de gauche, sélectionner la base **3a19**.
 5. Onglet **SQL**, copier-coller tout le contenu de `src/main/resources/schema_probleme_diagnostique.sql`, puis Exécuter.
+6. **Module Produits / Matériels** : dans la même base **3a19**, exécuter aussi le script `src/main/resources/schema_produit_materiel.sql` (tables `produit` et `materiel`).
 
 ---
 

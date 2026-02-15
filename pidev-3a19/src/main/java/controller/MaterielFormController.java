@@ -70,6 +70,15 @@ public class MaterielFormController {
     @FXML
     private void handleSave() {
 
+        if (produit == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Produit requis");
+            alert.setHeaderText(null);
+            alert.setContentText("Aucun produit n'est associé à cette vue. Revenez à la liste des produits, sélectionnez un produit puis ouvrez ses matériels.");
+            alert.showAndWait();
+            return;
+        }
+
         if (!validateInput()) return;
 
         materiel.setNom(nomField.getText().trim());

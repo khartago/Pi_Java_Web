@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,7 +18,10 @@ import javafx.stage.Stage;
 import model.Materiel;
 import model.MaterielDAO;
 import model.Produit;
+import model.ProduitDAO;
+
 import java.io.IOException;
+import java.util.List;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -37,8 +42,11 @@ public class MaterielController {
     private TableColumn<Materiel, String> dateAchatColumn;
     @FXML
     private TableColumn<Materiel, Double> coutColumn;
+    @FXML
+    private ComboBox<Produit> produitCombo;
 
     private final MaterielDAO materielDAO = new MaterielDAO();
+    private final ProduitDAO produitDAO = new ProduitDAO();
     private ObservableList<Materiel> materiels;
     private Produit produit;
 
@@ -50,6 +58,9 @@ public class MaterielController {
      */
     public void setProduit(Produit produit) {
         this.produit = produit;
+        if (produitCombo != null && produit != null) {
+            produitCombo.getSelectionModel().select(produit);
+        }
         loadMateriels();
     }
 
@@ -67,6 +78,34 @@ public class MaterielController {
             }
         });
         coutColumn.setCellValueFactory(new PropertyValueFactory<>("cout"));
+
+        if (produitCombo != null) {
+            produitCombo.setCellFactory(lv -> new ListCell<Produit>() {
+                @Override
+                protected void updateItem(Produit item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getNom());
+                }
+            });
+            produitCombo.setButtonCell(new ListCell<Produit>() {
+                @Override
+                protected void updateItem(Produit item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getNom());
+                }
+            });
+            List<Produit> produits = produitDAO.getAll();
+            produitCombo.setItems(FXCollections.observableArrayList(produits));
+            produitCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    setProduit(newVal);
+                }
+            });
+            if (produit == null && !produits.isEmpty()) {
+                produitCombo.getSelectionModel().selectFirst();
+                setProduit(produits.get(0));
+            }
+        }
     }
 
     /**

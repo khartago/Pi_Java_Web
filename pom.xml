@@ -5,67 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>gestion-produits-premium</artifactId>
+    <artifactId>pi_me</artifactId>
     <version>1.0.0</version>
-    <name>Gestion Produits Matériels Premium</name>
+    <packaging>pom</packaging>
+    <name>PiDev 3A – FARMTECH</name>
+    <description>Projet User, Support (Problèmes/Diagnostics) et Produits/Matériels.</description>
 
-    <!--
-        Properties define project‑wide values. The JavaFX version can be bumped easily
-        here. The Java version is set to 17 in accordance with the requirements.
-    -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>17</java.version>
-        <!--
-            Version de JavaFX utilisée. La version 17 est compatible avec le JDK 17
-            et correspond aux bibliothèques fournies via le SDK JavaFX 17.0.18.
-         -->
-        <javafx.version>17.0.2</javafx.version>
-    </properties>
-
-    <dependencies>
-        <!-- JavaFX UI controls -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <!-- JavaFX FXML support -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <!-- MySQL Connector for JDBC -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.33</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <!-- Compiles source code to the specified Java version -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <!-- JavaFX plugin to simplify running the application -->
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <configuration>
-                    <mainClass>app.MainApp</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
+    <modules>
+        <module>pidev-3a19</module>
+    </modules>
 </project>

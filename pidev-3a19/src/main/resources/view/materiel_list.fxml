@@ -3,42 +3,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielController"
             styleClass="root"
-            stylesheets="@../css/style.css">
-
-    <!-- Barre d'en-tête -->
-    <top>
-        <VBox>
-            <!-- Header principal avec logo et titre -->
-            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
-                <ImageView fitHeight="35" fitWidth="35" preserveRatio="true">
-                    <image>
-                        <Image url="@/images/farmtech-logo.png"/>
-                    </image>
-                </ImageView>
-                <Label text="FARMTECH" styleClass="app-title" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Label text="Backoffice Admin" styleClass="header-section" />
-                <Label text="Accueil" styleClass="header-section" />
-                <Button text="Se déconnecter" styleClass="logout-button" />
-            </HBox>
-
-            <!-- Navigation avec tabs -->
-            <HBox spacing="0" styleClass="navigation-bar">
-                <Button text="Produits" onAction="#handleVoirProduits" styleClass="nav-tab" />
-                <Button text="Matériels" styleClass="nav-tab, nav-tab-active" />
-            </HBox>
-        </VBox>
-    </top>
+            stylesheets="@farmtech-theme.css">
 
     <!-- Contenu central -->
     <center>
         <VBox spacing="15" styleClass="content-area">
+            <!-- Sélecteur de produit (pour accès depuis le menu Matériels) -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Produit :" styleClass="field-label"/>
+                <ComboBox fx:id="produitCombo" prefWidth="280" promptText="Choisir un produit"/>
+            </HBox>
             <!-- Titre et boutons d'action -->
             <HBox alignment="CENTER_LEFT" spacing="15">
                 <Label text="Gestion des Matériels" styleClass="page-title" />

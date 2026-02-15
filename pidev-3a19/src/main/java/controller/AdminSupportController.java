@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AdminProblemesController implements Initializable {
+public class AdminSupportController implements Initializable {
 
     @FXML
     private TableView<Probleme> problemeTable;
@@ -51,13 +51,13 @@ public class AdminProblemesController implements Initializable {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         etatColumn.setCellValueFactory(new PropertyValueFactory<>("etat"));
-        fermierColumn.setCellValueFactory(cellData -> 
+        fermierColumn.setCellValueFactory(cellData ->
             javafx.beans.binding.Bindings.createStringBinding(() -> "N/A"));
-        
+
         etatFilterCombo.getItems().addAll("Tous", "EN_ATTENTE", "EN_COURS", "RESOLU", "FERME");
         etatFilterCombo.setValue("Tous");
         etatFilterCombo.setOnAction(e -> handleFilterEtat());
-        
+
         loadProblemes();
     }
 
@@ -71,7 +71,7 @@ public class AdminProblemesController implements Initializable {
     private void handleFilterEtat() {
         String selectedEtat = etatFilterCombo.getValue();
         filteredList.clear();
-        
+
         if (selectedEtat == null || "Tous".equals(selectedEtat)) {
             filteredList.addAll(problemeList);
         } else {
@@ -81,7 +81,7 @@ public class AdminProblemesController implements Initializable {
                 }
             }
         }
-        
+
         problemeTable.setItems(filteredList);
     }
 
@@ -96,29 +96,29 @@ public class AdminProblemesController implements Initializable {
             alert.showAndWait();
             return;
         }
-        
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/diagnostique_form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/support_diagnostic_form.fxml"));
             Parent root = loader.load();
-            DiagnostiqueFormController controller = loader.getController();
+            SupportDiagnosticFormController controller = loader.getController();
             controller.setProblemeId(selectedProbleme.getId());
-            
+
             Diagnostique existingDiagnostique = diagnostiqueService.afficherDiagnostiqueParProbleme(selectedProbleme.getId());
             if (existingDiagnostique != null) {
                 controller.setDiagnostique(existingDiagnostique);
             }
-            
+
             Stage stage = new Stage();
             Scene scene = new Scene(root, 600, 500);
-            stage.setTitle("Diagnostic du problème - FARMTECH");
+            stage.setTitle("Diagnostic - FARMTECH");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.setMinWidth(500);
             stage.setMinHeight(450);
             stage.centerOnScreen();
-            
+
             stage.setOnHidden(e -> loadProblemes());
-            
+
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

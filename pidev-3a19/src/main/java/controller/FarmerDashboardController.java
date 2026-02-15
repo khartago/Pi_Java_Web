@@ -2,73 +2,105 @@ package controller;
 
 import model.Probleme;
 import Services.ProblemeService;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class FarmerDashboardController implements Initializable {
 
     @FXML
-    private TableView<Probleme> problemeTable;
-
-    @FXML
-    private TableColumn<Probleme, String> typeColumn;
-
-    @FXML
-    private TableColumn<Probleme, String> graviteColumn;
-
-    @FXML
-    private TableColumn<Probleme, String> dateColumn;
-
-    @FXML
-    private TableColumn<Probleme, String> etatColumn;
+    private FlowPane problemeCardsContainer;
 
     private ProblemeService problemeService = new ProblemeService();
-    private ObservableList<Probleme> problemeList = FXCollections.observableArrayList();
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        graviteColumn.setCellValueFactory(new PropertyValueFactory<>("gravite"));
-        etatColumn.setCellValueFactory(new PropertyValueFactory<>("etat"));
-        
-        dateColumn.setCellValueFactory(cellData -> {
-            LocalDateTime date = cellData.getValue().getDateDetection();
-            if (date != null) {
-                return javafx.beans.binding.Bindings.createStringBinding(
-                    () -> date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                );
-            }
-            return javafx.beans.binding.Bindings.createStringBinding(() -> "");
-        });
-        
         loadProblemes();
     }
 
     private void loadProblemes() {
-        problemeList.clear();
-        problemeList.addAll(problemeService.afficherProblemes());
-        problemeTable.setItems(problemeList);
+        problemeCardsContainer.getChildren().clear();
+        for (Probleme p : problemeService.afficherProblemes()) {
+            VBox card = buildProblemeCard(p);
+            problemeCardsContainer.getChildren().add(card);
+        }
+    }
+
+    private VBox buildProblemeCard(Probleme p) {
+        VBox card = new VBox(12);
+        card.getStyleClass().add("probleme-card");
+        card.setPrefWidth(280);
+        card.setMinWidth(260);
+        card.setMaxWidth(320);
+        card.setPadding(new Insets(16));
+
+        Label typeLabel = new Label(p.getType() != null ? p.getType() : "—");
+        typeLabel.getStyleClass().add("probleme-card-title");
+        typeLabel.setWrapText(true);
+
+        String dateStr = p.getDateDetection() != null
+            ? p.getDateDetection().format(DATE_FORMAT)
+            : "—";
+        Label dateLabel = new Label(dateStr);
+        dateLabel.getStyleClass().add("probleme-card-date");
+
+        HBox badges = new HBox(8);
+        badges.getStyleClass().add("probleme-card-badges");
+        Label graviteBadge = new Label(p.getGravite() != null ? p.getGravite() : "—");
+        graviteBadge.getStyleClass().add("probleme-card-badge");
+        Label etatBadge = new Label(p.getEtat() != null ? p.getEtat() : "—");
+        etatBadge.getStyleClass().add("probleme-card-badge");
+        etatBadge.getStyleClass().add("probleme-card-etat");
+        badges.getChildren().addAll(graviteBadge, etatBadge);
+
+        Button voirDetail = new Button("Voir détail");
+        voirDetail.getStyleClass().add("secondary-button");
+        voirDetail.setOnAction(e -> openDetailFor(p));
+
+        card.getChildren().addAll(typeLabel, dateLabel, badges, voirDetail);
+        return card;
+    }
+
+    private void openDetailFor(Probleme p) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/support_issue_detail.fxml"));
+            Parent root = loader.load();
+            SupportIssueDetailController controller = loader.getController();
+            controller.setProbleme(p);
+
+            Stage stage = new Stage();
+            Scene scene = new Scene(root, 700, 600);
+            stage.setTitle("Détail du problème - FARMTECH");
+            stage.setScene(scene);
+            stage.setResizable(true);
+            stage.setMinWidth(600);
+            stage.setMinHeight(500);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleNewProbleme() {
         try {
             Stage stage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("/view/probleme_form.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/view/support_issue_form.fxml"));
             Scene scene = new Scene(root, 600, 700);
             stage.setTitle("Nouveau problème - FARMTECH");
             stage.setScene(scene);
@@ -79,38 +111,6 @@ public class FarmerDashboardController implements Initializable {
             
             stage.setOnHidden(e -> loadProblemes());
             
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleOpenDetail() {
-        Probleme selectedProbleme = problemeTable.getSelectionModel().getSelectedItem();
-        if (selectedProbleme == null) {
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-            alert.setTitle("Aucune sélection");
-            alert.setHeaderText(null);
-            alert.setContentText("Veuillez sélectionner un problème pour voir les détails.");
-            alert.showAndWait();
-            return;
-        }
-        
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/probleme_detail.fxml"));
-            Parent root = loader.load();
-            ProblemeDetailController controller = loader.getController();
-            controller.setProbleme(selectedProbleme);
-            
-            Stage stage = new Stage();
-            Scene scene = new Scene(root, 700, 600);
-            stage.setTitle("Détail du problème - FARMTECH");
-            stage.setScene(scene);
-            stage.setResizable(true);
-            stage.setMinWidth(600);
-            stage.setMinHeight(500);
-            stage.centerOnScreen();
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

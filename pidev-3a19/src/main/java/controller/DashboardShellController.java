@@ -7,7 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -21,45 +22,59 @@ import java.io.IOException;
 public class DashboardShellController {
 
     @FXML private StackPane contentArea;
+    @FXML private Label headerTitle;
     @FXML private Button btnUtilisateurs;
-    @FXML private Button btnProblemes;
-    @FXML private Button btnMesProblemes;
-    @FXML private Button btnProduitsMateriels;
+    @FXML private Button btnSupport;
+    @FXML private Button btnSupportFarmer;
+    @FXML private Button btnProduits;
+    @FXML private Button btnMateriels;
 
     private User user;
-    private Node adminContent;        // TabPane (Utilisateurs | Problèmes & Diagnostics)
-    private Node farmerContent;       // VBox (Mes problèmes)
-    private Node produitsMaterielsContent;  // Produits & Matériels module (produits list + matériels)
+    private Node adminUsersContent;
+    private Node adminSupportContent;
+    private Node farmerContent;
 
     /**
      * Called by LoginController after loading the shell.
-     * Only two roles: ADMIN and FARMER. Produits & Matériels is one module for both.
+     * Only two roles: ADMIN and FARMER. Produits & Matériels are backoffice-only (admin).
      */
     public void initUser(User user) {
         this.user = user;
         boolean isAdmin = user != null && "ADMIN".equals(user.getRole());
 
+        if (headerTitle != null) {
+            headerTitle.setText(isAdmin ? "Backoffice Admin" : "Mon espace");
+        }
         btnUtilisateurs.setVisible(isAdmin);
         btnUtilisateurs.setManaged(isAdmin);
-        btnProblemes.setVisible(isAdmin);
-        btnProblemes.setManaged(isAdmin);
-        btnMesProblemes.setVisible(!isAdmin);
-        btnMesProblemes.setManaged(!isAdmin);
-        btnProduitsMateriels.setVisible(true);
-        btnProduitsMateriels.setManaged(true);
+        btnSupport.setVisible(isAdmin);
+        btnSupport.setManaged(isAdmin);
+        btnSupportFarmer.setVisible(!isAdmin);
+        btnSupportFarmer.setManaged(!isAdmin);
+        btnProduits.setVisible(isAdmin);
+        btnProduits.setManaged(isAdmin);
+        btnMateriels.setVisible(isAdmin);
+        btnMateriels.setManaged(isAdmin);
 
         if (isAdmin) {
             showUtilisateurs();
         } else {
-            showMesProblemes();
+            showSupportFarmer();
         }
     }
 
-    private Node getAdminContent() throws IOException {
-        if (adminContent == null) {
-            adminContent = FXMLLoader.load(getClass().getResource("/view/admin_content.fxml"));
+    private Node getAdminUsersContent() throws IOException {
+        if (adminUsersContent == null) {
+            adminUsersContent = FXMLLoader.load(getClass().getResource("/view/admin_users.fxml"));
         }
-        return adminContent;
+        return adminUsersContent;
+    }
+
+    private Node getAdminSupportContent() throws IOException {
+        if (adminSupportContent == null) {
+            adminSupportContent = FXMLLoader.load(getClass().getResource("/view/admin_support.fxml"));
+        }
+        return adminSupportContent;
     }
 
     private Node getFarmerContent() throws IOException {
@@ -69,13 +84,6 @@ public class DashboardShellController {
         return farmerContent;
     }
 
-    private Node getProduitsMaterielsContent() throws IOException {
-        if (produitsMaterielsContent == null) {
-            produitsMaterielsContent = FXMLLoader.load(getClass().getResource("/view/produit_content.fxml"));
-        }
-        return produitsMaterielsContent;
-    }
-
     private void setContent(Node node) {
         contentArea.getChildren().setAll(node);
     }
@@ -83,31 +91,23 @@ public class DashboardShellController {
     @FXML
     private void showUtilisateurs() {
         try {
-            Node content = getAdminContent();
-            setContent(content);
-            if (content instanceof TabPane) {
-                ((TabPane) content).getSelectionModel().selectFirst();
-            }
+            setContent(getAdminUsersContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void showProblemes() {
+    private void showSupport() {
         try {
-            Node content = getAdminContent();
-            setContent(content);
-            if (content instanceof TabPane) {
-                ((TabPane) content).getSelectionModel().selectLast();
-            }
+            setContent(getAdminSupportContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void showMesProblemes() {
+    private void showSupportFarmer() {
         try {
             setContent(getFarmerContent());
         } catch (IOException e) {
@@ -116,9 +116,24 @@ public class DashboardShellController {
     }
 
     @FXML
-    private void showProduitsMateriels() {
+    private void showProduits() {
         try {
-            setContent(getProduitsMaterielsContent());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/produit_list.fxml"));
+            Parent root = loader.load();
+            Node content = (root instanceof BorderPane) ? ((BorderPane) root).getCenter() : root;
+            setContent(content != null ? content : root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showMateriels() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/materiel_list.fxml"));
+            Parent root = loader.load();
+            Node content = (root instanceof BorderPane) ? ((BorderPane) root).getCenter() : root;
+            setContent(content != null ? content : root);
         } catch (IOException e) {
             e.printStackTrace();
         }
