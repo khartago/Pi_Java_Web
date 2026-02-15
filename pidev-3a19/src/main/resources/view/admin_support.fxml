@@ -10,24 +10,22 @@
             stylesheets="@farmtech-theme.css">
 
     <center>
-        <VBox spacing="10.0">
-            <padding>
-                <Insets top="16.0" right="16.0" bottom="16.0" left="16.0"/>
-            </padding>
-            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                <Label text="Support — Problèmes &amp; diagnostics" styleClass="section-title"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Label text="Filtre état:"/>
-                <ComboBox fx:id="etatFilterCombo" onAction="#handleFilterEtat"/>
+        <VBox spacing="15" styleClass="content-area">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Support — Problèmes &amp; diagnostics" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Filtre état :" styleClass="field-label"/>
+                <ComboBox fx:id="etatFilterCombo" styleClass="modern-input" onAction="#handleFilterEtat"/>
                 <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
             </HBox>
 
-            <TableView fx:id="problemeTable" prefHeight="260.0">
+            <TableView fx:id="problemeTable" styleClass="table-view" prefHeight="280">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60.0"/>
-                    <TableColumn fx:id="typeColumn" text="Type"/>
-                    <TableColumn fx:id="fermierColumn" text="Fermier"/>
-                    <TableColumn fx:id="etatColumn" text="État" prefWidth="100.0"/>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="180"/>
+                    <TableColumn fx:id="fermierColumn" text="Fermier" prefWidth="200"/>
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>

@@ -8,7 +8,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielFormController"
             styleClass="root"
-            stylesheets="@../css/style.css">
+            stylesheets="@farmtech-theme.css">
 
     <!-- En-tête -->
     <top>
@@ -27,16 +27,16 @@
                 </columnConstraints>
 
                 <Label text="Nom du matériel :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
+                <TextField fx:id="nomField" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
 
                 <Label text="État :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="etatField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
+                <TextField fx:id="etatField" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
 
                 <Label text="Date d'achat :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
-                <DatePicker fx:id="dateAchatPicker" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+                <DatePicker fx:id="dateAchatPicker" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
 
                 <Label text="Coût :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="coutField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
+                <TextField fx:id="coutField" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
             </GridPane>
         </VBox>
     </center>

@@ -21,7 +21,7 @@
             </HBox>
 
             <!-- Tableau -->
-            <TableView fx:id="produitTable" VBox.vgrow="ALWAYS">
+            <TableView fx:id="produitTable" styleClass="table-view" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
                     <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />

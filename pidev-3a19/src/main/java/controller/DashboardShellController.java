@@ -28,6 +28,7 @@ public class DashboardShellController {
     @FXML private Button btnSupportFarmer;
     @FXML private Button btnProduits;
     @FXML private Button btnMateriels;
+    @FXML private Button btnProduction;
 
     private User user;
     private Node adminUsersContent;
@@ -55,6 +56,8 @@ public class DashboardShellController {
         btnProduits.setManaged(isAdmin);
         btnMateriels.setVisible(isAdmin);
         btnMateriels.setManaged(isAdmin);
+        btnProduction.setVisible(!isAdmin);
+        btnProduction.setManaged(!isAdmin);
 
         if (isAdmin) {
             showUtilisateurs();
@@ -134,6 +137,16 @@ public class DashboardShellController {
             Parent root = loader.load();
             Node content = (root instanceof BorderPane) ? ((BorderPane) root).getCenter() : root;
             setContent(content != null ? content : root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showProduction() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/Production.fxml"));
+            setContent(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

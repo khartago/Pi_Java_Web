@@ -13,7 +13,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.ProduitFormController"
             styleClass="root"
-            stylesheets="@../css/style.css">
+            stylesheets="@farmtech-theme.css">
 
     <!-- En-tête -->
     <top>
@@ -32,16 +32,16 @@
                 </columnConstraints>
 
                 <Label text="Nom :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du produit"/>
+                <TextField fx:id="nomField" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du produit"/>
 
                 <Label text="Quantité :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="quantiteField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Entrez la quantité"/>
+                <TextField fx:id="quantiteField" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Entrez la quantité"/>
 
                 <Label text="Unité :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="uniteField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Ex: kg, L, pièces"/>
+                <TextField fx:id="uniteField" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Ex: kg, L, pièces"/>
 
                 <Label text="Date d'expiration :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
-                <DatePicker fx:id="dateExpirationPicker" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+                <DatePicker fx:id="dateExpirationPicker" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
             </GridPane>
         </VBox>
     </center>
