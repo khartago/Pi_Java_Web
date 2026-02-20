@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.DashboardShellController"
+            stylesheets="@farmtech-theme.css"
+            prefWidth="1200" prefHeight="700">
+
+    <top>
+        <HBox styleClass="top-toolbar" alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Label fx:id="headerTitle" text="Backoffice Admin" styleClass="toolbar-title"/>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar" spacing="0" prefWidth="220" minWidth="220" maxWidth="220">
+            <padding><Insets top="20" right="16" bottom="20" left="16"/></padding>
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="sidebar-brand">
+                <ImageView fitHeight="36" fitWidth="36" preserveRatio="true">
+                    <image><Image url="@farmtech-logo.png"/></image>
+                </ImageView>
+                <Label text="FARMTECH" styleClass="navbar-brand"/>
+            </HBox>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label text="Menu" styleClass="section-title" style="-fx-padding: 16 0 8 0;"/>
+            <Button fx:id="btnUtilisateurs" text="Utilisateurs" onAction="#showUtilisateurs" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnSupport" text="Problèmes &amp; Diagnostics" onAction="#showSupport" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnSupportFarmer" text="Mes problèmes" onAction="#showSupportFarmer" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnProduits" text="Produits" onAction="#showProduits" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnMateriels" text="Matériels" onAction="#showMateriels" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnProduction" text="Production" onAction="#showProduction" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Separator/>
+            <Button text="Déconnexion" onAction="#logout" styleClass="navbar-button" maxWidth="Infinity" style="-fx-margin: 8 0 0 0;"/>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #F8FAF9;"/>
+    </center>
+</BorderPane>

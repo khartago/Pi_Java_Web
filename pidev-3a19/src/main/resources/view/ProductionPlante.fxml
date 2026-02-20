@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProductionPlanteController"
+            prefWidth="900" prefHeight="500"
+            stylesheets="@farmtech-theme.css">
+
+    <VBox spacing="18" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        <Label text="Production plant (récoltes)" styleClass="section-title"/>
+        <GridPane hgap="14" vgap="14">
+            <Label text="Quantité Produite" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="tfQuantiteProduite" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Date Récolte" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="dpDateRecolte" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Qualité" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="tfQualite" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="État" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <TextField fx:id="tfEtat" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <Button text="Modifier" onAction="#modifierProductionPlante" styleClass="secondary-button"/>
+                <Button text="Supprimer" onAction="#supprimerProductionPlante" styleClass="danger-button"/>
+                <Button text="Refresh" onAction="#refreshTable" styleClass="secondary-button"/>
+            </HBox>
+        </GridPane>
+        <TableView fx:id="tableProductionPlante" styleClass="table-view" prefHeight="320">
+            <columns>
+                <TableColumn fx:id="colIdProduction" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colQuantiteProduite" text="Quantité" prefWidth="150"/>
+                <TableColumn fx:id="colDateRecolte" text="Date récolte" prefWidth="150"/>
+                <TableColumn fx:id="colQualite" text="Qualité" prefWidth="150"/>
+                <TableColumn fx:id="colEtat" text="État" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </VBox>
+</AnchorPane>

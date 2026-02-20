@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.UserFormController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <VBox spacing="14" styleClass="content-area">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+            <Label fx:id="titleLabel" text="Nouvel utilisateur" styleClass="page-title"/>
+
+            <Label text="Nom" styleClass="field-label"/>
+            <TextField fx:id="nomField" styleClass="modern-input" prefHeight="40"/>
+
+            <Label text="Email" styleClass="field-label"/>
+            <TextField fx:id="emailField" styleClass="modern-input" prefHeight="40"/>
+
+            <Label text="Mot de passe" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" styleClass="modern-input" prefHeight="40"/>
+
+            <Label text="Rôle" styleClass="field-label"/>
+            <ComboBox fx:id="roleCombo" styleClass="modern-input" prefHeight="40"/>
+
+            <Label fx:id="errorLabel" style="-fx-text-fill: #DC2626; -fx-font-size: 12px;" visible="false"/>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 8 0 0 0;">
+                <Button text="Annuler" onAction="#handleCancel" styleClass="secondary-button"/>
+                <Button text="Enregistrer" onAction="#handleSave" styleClass="primary-button" defaultButton="true"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

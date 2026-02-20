@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AdminSupportController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <VBox spacing="15" styleClass="content-area">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Support — Problèmes &amp; diagnostics" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Filtre état :" styleClass="field-label"/>
+                <ComboBox fx:id="etatFilterCombo" styleClass="modern-input" onAction="#handleFilterEtat"/>
+                <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
+            </HBox>
+
+            <TableView fx:id="problemeTable" styleClass="table-view" prefHeight="280">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="180"/>
+                    <TableColumn fx:id="fermierColumn" text="Fermier" prefWidth="200"/>
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

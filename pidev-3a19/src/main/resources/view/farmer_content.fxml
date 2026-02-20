@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.FarmerDashboardController"
+      stylesheets="@farmtech-theme.css"
+      styleClass="content-area"
+      spacing="20">
+    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="4">
+            <Label text="Mes problèmes" styleClass="page-title"/>
+            <Label text="Gérez et suivez vos problèmes agricoles"
+                   style="-fx-text-fill: #6B7280; -fx-font-size: 13px;"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouveau problème" onAction="#handleNewProbleme" styleClass="primary-button"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" styleClass="transparent-scroll" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="problemeCardsContainer" hgap="16.0" vgap="16.0" prefWrapLength="900.0"/>
+    </ScrollPane>
+</VBox>

@@ -1,0 +1,159 @@
+/* ================= ROOT ================= */
+
+.root {
+    -fx-font-family: "Segoe UI", "Poppins", sans-serif;
+    -fx-background-color: #f4f7f6;
+}
+
+/* ================= PAGE TITLE ================= */
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b4332;
+}
+
+/* ================= CONTENT AREA ================= */
+
+.content-area {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #e0e0e0;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
+}
+
+/* ================= LABELS ================= */
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #344e41;
+    -fx-font-weight: 600;
+}
+
+/* ================= TEXTFIELDS ================= */
+
+.modern-input {
+    -fx-background-color: #f1f3f5;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+}
+
+.modern-input:focused {
+    -fx-border-color: #40916c;
+    -fx-border-width: 1.5;
+    -fx-background-color: white;
+}
+
+/* ================= DATEPICKER ================= */
+
+.date-picker {
+    -fx-background-radius: 10;
+}
+
+/* ================= BUTTONS ================= */
+
+.button {
+    -fx-font-weight: 600;
+    -fx-background-radius: 12;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+/* Primary (Ajouter) */
+.primary-button {
+    -fx-background-color: #2d6a4f;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #1b4332;
+}
+
+/* Secondary (Modifier / Actualiser) */
+.secondary-button {
+    -fx-background-color: #adb5bd;
+    -fx-text-fill: white;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #6c757d;
+}
+
+/* Danger (Supprimer) */
+.danger-button {
+    -fx-background-color: #d00000;
+    -fx-text-fill: white;
+}
+
+.danger-button:hover {
+    -fx-background-color: #9d0208;
+}
+
+/* ================= TABLE VIEW ================= */
+
+.table-view {
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: #dee2e6;
+    -fx-padding: 5;
+}
+
+/* Table header */
+.table-view .column-header-background {
+    -fx-background-color: #2d6a4f;
+    -fx-background-radius: 15 15 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Table rows */
+.table-row-cell {
+    -fx-background-color: white;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #b7e4c7;
+}
+
+.table-row-cell:filled:hover {
+    -fx-background-color: #e9f5ef;
+}
+
+/* ================= TABPANE ================= */
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 15;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #2d6a4f;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.tab-label {
+    -fx-text-fill: #344e41;
+    -fx-font-weight: 600;
+}

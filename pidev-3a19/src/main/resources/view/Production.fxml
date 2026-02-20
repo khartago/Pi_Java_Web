@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.ProductionController" stylesheets="@111.css"
+      styleClass="content-area" spacing="20" prefWidth="900" prefHeight="600">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    <Label text="Gestion Production" styleClass="page-title"/>
+    <TextField fx:id="searchField"
+               promptText="🔍Rechercher..."
+               prefWidth="300"/>
+    <TabPane fx:id="tabPane" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Plantation" closable="false">
+                <VBox spacing="18">
+                    <padding><Insets top="12" right="0" bottom="12" left="0"/></padding>
+                    <GridPane hgap="14" vgap="14">
+                        <Label text="Nom plant" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfNomPlant" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label text="Variété" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfVariete" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label text="Quantité" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfQuantite" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <Label text="Date plantation" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <DatePicker fx:id="dpDatePlante" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Label text="Saison" styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="tfSaison" styleClass="modern-input" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        <HBox spacing="10" alignment="CENTER_RIGHT" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                            <Button text="Ajouter" onAction="#ajouterProduction" styleClass="primary-button"/>
+                            <Button text="Modifier" onAction="#modifierProduction" styleClass="secondary-button"/>
+                            <Button text="Supprimer" onAction="#supprimerProduction" styleClass="danger-button"/>
+                            <Button text="Actualiser" onAction="#refreshTable" styleClass="secondary-button"/>
+                        </HBox>
+                    </GridPane>
+                    <TableView fx:id="tableProduction" styleClass="table-view" prefHeight="350">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="colNomPlant" text="Nom plant" prefWidth="130"/>
+                            <TableColumn fx:id="colVariete" text="Variété" prefWidth="130"/>
+                            <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="90"/>
+                            <TableColumn fx:id="colDatePlante" text="Date" prefWidth="120"/>
+                            <TableColumn fx:id="colSaison" text="Saison" prefWidth="90"/>
+                            <TableColumn fx:id="colEtat" text="État" prefWidth="110"/>
+                            <TableColumn fx:id="colAction" text="Action" prefWidth="140"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+            <Tab text="Production plant" closable="false">
+                <AnchorPane fx:id="productionPlantContainer" prefHeight="500"/>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>

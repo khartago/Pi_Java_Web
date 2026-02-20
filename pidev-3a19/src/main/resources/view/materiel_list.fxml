@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MaterielController"
+            styleClass="root"
+            stylesheets="@farmtech-theme.css">
+
+    <!-- Contenu central -->
+    <center>
+        <VBox spacing="15" styleClass="content-area">
+            <!-- Sélecteur de produit (pour accès depuis le menu Matériels) -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Produit :" styleClass="field-label"/>
+                <ComboBox fx:id="produitCombo" prefWidth="280" promptText="Choisir un produit"/>
+            </HBox>
+            <!-- Titre et boutons d'action -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Gestion des Matériels" styleClass="page-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+            </HBox>
+
+            <!-- Tableau -->
+            <TableView fx:id="materielTable" styleClass="table-view" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="150" />
+                    <TableColumn fx:id="dateAchatColumn" text="Date d'achat" prefWidth="200" />
+                    <TableColumn fx:id="coutColumn" text="Coût" prefWidth="150" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+</BorderPane>

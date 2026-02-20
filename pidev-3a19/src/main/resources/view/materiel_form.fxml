@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MaterielFormController"
+            styleClass="root"
+            stylesheets="@farmtech-theme.css">
+
+    <!-- En-tête -->
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="form-header">
+            <Label text="Formulaire Matériel" styleClass="form-title"/>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <VBox spacing="20" styleClass="form-container">
+            <GridPane hgap="15" vgap="15" styleClass="form-grid">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="120"/>
+                    <ColumnConstraints minWidth="250" prefWidth="300" hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Nom du matériel :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="nomField" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
+
+                <Label text="État :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="etatField" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
+
+                <Label text="Date d'achat :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
+                <DatePicker fx:id="dateAchatPicker" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+
+                <Label text="Coût :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="coutField" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
+            </GridPane>
+        </VBox>
+    </center>
+
+    <!-- Actions -->
+    <bottom>
+        <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+            <Button fx:id="cancelButton"
+                    text="Annuler"
+                    onAction="#handleCancel"
+                    styleClass="secondary-button"/>
+            <Button fx:id="saveButton"
+                    text="Enregistrer"
+                    onAction="#handleSave"
+                    styleClass="primary-button"/>
+        </HBox>
+    </bottom>
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+</BorderPane>

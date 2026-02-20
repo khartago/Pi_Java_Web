@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.AdminUsersController"
+      stylesheets="@farmtech-theme.css"
+      styleClass="content-area"
+      spacing="15">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Gestion des utilisateurs" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Ajouter" onAction="#handleAddUser" styleClass="primary-button"/>
+        <Button text="Modifier" onAction="#handleEditUser" styleClass="secondary-button"/>
+        <Button text="Supprimer" onAction="#handleDeleteUser" styleClass="danger-button"/>
+    </HBox>
+
+    <TableView fx:id="userTable" styleClass="table-view" prefHeight="350">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="200"/>
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="250"/>
+            <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>
