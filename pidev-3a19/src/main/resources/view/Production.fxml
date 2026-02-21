@@ -11,6 +11,9 @@
     <TextField fx:id="searchField"
                promptText="🔍Rechercher..."
                prefWidth="300"/>
+    <ComboBox fx:id="sortColumnBox" promptText="Trier par" prefWidth="150"/>
+    <ComboBox fx:id="sortOrderBox" promptText="Ordre" prefWidth="120"/>
+    <Button text="Appliquer Tri" onAction="#applySorting"/>
     <TabPane fx:id="tabPane" VBox.vgrow="ALWAYS">
         <tabs>
             <Tab text="Plantation" closable="false">

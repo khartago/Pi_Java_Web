@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.GameController"
+            stylesheets="@/css/game.css">
+
+    <!-- ================= TOP BAR ================= -->
+    <top>
+        <HBox spacing="20"
+              alignment="CENTER_RIGHT"
+              styleClass="game-navbar">
+
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
+
+            <!-- WATER -->
+            <Button onAction="#selectWater" styleClass="tool-image-button">
+                <graphic>
+                    <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
+                        <image>
+                            <Image url="@/images/water.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <!-- MANURE -->
+            <Button onAction="#selectManure" styleClass="tool-image-button">
+                <graphic>
+                    <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
+                        <image>
+                            <Image url="@/images/manure.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <!-- SHOVEL -->
+            <Button onAction="#selectShovel" styleClass="tool-image-button">
+                <graphic>
+                    <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
+                        <image>
+                            <Image url="@/images/shovel.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+        </HBox>
+    </top>
+
+    <!-- ================= GAME AREA ================= -->
+    <center>
+        <AnchorPane styleClass="game-background">
+
+            <GridPane fx:id="plantGrid"
+                      hgap="70"
+                      vgap="45"
+                      AnchorPane.leftAnchor="500"
+                      AnchorPane.topAnchor="290">
+            </GridPane>
+
+        </AnchorPane>
+    </center>
+
+</BorderPane>

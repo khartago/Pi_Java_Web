@@ -56,5 +56,26 @@ public class HomeController {
             e.printStackTrace();
         }
     }
+    @FXML
+    public void initialize() {
+        System.out.println("Game Mode Loaded 🚀");
+    }
+
+    @FXML
+    private void handleGame(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root, 1200, 800); // 👈 FORCE SIZE
+            stage.setScene(scene);
+            stage.centerOnScreen(); // 👈 CENTER WINDOW
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     }

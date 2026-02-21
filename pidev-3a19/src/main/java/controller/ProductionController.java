@@ -26,7 +26,8 @@ public class ProductionController {
     @FXML private TextField tfNomPlant, tfVariete, tfQuantite, tfSaison;
     @FXML private DatePicker dpDatePlante;
     @FXML private TextField searchField;
-
+    @FXML private ComboBox<String> sortColumnBox;
+    @FXML private ComboBox<String> sortOrderBox;
     @FXML private TableView<Production> tableProduction;
     @FXML private TableColumn<Production, Integer> colId;
     @FXML private TableColumn<Production, String> colNomPlant, colVariete, colSaison;
@@ -53,7 +54,17 @@ public class ProductionController {
         colDatePlante.setCellValueFactory(new PropertyValueFactory<>("datePlante"));
         colSaison.setCellValueFactory(new PropertyValueFactory<>("saison"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etat"));
+// 🔽 Sorting options
+        sortColumnBox.getItems().addAll(
+                "Nom",
+                "Variete",
+                "Quantite",
+                "Date",
+                "Saison",
+                "Etat"
+        );
 
+        sortOrderBox.getItems().addAll("ASC", "DESC");
         // Selection listener
         tableProduction.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             if (newV != null) {
@@ -61,39 +72,54 @@ public class ProductionController {
                 tfVariete.setText(newV.getVariete());
                 tfQuantite.setText(String.valueOf(newV.getQuantite()));
                 tfSaison.setText(newV.getSaison());
-                if (newV.getDatePlante() != null)
+
+                if (newV.getDatePlante() != null) {
                     dpDatePlante.setValue(newV.getDatePlante().toLocalDate());
+                } else {
+                    dpDatePlante.setValue(null);
+                }
             }
         });
 
         loadProductionPlantTab();
         addAccepterButtonToTable();
 
-        // 🔎 SEARCH + SORT
-        filteredData = new FilteredList<>(list, b -> true);
+        // 🔎 SEARCH + SORT (Safe Null Handling)
+        filteredData = new FilteredList<>(list, p -> true);
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(production -> {
+        if (searchField != null) {
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
+                filteredData.setPredicate(production -> {
 
-                String filter = newValue.toLowerCase();
+                    if (newValue == null || newValue.trim().isEmpty()) {
+                        return true;
+                    }
 
-                if (production.getNomPlant().toLowerCase().contains(filter)) return true;
-                if (production.getVariete().toLowerCase().contains(filter)) return true;
-                if (production.getSaison().toLowerCase().contains(filter)) return true;
-                if (String.valueOf(production.getQuantite()).contains(filter)) return true;
-                if (production.getEtat() != null &&
-                        production.getEtat().toLowerCase().contains(filter)) return true;
+                    String filter = newValue.toLowerCase();
 
-                return false;
+                    if (production.getNomPlant() != null &&
+                            production.getNomPlant().toLowerCase().contains(filter)) return true;
+
+                    if (production.getVariete() != null &&
+                            production.getVariete().toLowerCase().contains(filter)) return true;
+
+                    if (production.getSaison() != null &&
+                            production.getSaison().toLowerCase().contains(filter)) return true;
+
+                    if (String.valueOf(production.getQuantite()).contains(filter)) return true;
+
+                    if (production.getEtat() != null &&
+                            production.getEtat().toLowerCase().contains(filter)) return true;
+
+                    return false;
+                });
             });
-        });
+        }
 
         sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableProduction.comparatorProperty());
+
         tableProduction.setItems(sortedData);
 
         refreshTable();
@@ -318,7 +344,59 @@ public class ProductionController {
                     e.getMessage());
         }
     }
+    @FXML
+    public void applySorting() {
 
+        String column = sortColumnBox.getValue();
+        String order = sortOrderBox.getValue();
+
+        if (column == null || order == null) {
+            showAlert(Alert.AlertType.WARNING,
+                    "Tri",
+                    "Choisir colonne et ordre.");
+            return;
+        }
+
+        // 🔥 UNBIND before setting comparator
+        sortedData.comparatorProperty().unbind();
+
+        sortedData.setComparator((p1, p2) -> {
+
+            int result = 0;
+
+            switch (column) {
+
+                case "Nom":
+                    result = p1.getNomPlant().compareToIgnoreCase(p2.getNomPlant());
+                    break;
+
+                case "Variete":
+                    result = p1.getVariete().compareToIgnoreCase(p2.getVariete());
+                    break;
+
+                case "Quantite":
+                    result = Integer.compare(p1.getQuantite(), p2.getQuantite());
+                    break;
+
+                case "Date":
+                    result = p1.getDatePlante().compareTo(p2.getDatePlante());
+                    break;
+
+                case "Saison":
+                    result = p1.getSaison().compareToIgnoreCase(p2.getSaison());
+                    break;
+
+                case "Etat":
+                    if (p1.getEtat() != null && p2.getEtat() != null)
+                        result = p1.getEtat().compareToIgnoreCase(p2.getEtat());
+                    break;
+            }
+
+            return order.equals("ASC") ? result : -result;
+        });
+
+        tableProduction.setItems(sortedData);
+    }
     @FXML
     public void refreshTable() {
 
