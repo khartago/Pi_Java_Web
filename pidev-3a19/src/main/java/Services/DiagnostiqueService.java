@@ -21,7 +21,7 @@ public class DiagnostiqueService implements IDiagnostiqueService {
     @Override
     public void ajouterDiagnostique(Diagnostique d) {
 
-        String req = "INSERT INTO diagnostique (id_probleme, cause, solution_proposee, date_diagnostique, resultat) VALUES (?, ?, ?, ?, ?)";
+        String req = "INSERT INTO diagnostique (id_probleme, cause, solution_proposee, date_diagnostique, resultat, medicament, approuve) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement ste = con.prepareStatement(req);
@@ -30,6 +30,8 @@ public class DiagnostiqueService implements IDiagnostiqueService {
             ste.setString(3, d.getSolutionProposee());
             ste.setTimestamp(4, Timestamp.valueOf(d.getDateDiagnostique()));
             ste.setString(5, d.getResultat());
+            ste.setString(6, d.getMedicament());
+            ste.setBoolean(7, d.isApprouve());
             ste.executeUpdate();
 
             System.out.println("diagnostique ajoute");
@@ -41,7 +43,7 @@ public class DiagnostiqueService implements IDiagnostiqueService {
     @Override
     public void modifierDiagnostique(Diagnostique d) {
 
-        String req = "UPDATE diagnostique SET cause = ?, solution_proposee = ?, date_diagnostique = ?, resultat = ? WHERE id = ?";
+        String req = "UPDATE diagnostique SET cause = ?, solution_proposee = ?, date_diagnostique = ?, resultat = ?, medicament = ?, approuve = ? WHERE id = ?";
 
         try {
             PreparedStatement ste = con.prepareStatement(req);
@@ -49,7 +51,9 @@ public class DiagnostiqueService implements IDiagnostiqueService {
             ste.setString(2, d.getSolutionProposee());
             ste.setTimestamp(3, Timestamp.valueOf(d.getDateDiagnostique()));
             ste.setString(4, d.getResultat());
-            ste.setInt(5, d.getId());
+            ste.setString(5, d.getMedicament());
+            ste.setBoolean(6, d.isApprouve());
+            ste.setInt(7, d.getId());
             ste.executeUpdate();
 
             System.out.println("diagnostique mis a jour");
@@ -115,6 +119,56 @@ public class DiagnostiqueService implements IDiagnostiqueService {
         return null;
     }
 
+    @Override
+    public Diagnostique afficherDiagnostiqueParProblemeApprouve(int idProbleme) {
+        String req = "SELECT * FROM diagnostique WHERE id_probleme = ? AND approuve = 1 LIMIT 1";
+
+        try {
+            PreparedStatement ste = con.prepareStatement(req);
+            ste.setInt(1, idProbleme);
+            ResultSet rs = ste.executeQuery();
+
+            if (rs.next()) {
+                return mapRowToDiagnostique(rs);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    /** Valeur d'état du problème lorsque le diagnostic est visible par le fermier. */
+    public static final String ETAT_DIAGNOSTIQUE_DISPONIBLE = "DIAGNOSTIQUE_DISPONIBLE";
+
+    @Override
+    public void approuverDiagnostique(int idDiagnostique) {
+        try {
+            int idProbleme;
+            try (PreparedStatement sel = con.prepareStatement("SELECT id_probleme FROM diagnostique WHERE id = ?")) {
+                sel.setInt(1, idDiagnostique);
+                ResultSet rs = sel.executeQuery();
+                if (!rs.next()) {
+                    throw new RuntimeException("Diagnostique introuvable: id=" + idDiagnostique);
+                }
+                idProbleme = rs.getInt("id_probleme");
+            }
+            try (PreparedStatement ste = con.prepareStatement("UPDATE diagnostique SET approuve = 1 WHERE id = ?")) {
+                ste.setInt(1, idDiagnostique);
+                ste.executeUpdate();
+            }
+            try (PreparedStatement upd = con.prepareStatement("UPDATE probleme SET etat = ? WHERE id = ?")) {
+                upd.setString(1, ETAT_DIAGNOSTIQUE_DISPONIBLE);
+                upd.setInt(2, idProbleme);
+                upd.executeUpdate();
+            }
+            System.out.println("diagnostique id=" + idDiagnostique + " approuve, probleme id=" + idProbleme + " etat=" + ETAT_DIAGNOSTIQUE_DISPONIBLE);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Diagnostique mapRowToDiagnostique(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int idProbleme = rs.getInt("id_probleme");
@@ -123,8 +177,14 @@ public class DiagnostiqueService implements IDiagnostiqueService {
         Timestamp ts = rs.getTimestamp("date_diagnostique");
         LocalDateTime dateDiagnostique = ts.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         String resultat = rs.getString("resultat");
+        String medicament = rs.getString("medicament");
+        boolean approuve = false;
+        try {
+            approuve = rs.getBoolean("approuve");
+        } catch (SQLException ignored) {
+        }
 
-        return new Diagnostique(id, idProbleme, cause, solutionProposee, dateDiagnostique, resultat);
+        return new Diagnostique(id, idProbleme, cause, solutionProposee, dateDiagnostique, resultat, medicament, approuve);
     }
 }
 

@@ -10,25 +10,44 @@ public class Diagnostique {
     private String solutionProposee;
     private LocalDateTime dateDiagnostique;
     private String resultat;
+    private String medicament;
+    /** true = visible par le fermier après acceptation admin, false = brouillon / en attente de révision */
+    private boolean approuve;
 
     public Diagnostique() {
     }
 
-    public Diagnostique(int id, int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat) {
+    public Diagnostique(int id, int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat, String medicament, boolean approuve) {
         this.id = id;
         this.idProbleme = idProbleme;
         this.cause = cause;
         this.solutionProposee = solutionProposee;
         this.dateDiagnostique = dateDiagnostique;
         this.resultat = resultat;
+        this.medicament = medicament;
+        this.approuve = approuve;
     }
 
-    public Diagnostique(int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat) {
+    public Diagnostique(int id, int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat, String medicament) {
+        this(id, idProbleme, cause, solutionProposee, dateDiagnostique, resultat, medicament, false);
+    }
+
+    public Diagnostique(int id, int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat) {
+        this(id, idProbleme, cause, solutionProposee, dateDiagnostique, resultat, null);
+    }
+
+    public Diagnostique(int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat, String medicament) {
         this.idProbleme = idProbleme;
         this.cause = cause;
         this.solutionProposee = solutionProposee;
         this.dateDiagnostique = dateDiagnostique;
         this.resultat = resultat;
+        this.medicament = medicament;
+        this.approuve = false;
+    }
+
+    public Diagnostique(int idProbleme, String cause, String solutionProposee, LocalDateTime dateDiagnostique, String resultat) {
+        this(idProbleme, cause, solutionProposee, dateDiagnostique, resultat, null);
     }
 
     public int getId() {
@@ -79,6 +98,22 @@ public class Diagnostique {
         this.resultat = resultat;
     }
 
+    public String getMedicament() {
+        return medicament;
+    }
+
+    public void setMedicament(String medicament) {
+        this.medicament = medicament;
+    }
+
+    public boolean isApprouve() {
+        return approuve;
+    }
+
+    public void setApprouve(boolean approuve) {
+        this.approuve = approuve;
+    }
+
     @Override
     public String toString() {
         return "Diagnostique{" +
@@ -88,6 +123,8 @@ public class Diagnostique {
                 ", solutionProposee='" + solutionProposee + '\'' +
                 ", dateDiagnostique=" + dateDiagnostique +
                 ", resultat='" + resultat + '\'' +
+                ", medicament='" + medicament + '\'' +
+                ", approuve=" + approuve +
                 '}';
     }
 }

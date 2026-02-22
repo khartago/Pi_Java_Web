@@ -33,9 +33,13 @@
                     <ComboBox fx:id="graviteCombo" prefHeight="44.0" styleClass="modern-input"/>
                 </VBox>
 
-                <VBox spacing="6.0">
-                    <Label text="Photos (chemin ou URL)" styleClass="field-label"/>
-                    <TextField fx:id="photosField" promptText="Séparez plusieurs photos par ;" styleClass="modern-input" prefHeight="44.0"/>
+                <VBox spacing="8.0">
+                    <Label text="Photos du problème" styleClass="field-label"/>
+                    <HBox spacing="12.0" alignment="CENTER_LEFT">
+                        <Button fx:id="browsePhotosButton" text="Parcourir" onAction="#handleBrowsePhotos" styleClass="secondary-button" prefHeight="36.0"/>
+                    </HBox>
+                    <FlowPane fx:id="photosFlowPane" hgap="12.0" vgap="12.0" style="-fx-padding: 8 0; -fx-border-color: #E5EDE5; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-background-color: #FAFBFA; -fx-padding: 12;"/>
+                    <Label fx:id="photosErrorLabel" textFill="#DC2626" visible="false" style="-fx-font-size: 12px; -fx-wrap-text: true;"/>
                 </VBox>
 
                 <Label fx:id="errorLabel" textFill="#DC2626" visible="false"

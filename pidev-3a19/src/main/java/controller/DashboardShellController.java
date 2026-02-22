@@ -1,6 +1,9 @@
 package controller;
 
+import model.Produit;
 import model.User;
+import Utils.UserContext;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -12,8 +15,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.WeatherInfo;
+import Services.WeatherService;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Single post-login layout: sidebar menu + content area.
@@ -29,6 +35,8 @@ public class DashboardShellController {
     @FXML private Button btnProduits;
     @FXML private Button btnMateriels;
     @FXML private Button btnProduction;
+    @FXML private Label weatherTempLabel;
+    @FXML private Label weatherDescLabel;
 
     private User user;
     private Node adminUsersContent;
@@ -41,6 +49,7 @@ public class DashboardShellController {
      */
     public void initUser(User user) {
         this.user = user;
+        UserContext.setCurrentUser(user);
         boolean isAdmin = user != null && "ADMIN".equals(user.getRole());
 
         if (headerTitle != null) {
@@ -59,11 +68,33 @@ public class DashboardShellController {
         btnProduction.setVisible(!isAdmin);
         btnProduction.setManaged(!isAdmin);
 
+        loadWeatherAsync();
+
         if (isAdmin) {
             showUtilisateurs();
         } else {
             showSupportFarmer();
         }
+    }
+
+    private void loadWeatherAsync() {
+        if (weatherTempLabel == null && weatherDescLabel == null) return;
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                return new WeatherService().getCurrentWeather();
+            } catch (Exception e) {
+                return null;
+            }
+        }).thenAccept(info -> {
+            Platform.runLater(() -> {
+                if (weatherTempLabel != null) {
+                    weatherTempLabel.setText(info != null ? String.format("%.0f °C", info.getTemperature()) : "—");
+                }
+                if (weatherDescLabel != null) {
+                    weatherDescLabel.setText(info != null ? info.getDescription() : "Météo indisponible");
+                }
+            });
+        });
     }
 
     private Node getAdminUsersContent() throws IOException {
@@ -135,6 +166,12 @@ public class DashboardShellController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/materiel_list.fxml"));
             Parent root = loader.load();
+            MaterielController controller = loader.getController();
+            // Pass the selected product from navigation context if available
+            Produit selectedProduit = NavigationContext.getInstance().getSelectedProduit();
+            if (selectedProduit != null) {
+                controller.setProduit(selectedProduit);
+            }
             Node content = (root instanceof BorderPane) ? ((BorderPane) root).getCenter() : root;
             setContent(content != null ? content : root);
         } catch (IOException e) {
@@ -154,6 +191,7 @@ public class DashboardShellController {
 
     @FXML
     private void logout() {
+        UserContext.setCurrentUser(null);
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/home.fxml"));
             Stage stage = (Stage) contentArea.getScene().getWindow();

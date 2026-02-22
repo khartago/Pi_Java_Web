@@ -10,27 +10,41 @@
             stylesheets="@farmtech-theme.css">
 
     <center>
-        <VBox spacing="10.0">
-            <padding>
-                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
-            </padding>
-            <Label fx:id="titleLabel" text="Diagnostic du problème" styleClass="title-label"/>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
+            <VBox spacing="12.0">
+                <padding>
+                    <Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/>
+                </padding>
+                <Label fx:id="titleLabel" text="Diagnostic du problème" styleClass="title-label"/>
 
-            <Label text="Cause" styleClass="field-label"/>
-            <TextArea fx:id="causeArea" prefRowCount="3"/>
+                <Label text="Photos du problème" styleClass="field-label"/>
+                <FlowPane fx:id="photosFlowPane" hgap="10.0" vgap="10.0" style="-fx-padding: 8 0; -fx-border-color: #E5EDE5; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-background-color: #FAFBFA; -fx-padding: 10;"/>
 
-            <Label text="Solution proposée" styleClass="field-label"/>
-            <TextArea fx:id="solutionArea" prefRowCount="3"/>
+                <Label text="Cause" styleClass="field-label"/>
+                <TextArea fx:id="causeArea" wrapText="true" prefRowCount="5" prefWidth="520" styleClass="modern-input diagnostic-text-area"/>
 
-            <Label text="Résultat" styleClass="field-label"/>
-            <ComboBox fx:id="resultatCombo"/>
+                <Label text="Solution proposée" styleClass="field-label"/>
+                <TextArea fx:id="solutionArea" wrapText="true" prefRowCount="5" prefWidth="520" styleClass="modern-input diagnostic-text-area"/>
 
-            <Label fx:id="errorLabel" textFill="#d14343" visible="false"/>
+                <Label text="Médicament recommandé" styleClass="field-label"/>
+                <TextArea fx:id="medicamentArea" wrapText="true" prefRowCount="3" prefWidth="520" styleClass="modern-input diagnostic-text-area"/>
 
-            <HBox spacing="10.0" alignment="CENTER_RIGHT">
-                <Button text="Annuler" onAction="#handleCancel" styleClass="secondary-button"/>
-                <Button text="Enregistrer" onAction="#handleSave" styleClass="primary-button" defaultButton="true"/>
-            </HBox>
-        </VBox>
+                <Label text="Résultat" styleClass="field-label"/>
+                <ComboBox fx:id="resultatCombo" styleClass="modern-input"/>
+
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <Button fx:id="generateAIButton" text="Générer avec l'IA" onAction="#handleGenerateWithAI" styleClass="secondary-button"/>
+                    <ProgressIndicator fx:id="aiProgressIndicator" visible="false" maxWidth="24" maxHeight="24"/>
+                    <Label fx:id="aiStatusLabel" text="Génération en cours..." visible="false" style="-fx-text-fill: #6B7280;"/>
+                </HBox>
+
+                <Label fx:id="errorLabel" textFill="#DC2626" visible="false" style="-fx-font-size: 13px; -fx-wrap-text: true;"/>
+
+                <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                    <Button text="Annuler" onAction="#handleCancel" styleClass="secondary-button"/>
+                    <Button text="Enregistrer" onAction="#handleSave" styleClass="primary-button" defaultButton="true"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

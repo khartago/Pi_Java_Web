@@ -1,7 +1,9 @@
 package controller;
 
 import model.Probleme;
+import model.User;
 import Services.ProblemeService;
+import Utils.UserContext;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,7 +36,11 @@ public class FarmerDashboardController implements Initializable {
 
     private void loadProblemes() {
         problemeCardsContainer.getChildren().clear();
-        for (Probleme p : problemeService.afficherProblemes()) {
+        User currentUser = UserContext.getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+        for (Probleme p : problemeService.afficherProblemesParUtilisateur(currentUser.getId())) {
             VBox card = buildProblemeCard(p);
             problemeCardsContainer.getChildren().add(card);
         }

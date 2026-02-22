@@ -12,20 +12,37 @@
     <center>
         <VBox spacing="15" styleClass="content-area">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Support — Problèmes &amp; diagnostics" styleClass="page-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label text="Filtre état :" styleClass="field-label"/>
-                <ComboBox fx:id="etatFilterCombo" styleClass="modern-input" onAction="#handleFilterEtat"/>
-                <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
-            </HBox>
-
+            <Label text="Support — Problèmes &amp; diagnostics" styleClass="page-title"/>
+            <VBox spacing="14">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <Label text="Type" styleClass="field-label" minWidth="40"/>
+                    <ComboBox fx:id="typeFilterCombo" styleClass="modern-input" prefWidth="160" minWidth="140" onAction="#applyFiltersAndSort"/>
+                    <Label text="Gravité" styleClass="field-label" minWidth="50"/>
+                    <ComboBox fx:id="graviteFilterCombo" styleClass="modern-input" prefWidth="110" minWidth="100" onAction="#applyFiltersAndSort"/>
+                    <Label text="État" styleClass="field-label" minWidth="40"/>
+                    <ComboBox fx:id="etatFilterCombo" styleClass="modern-input" prefWidth="120" minWidth="110" onAction="#applyFiltersAndSort"/>
+                    <Label text="Du" styleClass="field-label" minWidth="24"/>
+                    <DatePicker fx:id="dateDebutPicker" styleClass="modern-input" prefWidth="130" onAction="#applyFiltersAndSort"/>
+                    <Label text="Au" styleClass="field-label" minWidth="24"/>
+                    <DatePicker fx:id="dateFinPicker" styleClass="modern-input" prefWidth="130" onAction="#applyFiltersAndSort"/>
+                </HBox>
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <Label text="Trier par" styleClass="field-label" minWidth="60"/>
+                    <ComboBox fx:id="triCombo" styleClass="modern-input" prefWidth="170" minWidth="160" onAction="#applyFiltersAndSort"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Réinitialiser les filtres" onAction="#handleResetFilters" styleClass="secondary-button"/>
+                    <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
+                    <Button fx:id="accepterDiagnosticButton" text="Accepter le diagnostic" onAction="#handleAccepterDiagnostic" styleClass="primary-button" visible="false"/>
+                </HBox>
+            </VBox>
+            <Label fx:id="emptyMessageLabel" text="Aucun problème ne correspond aux critères." visible="false" style="-fx-text-fill: #6B7280; -fx-font-size: 14px;"/>
             <TableView fx:id="problemeTable" styleClass="table-view" prefHeight="280">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
-                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="180"/>
-                    <TableColumn fx:id="fermierColumn" text="Fermier" prefWidth="200"/>
-                    <TableColumn fx:id="etatColumn" text="État" prefWidth="100"/>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="45" minWidth="40"/>
+                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="220" minWidth="180"/>
+                    <TableColumn fx:id="graviteColumn" text="Gravité" prefWidth="95" minWidth="80"/>
+                    <TableColumn fx:id="etatColumn" text="État" prefWidth="115" minWidth="95"/>
+                    <TableColumn fx:id="fermierColumn" text="Fermier" prefWidth="100" minWidth="80"/>
                 </columns>
             </TableView>
         </VBox>

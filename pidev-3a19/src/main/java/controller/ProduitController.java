@@ -58,6 +58,11 @@ public class ProduitController {
             }
         });
         loadProduits();
+        
+        // Store selected product in navigation context when selection changes
+        produitTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            NavigationContext.getInstance().setSelectedProduit(newVal);
+        });
     }
 
     /**

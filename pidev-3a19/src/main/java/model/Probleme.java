@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class Probleme {
 
     private int id;
+    private Integer idUtilisateur;
     private String type;
     private String description;
     private String gravite;
@@ -15,14 +16,19 @@ public class Probleme {
     public Probleme() {
     }
 
-    public Probleme(int id, String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
+    public Probleme(int id, Integer idUtilisateur, String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
         this.id = id;
+        this.idUtilisateur = idUtilisateur;
         this.type = type;
         this.description = description;
         this.gravite = gravite;
         this.dateDetection = dateDetection;
         this.etat = etat;
         this.photos = photos;
+    }
+
+    public Probleme(int id, String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
+        this(id, null, type, description, gravite, dateDetection, etat, photos);
     }
 
     public Probleme(String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
@@ -32,6 +38,14 @@ public class Probleme {
         this.dateDetection = dateDetection;
         this.etat = etat;
         this.photos = photos;
+    }
+
+    public Integer getIdUtilisateur() {
+        return idUtilisateur;
+    }
+
+    public void setIdUtilisateur(Integer idUtilisateur) {
+        this.idUtilisateur = idUtilisateur;
     }
 
     public int getId() {
@@ -94,6 +108,7 @@ public class Probleme {
     public String toString() {
         return "Probleme{" +
                 "id=" + id +
+                ", idUtilisateur=" + idUtilisateur +
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", gravite='" + gravite + '\'' +

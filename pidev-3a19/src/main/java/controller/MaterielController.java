@@ -101,7 +101,25 @@ public class MaterielController {
                     setProduit(newVal);
                 }
             });
-            if (produit == null && !produits.isEmpty()) {
+            
+            // Check navigation context first for selected product
+            Produit contextProduit = NavigationContext.getInstance().getSelectedProduit();
+            if (contextProduit != null) {
+                // Verify the product still exists in the list
+                Produit foundProduit = produits.stream()
+                    .filter(p -> p.getIdProduit() == contextProduit.getIdProduit())
+                    .findFirst()
+                    .orElse(null);
+                if (foundProduit != null) {
+                    produitCombo.getSelectionModel().select(foundProduit);
+                    setProduit(foundProduit);
+                } else if (!produits.isEmpty()) {
+                    // Product from context no longer exists, select first
+                    produitCombo.getSelectionModel().selectFirst();
+                    setProduit(produits.get(0));
+                }
+            } else if (produit == null && !produits.isEmpty()) {
+                // No product selected, select first by default
                 produitCombo.getSelectionModel().selectFirst();
                 setProduit(produits.get(0));
             }

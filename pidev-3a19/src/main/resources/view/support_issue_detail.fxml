@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
@@ -10,49 +11,58 @@
             stylesheets="@farmtech-theme.css">
 
     <center>
-        <VBox spacing="16.0">
-            <padding>
-                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
-            </padding>
-            <Label text="Détail du problème" styleClass="title-label"/>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
+            <VBox spacing="16.0">
+                <padding>
+                    <Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/>
+                </padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Détail du problème" styleClass="title-label"/>
+                    <Button fx:id="exportPdfButton" text="Exporter en PDF" onAction="#exportToPdf" styleClass="secondary-button"/>
+                </HBox>
 
-            <GridPane hgap="10.0" vgap="8.0">
-                <columnConstraints>
-                    <ColumnConstraints percentWidth="25.0"/>
-                    <ColumnConstraints percentWidth="75.0"/>
-                </columnConstraints>
+                <GridPane hgap="12.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="120" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
 
-                <Label text="Type :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <Label fx:id="typeLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Type :" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="typeLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                <Label text="Description :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <Label fx:id="descriptionLabel" wrapText="true"
-                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Description :" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="descriptionLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                <Label text="Gravité :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <Label fx:id="graviteLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Gravité :" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="graviteLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                <Label text="Date détection :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <Label fx:id="dateLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Date détection :" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="dateLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-                <Label text="État :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <Label fx:id="etatLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-            </GridPane>
+                    <Label text="État :" styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="etatLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                </GridPane>
 
-            <Separator/>
+                <Separator/>
 
-            <Label text="Diagnostic" styleClass="section-title"/>
-            <VBox spacing="6.0">
-                <Label fx:id="diagnosticStatusLabel"/>
-                <Label text="Cause :" styleClass="field-label"/>
-                <Label fx:id="causeLabel" wrapText="true"/>
+                <Label text="Photos" styleClass="section-title"/>
+                <FlowPane fx:id="photosFlowPane" hgap="12.0" vgap="12.0" style="-fx-padding: 8 0;"/>
 
-                <Label text="Solution proposée :" styleClass="field-label"/>
-                <Label fx:id="solutionLabel" wrapText="true"/>
+                <Separator/>
 
-                <Label text="Résultat :" styleClass="field-label"/>
-                <Label fx:id="resultatLabel"/>
+                <Label text="Diagnostic" styleClass="section-title"/>
+                <VBox spacing="8.0">
+                    <Label fx:id="diagnosticStatusLabel" style="-fx-font-weight: 600;"/>
+                    <Label text="Cause :" styleClass="field-label"/>
+                    <Label fx:id="causeLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                    <Label text="Solution proposée :" styleClass="field-label"/>
+                    <Label fx:id="solutionLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                    <Label text="Résultat :" styleClass="field-label"/>
+                    <Label fx:id="resultatLabel" wrapText="true"/>
+                    <Label text="Médicament recommandé :" styleClass="field-label"/>
+                    <Label fx:id="medicamentLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                </VBox>
             </VBox>
-        </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>
