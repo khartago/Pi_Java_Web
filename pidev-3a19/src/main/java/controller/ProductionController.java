@@ -173,6 +173,7 @@ public class ProductionController {
 
                         productionPlanteService.ajouter(
                                 new ProductionPlante(
+                                        selected.getId(), // 🔥 THIS IS THE FIX
                                         (float) selected.getQuantite(),
                                         new Date(System.currentTimeMillis()),
                                         "Bonne",
@@ -242,15 +243,24 @@ public class ProductionController {
                 return;
             }
 
-            productionService.ajouter(
-                    new Production(
-                            tfNomPlant.getText(),
-                            tfVariete.getText(),
-                            Integer.parseInt(tfQuantite.getText()),
-                            Date.valueOf(dpDatePlante.getValue()),
-                            tfSaison.getText()
-                    )
-            );
+            Production p = new Production();
+
+            p.setNomPlant(tfNomPlant.getText());
+            p.setVariete(tfVariete.getText());
+            p.setQuantite(Integer.parseInt(tfQuantite.getText()));
+            p.setDatePlante(Date.valueOf(dpDatePlante.getValue()));
+            p.setSaison(tfSaison.getText());
+            p.setEtat("EN_ATTENTE");
+
+            // 🔥 Game defaults
+            p.setStage(1);
+            p.setWaterCount(0);
+            p.setLastWaterTime(System.currentTimeMillis());
+            p.setStatus("ALIVE");
+            p.setGrowthSpeed(1.0);
+            p.setSlotIndex(0); // you can improve later
+
+            productionService.ajouter(p);
 
             showAlert(Alert.AlertType.INFORMATION,
                     "Succes",
@@ -287,17 +297,16 @@ public class ProductionController {
                 return;
             }
 
-            productionService.modifier(
-                    new Production(
-                            selected.getId(),
-                            tfNomPlant.getText(),
-                            tfVariete.getText(),
-                            Integer.parseInt(tfQuantite.getText()),
-                            Date.valueOf(dpDatePlante.getValue()),
-                            tfSaison.getText(),
-                            selected.getEtat()
-                    )
-            );
+            selected.setNomPlant(tfNomPlant.getText());
+            selected.setVariete(tfVariete.getText());
+            selected.setQuantite(Integer.parseInt(tfQuantite.getText()));
+            selected.setDatePlante(Date.valueOf(dpDatePlante.getValue()));
+            selected.setSaison(tfSaison.getText());
+
+            // 🔥 KEEP GAME VALUES (do NOT reset)
+            // stage, waterCount, status etc stay unchanged
+
+            productionService.modifier(selected);
 
             showAlert(Alert.AlertType.INFORMATION,
                     "Succes",

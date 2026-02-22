@@ -13,16 +13,22 @@ public class Production {
     private String saison;
     private String etat;
 
-    // 🔥 NEW FIELDS (Game System)
-    private int stage = 1;
-    private int waterCount = 0;
+    // ===== GAME SYSTEM FIELDS =====
+    private int stage;
+    private int waterCount;
     private long lastWaterTime;
-    private String status = "ALIVE";
-    private double growthSpeed = 1.0;
+    private String status;
+    private double growthSpeed;
+    private int slotIndex;   // 🔥 IMPORTANT
 
-    public Production() {}
+    // ===== EMPTY CONSTRUCTOR =====
+    public Production() {
+    }
 
-    public Production(String nomPlant, String variete, int quantite, Date datePlante, String saison) {
+    // ===== CONSTRUCTOR WHEN ADDING NEW PLANT =====
+    public Production(String nomPlant, String variete, int quantite,
+                      Date datePlante, String saison, int slotIndex) {
+
         this.nomPlant = nomPlant;
         this.variete = variete;
         this.quantite = quantite;
@@ -30,16 +36,20 @@ public class Production {
         this.saison = saison;
         this.etat = "EN_ATTENTE";
 
-        // default game values
+        // Game defaults
         this.stage = 1;
         this.waterCount = 0;
         this.status = "ALIVE";
         this.growthSpeed = 1.0;
         this.lastWaterTime = System.currentTimeMillis();
+        this.slotIndex = slotIndex;
     }
 
+    // ===== FULL CONSTRUCTOR (LOAD FROM DATABASE) =====
     public Production(int id, String nomPlant, String variete, int quantite,
-                      Date datePlante, String saison, String etat) {
+                      Date datePlante, String saison, String etat,
+                      int stage, int waterCount, long lastWaterTime,
+                      String status, double growthSpeed, int slotIndex) {
 
         this.id = id;
         this.nomPlant = nomPlant;
@@ -48,9 +58,16 @@ public class Production {
         this.datePlante = datePlante;
         this.saison = saison;
         this.etat = etat;
+
+        this.stage = stage;
+        this.waterCount = waterCount;
+        this.lastWaterTime = lastWaterTime;
+        this.status = status;
+        this.growthSpeed = growthSpeed;
+        this.slotIndex = slotIndex;
     }
 
-    // ===== EXISTING GETTERS =====
+    // ===== GETTERS & SETTERS =====
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -73,8 +90,6 @@ public class Production {
     public String getEtat() { return etat; }
     public void setEtat(String etat) { this.etat = etat; }
 
-    // ===== NEW GAME GETTERS =====
-
     public int getStage() { return stage; }
     public void setStage(int stage) { this.stage = stage; }
 
@@ -89,4 +104,11 @@ public class Production {
 
     public double getGrowthSpeed() { return growthSpeed; }
     public void setGrowthSpeed(double growthSpeed) { this.growthSpeed = growthSpeed; }
+
+    public int getSlotIndex() { return slotIndex; }
+    public void setSlotIndex(int slotIndex) { this.slotIndex = slotIndex; }
+
+    // runtime only (not saved in DB)
+    private long nextWaterDeadline;   // time when 60s ends
+    private boolean waitingForWater = false;
 }

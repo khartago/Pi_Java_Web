@@ -37,7 +37,32 @@ public class ProductionService {
             ps.executeUpdate();
         }
     }
+    public void updateGameData(Production p) {
 
+        String sql = "UPDATE plantation SET "
+                + "stage = ?, "
+                + "water_count = ?, "
+                + "last_water_time = ?, "
+                + "status = ?, "
+                + "growth_speed = ? "
+                + "WHERE id = ?";
+
+        try (Connection cnx = DBConnection.getConnection();
+             PreparedStatement ps = cnx.prepareStatement(sql)) {
+
+            ps.setInt(1, p.getStage());
+            ps.setInt(2, p.getWaterCount());
+            ps.setLong(3, p.getLastWaterTime());
+            ps.setString(4, p.getStatus());
+            ps.setDouble(5, p.getGrowthSpeed());
+            ps.setInt(6, p.getId());
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            System.err.println("Erreur updateGameData: " + e.getMessage());
+        }
+    }
     public void updateEtat(int id, String etat) {
         try (Connection cnx = DBConnection.getConnection();
              PreparedStatement ps = cnx.prepareStatement("UPDATE plantation SET etat=? WHERE id=?")) {
@@ -50,7 +75,45 @@ public class ProductionService {
             System.err.println("Erreur updateEtat: " + e.getMessage());
         }
     }
+    public Production getBySlotIndex(int slotIndex) {
 
+        String sql = "SELECT * FROM plantation WHERE slot_index = ?";
+
+        try (Connection cnx = DBConnection.getConnection();
+             PreparedStatement ps = cnx.prepareStatement(sql)) {
+
+            ps.setInt(1, slotIndex);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                Production p = new Production();
+
+                p.setId(rs.getInt("id"));
+                p.setNomPlant(rs.getString("nomPlant"));
+                p.setVariete(rs.getString("variete"));
+                p.setQuantite(rs.getInt("quantite"));
+                p.setDatePlante(rs.getDate("datePlante"));
+                p.setSaison(rs.getString("saison"));
+                p.setEtat(rs.getString("etat"));
+
+                // 🔥 GAME FIELDS
+                p.setStage(rs.getInt("stage"));
+                p.setWaterCount(rs.getInt("water_count"));
+                p.setLastWaterTime(rs.getLong("last_water_time"));
+                p.setStatus(rs.getString("status"));
+                p.setGrowthSpeed(rs.getDouble("growth_speed"));
+
+                return p;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erreur getBySlotIndex: " + e.getMessage());
+        }
+
+        return null;
+    }
     public void modifier(Production p) throws SQLException {
 
         String req = "UPDATE plantation SET " +
