@@ -1,59 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.ProductionController" stylesheets="@111.css"
-      styleClass="content-area" spacing="20" prefWidth="900" prefHeight="600">
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.ProductionController"
+      stylesheets="@111.css"
+      styleClass="content-area"
+      spacing="20"
+      prefWidth="1000"
+      prefHeight="650">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- ================= TITLE ================= -->
     <Label text="Gestion Production" styleClass="page-title"/>
-    <TextField fx:id="searchField"
-               promptText="🔍Rechercher..."
-               prefWidth="300"/>
-    <ComboBox fx:id="sortColumnBox" promptText="Trier par" prefWidth="150"/>
-    <ComboBox fx:id="sortOrderBox" promptText="Ordre" prefWidth="120"/>
-    <Button text="Appliquer Tri" onAction="#applySorting"/>
+
+    <!-- ================= STATISTICS ================= -->
+    <HBox spacing="25" alignment="CENTER_LEFT">
+
+        <VBox styleClass="stat-card" spacing="8">
+            <Label text="Total Productions" styleClass="stat-title"/>
+            <Label fx:id="totalLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" spacing="8">
+            <Label text="Pending" styleClass="stat-title"/>
+            <Label fx:id="pendingLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" spacing="8">
+            <Label text="Complete" styleClass="stat-title"/>
+            <Label fx:id="completeLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+
+        <VBox styleClass="stat-card" spacing="8">
+            <Label text="Total Quantity" styleClass="stat-title"/>
+            <Label fx:id="quantityLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+
+    </HBox>
+
+    <!-- ================= SEARCH + SORT ================= -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher..."
+                   prefWidth="250"/>
+
+        <ComboBox fx:id="sortColumnBox"
+                  promptText="Trier par"
+                  prefWidth="150"/>
+
+        <ComboBox fx:id="sortOrderBox"
+                  promptText="Ordre"
+                  prefWidth="120"/>
+
+        <Button text="Appliquer"
+                onAction="#applySorting"
+                styleClass="secondary-button"/>
+
+    </HBox>
+
+    <!-- ================= TABS ================= -->
     <TabPane fx:id="tabPane" VBox.vgrow="ALWAYS">
+
         <tabs>
+
+            <!-- ================= TAB 1 : PLANTATION ================= -->
             <Tab text="Plantation" closable="false">
+
                 <VBox spacing="18">
-                    <padding><Insets top="12" right="0" bottom="12" left="0"/></padding>
+
+                    <padding>
+                        <Insets top="12" right="0" bottom="12" left="0"/>
+                    </padding>
+
+                    <!-- ================= FORM ================= -->
                     <GridPane hgap="14" vgap="14">
-                        <Label text="Nom plant" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="tfNomPlant" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                        <Label text="Variété" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="tfVariete" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                        <Label text="Quantité" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <TextField fx:id="tfQuantite" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                        <Label text="Date plantation" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <DatePicker fx:id="dpDatePlante" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                        <Label text="Saison" styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                        <TextField fx:id="tfSaison" styleClass="modern-input" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                        <HBox spacing="10" alignment="CENTER_RIGHT" GridPane.rowIndex="5" GridPane.columnIndex="1">
-                            <Button text="Ajouter" onAction="#ajouterProduction" styleClass="primary-button"/>
-                            <Button text="Modifier" onAction="#modifierProduction" styleClass="secondary-button"/>
-                            <Button text="Supprimer" onAction="#supprimerProduction" styleClass="danger-button"/>
-                            <Button text="Actualiser" onAction="#refreshTable" styleClass="secondary-button"/>
+
+                        <Label text="Nom plant"
+                               styleClass="field-label"
+                               GridPane.rowIndex="0"
+                               GridPane.columnIndex="0"/>
+
+                        <TextField fx:id="tfNomPlant"
+                                   styleClass="modern-input"
+                                   GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1"/>
+
+                        <Label text="Variété"
+                               styleClass="field-label"
+                               GridPane.rowIndex="1"
+                               GridPane.columnIndex="0"/>
+
+                        <TextField fx:id="tfVariete"
+                                   styleClass="modern-input"
+                                   GridPane.rowIndex="1"
+                                   GridPane.columnIndex="1"/>
+
+                        <Label text="Quantité"
+                               styleClass="field-label"
+                               GridPane.rowIndex="2"
+                               GridPane.columnIndex="0"/>
+
+                        <TextField fx:id="tfQuantite"
+                                   styleClass="modern-input"
+                                   GridPane.rowIndex="2"
+                                   GridPane.columnIndex="1"/>
+
+                        <Label text="Date plantation"
+                               styleClass="field-label"
+                               GridPane.rowIndex="3"
+                               GridPane.columnIndex="0"/>
+
+                        <DatePicker fx:id="dpDatePlante"
+                                    styleClass="modern-input"
+                                    GridPane.rowIndex="3"
+                                    GridPane.columnIndex="1"/>
+
+                        <Label text="Saison"
+                               styleClass="field-label"
+                               GridPane.rowIndex="4"
+                               GridPane.columnIndex="0"/>
+
+                        <TextField fx:id="tfSaison"
+                                   styleClass="modern-input"
+                                   GridPane.rowIndex="4"
+                                   GridPane.columnIndex="1"/>
+
+                        <!-- ================= BUTTONS ================= -->
+                        <HBox spacing="10"
+                              alignment="CENTER_RIGHT"
+                              GridPane.rowIndex="5"
+                              GridPane.columnIndex="1">
+
+                            <Button text="Ajouter"
+                                    onAction="#ajouterProduction"
+                                    styleClass="primary-button"/>
+
+                            <Button text="Modifier"
+                                    onAction="#modifierProduction"
+                                    styleClass="secondary-button"/>
+
+                            <Button text="Supprimer"
+                                    onAction="#supprimerProduction"
+                                    styleClass="danger-button"/>
+
+                            <Button text="Actualiser"
+                                    onAction="#refreshTable"
+                                    styleClass="secondary-button"/>
+
                         </HBox>
+
                     </GridPane>
-                    <TableView fx:id="tableProduction" styleClass="table-view" prefHeight="350">
+
+                    <!-- ================= TABLE ================= -->
+                    <TableView fx:id="tableProduction"
+                               styleClass="table-view"
+                               VBox.vgrow="ALWAYS">
+
                         <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-                            <TableColumn fx:id="colNomPlant" text="Nom plant" prefWidth="130"/>
-                            <TableColumn fx:id="colVariete" text="Variété" prefWidth="130"/>
-                            <TableColumn fx:id="colQuantite" text="Quantité" prefWidth="90"/>
-                            <TableColumn fx:id="colDatePlante" text="Date" prefWidth="120"/>
-                            <TableColumn fx:id="colSaison" text="Saison" prefWidth="90"/>
-                            <TableColumn fx:id="colEtat" text="État" prefWidth="110"/>
-                            <TableColumn fx:id="colAction" text="Action" prefWidth="140"/>
+
+                            <TableColumn fx:id="colId"
+                                         text="ID"
+                                         prefWidth="60"/>
+
+                            <TableColumn fx:id="colNomPlant"
+                                         text="Nom plant"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="colVariete"
+                                         text="Variété"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="colQuantite"
+                                         text="Quantité"
+                                         prefWidth="100"/>
+
+                            <TableColumn fx:id="colDatePlante"
+                                         text="Date"
+                                         prefWidth="120"/>
+
+                            <TableColumn fx:id="colSaison"
+                                         text="Saison"
+                                         prefWidth="100"/>
+
+                            <TableColumn fx:id="colEtat"
+                                         text="État"
+                                         prefWidth="120"/>
+
+                            <TableColumn fx:id="colAction"
+                                         text="Action"
+                                         prefWidth="140"/>
+
                         </columns>
+
                     </TableView>
+
                 </VBox>
+
             </Tab>
+
+            <!-- ================= TAB 2 ================= -->
             <Tab text="Production plant" closable="false">
-                <AnchorPane fx:id="productionPlantContainer" prefHeight="500"/>
+                <AnchorPane fx:id="productionPlantContainer"
+                            prefHeight="500"/>
             </Tab>
+
         </tabs>
+
     </TabPane>
+
 </VBox>

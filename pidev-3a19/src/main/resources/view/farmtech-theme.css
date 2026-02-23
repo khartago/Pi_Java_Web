@@ -456,7 +456,23 @@
 .tab-pane .tab .tab-label {
     -fx-text-fill: inherit;
 }
+.stat-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0.3, 0, 4);
+}
 
+.stat-card Label:first-child {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}
+
+.stat-card Label:last-child {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2e7d32;
+}
 .tab-pane .tab-content-area {
     -fx-background-color: white;
 }

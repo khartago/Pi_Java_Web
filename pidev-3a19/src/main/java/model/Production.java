@@ -111,4 +111,10 @@ public class Production {
     // runtime only (not saved in DB)
     private long nextWaterDeadline;   // time when 60s ends
     private boolean waitingForWater = false;
+    public long getNextWaterDeadline() { return nextWaterDeadline; }
+    public void setNextWaterDeadline(long nextWaterDeadline) { this.nextWaterDeadline = nextWaterDeadline; }
+
+    public boolean isWaitingForWater() { return waitingForWater; }
+    public void setWaitingForWater(boolean waitingForWater) { this.waitingForWater = waitingForWater; }
+
 }

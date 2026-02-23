@@ -15,7 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-
+import java.sql.SQLException;
 import java.sql.Date;
 
 public class ProductionController {
@@ -35,7 +35,17 @@ public class ProductionController {
     @FXML private TableColumn<Production, Date> colDatePlante;
     @FXML private TableColumn<Production, String> colEtat;
     @FXML private TableColumn<Production, Void> colAction;
+    @FXML
+    private Label totalLabel;
 
+    @FXML
+    private Label quantityLabel;
+
+    @FXML
+    private Label pendingLabel;
+
+    @FXML
+    private Label completeLabel;
     private final ProductionService productionService = new ProductionService();
     private final ProductionPlanteService productionPlanteService = new ProductionPlanteService();
 
@@ -46,7 +56,13 @@ public class ProductionController {
     @FXML
     public void initialize() {
 
-        // Columns
+        try {
+            list.clear();
+            list.addAll(productionService.afficher());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // ================= TABLE COLUMNS =================
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNomPlant.setCellValueFactory(new PropertyValueFactory<>("nomPlant"));
         colVariete.setCellValueFactory(new PropertyValueFactory<>("variete"));
@@ -54,7 +70,8 @@ public class ProductionController {
         colDatePlante.setCellValueFactory(new PropertyValueFactory<>("datePlante"));
         colSaison.setCellValueFactory(new PropertyValueFactory<>("saison"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etat"));
-// 🔽 Sorting options
+
+        // ================= SORT OPTIONS =================
         sortColumnBox.getItems().addAll(
                 "Nom",
                 "Variete",
@@ -65,64 +82,62 @@ public class ProductionController {
         );
 
         sortOrderBox.getItems().addAll("ASC", "DESC");
-        // Selection listener
+
+        // ================= SELECTION LISTENER =================
         tableProduction.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             if (newV != null) {
+
                 tfNomPlant.setText(newV.getNomPlant());
                 tfVariete.setText(newV.getVariete());
                 tfQuantite.setText(String.valueOf(newV.getQuantite()));
                 tfSaison.setText(newV.getSaison());
 
-                if (newV.getDatePlante() != null) {
+                if (newV.getDatePlante() != null)
                     dpDatePlante.setValue(newV.getDatePlante().toLocalDate());
-                } else {
+                else
                     dpDatePlante.setValue(null);
-                }
             }
         });
 
-        loadProductionPlantTab();
-        addAccepterButtonToTable();
-
-        // 🔎 SEARCH + SORT (Safe Null Handling)
+        // ================= FILTER =================
         filteredData = new FilteredList<>(list, p -> true);
 
-        if (searchField != null) {
-            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-                filteredData.setPredicate(production -> {
+            filteredData.setPredicate(production -> {
 
-                    if (newValue == null || newValue.trim().isEmpty()) {
-                        return true;
-                    }
+                if (newValue == null || newValue.trim().isEmpty())
+                    return true;
 
-                    String filter = newValue.toLowerCase();
+                String filter = newValue.toLowerCase();
 
-                    if (production.getNomPlant() != null &&
-                            production.getNomPlant().toLowerCase().contains(filter)) return true;
+                if (production.getNomPlant() != null &&
+                        production.getNomPlant().toLowerCase().contains(filter)) return true;
 
-                    if (production.getVariete() != null &&
-                            production.getVariete().toLowerCase().contains(filter)) return true;
+                if (production.getVariete() != null &&
+                        production.getVariete().toLowerCase().contains(filter)) return true;
 
-                    if (production.getSaison() != null &&
-                            production.getSaison().toLowerCase().contains(filter)) return true;
+                if (production.getSaison() != null &&
+                        production.getSaison().toLowerCase().contains(filter)) return true;
 
-                    if (String.valueOf(production.getQuantite()).contains(filter)) return true;
+                if (production.getEtat() != null &&
+                        production.getEtat().toLowerCase().contains(filter)) return true;
 
-                    if (production.getEtat() != null &&
-                            production.getEtat().toLowerCase().contains(filter)) return true;
+                if (String.valueOf(production.getQuantite()).contains(filter)) return true;
 
-                    return false;
-                });
+                return false;
             });
-        }
+        });
 
+        // ================= SORTED LIST =================
         sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableProduction.comparatorProperty());
 
         tableProduction.setItems(sortedData);
 
-        refreshTable();
+        // ================= OTHER METHODS =================
+        loadProductionPlantTab();
+        addAccepterButtonToTable();
     }
 
     private void loadProductionPlantTab() {
@@ -412,13 +427,38 @@ public class ProductionController {
         try {
             list.clear();
             list.addAll(productionService.afficher());
+            updateStatistics();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     "Erreur",
                     e.getMessage());
         }
     }
+    private void updateStatistics() {
 
+        int total = list.size();
+        int pending = 0;
+        int complete = 0;
+        int totalQuantity = 0;
+
+        for (Production p : list) {
+
+            if ("EN_ATTENTE".equalsIgnoreCase(p.getEtat())) {
+                pending++;
+            }
+
+            if ("COMPLETE".equalsIgnoreCase(p.getEtat())) {
+                complete++;
+            }
+
+            totalQuantity += p.getQuantite();
+        }
+
+        totalLabel.setText(String.valueOf(total));
+        pendingLabel.setText(String.valueOf(pending));
+        completeLabel.setText(String.valueOf(complete));
+        quantityLabel.setText(String.valueOf(totalQuantity));
+    }
     private void clearForm() {
         tfNomPlant.clear();
         tfVariete.clear();

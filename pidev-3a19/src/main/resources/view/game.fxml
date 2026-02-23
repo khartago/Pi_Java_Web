@@ -20,6 +20,7 @@
                 <Insets top="15" right="30" bottom="15" left="30"/>
             </padding>
 
+
             <!-- WATER -->
             <Button onAction="#selectWater" styleClass="tool-image-button">
                 <graphic>
@@ -54,6 +55,7 @@
             </Button>
 
         </HBox>
+
     </top>
 
     <!-- ================= GAME AREA ================= -->

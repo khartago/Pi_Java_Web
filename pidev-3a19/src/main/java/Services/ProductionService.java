@@ -132,6 +132,7 @@ public class ProductionService {
             ps.executeUpdate();
         }
     }
+
     public void waterPlant(int id) throws SQLException {
 
         String select = "SELECT water_count, stage, growth_speed FROM plantation WHERE id=?";
@@ -200,12 +201,15 @@ public class ProductionService {
                 p.setSaison(rs.getString("saison"));
                 p.setEtat(rs.getString("etat"));
 
-                // NEW GAME FIELDS
+                // 🔥 GAME FIELDS
                 p.setStage(rs.getInt("stage"));
                 p.setWaterCount(rs.getInt("water_count"));
                 p.setLastWaterTime(rs.getLong("last_water_time"));
                 p.setStatus(rs.getString("status"));
                 p.setGrowthSpeed(rs.getDouble("growth_speed"));
+
+                // ✅ THIS WAS MISSING
+                p.setSlotIndex(rs.getInt("slot_index"));
 
                 list.add(p);
             }
@@ -213,4 +217,59 @@ public class ProductionService {
 
         return list;
     }
+    public int getTotalProductions() {
+
+        String sql = "SELECT COUNT(*) FROM plantation";
+
+        try (Connection cnx = DBConnection.getConnection();
+             Statement st = cnx.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            if (rs.next())
+                return rs.getInt(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+    public int getTotalQuantity() {
+
+        String sql = "SELECT SUM(quantite) FROM plantation";
+
+        try (Connection cnx = DBConnection.getConnection();
+             Statement st = cnx.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            if (rs.next())
+                return rs.getInt(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+    public int countByEtat(String etat) {
+
+        String sql = "SELECT COUNT(*) FROM plantation WHERE etat=?";
+
+        try (Connection cnx = DBConnection.getConnection();
+             PreparedStatement ps = cnx.prepareStatement(sql)) {
+
+            ps.setString(1, etat);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next())
+                return rs.getInt(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+
 /**
  * Controller for the product list view. Handles display of all products and
  * operations such as create, update, delete and navigating to the material
@@ -37,6 +38,7 @@ public class ProduitController {
     private TableColumn<Produit, String> uniteColumn;
     @FXML
     private TableColumn<Produit, String> dateExpColumn;
+
 
     private final ProduitDAO produitDAO = new ProduitDAO();
     private ObservableList<Produit> produits;
