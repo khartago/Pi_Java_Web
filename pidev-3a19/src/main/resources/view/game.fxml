@@ -19,7 +19,9 @@
             <padding>
                 <Insets top="15" right="30" bottom="15" left="30"/>
             </padding>
-
+            <Label fx:id="weatherLabel"
+                   text="Weather loading..."
+                   style="-fx-font-size:18px; -fx-text-fill:white;" />
 
             <!-- WATER -->
             <Button onAction="#selectWater" styleClass="tool-image-button">

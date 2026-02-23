@@ -22,14 +22,18 @@ import Services.EmailService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import javafx.application.Platform;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.fxml.FXML;
 public class GameController {
 
     @FXML
     private GridPane plantGrid;
-    private Label weatherLabel;
-    private final ProductionService productionService = new ProductionService();
 
+    private final ProductionService productionService = new ProductionService();
+    @FXML
+    private Label weatherLabel;
     private enum Tool { NONE, WATER, MANURE, SHOVEL }
     private int rows = 3;
     private Tool selectedTool = Tool.NONE;
@@ -45,7 +49,15 @@ public class GameController {
     // ================= INITIALIZE =================
     @FXML
     public void initialize() {
+        new Thread(() -> {
 
+            double temp = WeatherService.getTemperature("Tunis");
+
+            Platform.runLater(() -> {
+                weatherLabel.setText("🌤 Tunis: " + temp + "°C");
+            });
+
+        }).start();
         try {
 
             createBoard();
