@@ -12,8 +12,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import java.util.Locale;
+import java.util.ResourceBundle;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.PropertyResourceBundle;
 
 /**
  * Single post-login layout: sidebar menu + content area.
@@ -34,7 +42,7 @@ public class DashboardShellController {
     private Node adminUsersContent;
     private Node adminSupportContent;
     private Node farmerContent;
-
+    public static Locale currentLocale = new Locale("fr");
     /**
      * Called by LoginController after loading the shell.
      * Only two roles: ADMIN and FARMER. Produits & Matériels are backoffice-only (admin).
@@ -141,12 +149,50 @@ public class DashboardShellController {
             e.printStackTrace();
         }
     }
-
     @FXML
     private void showProduction() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/Production.fxml"));
+
+            // Use global selected language
+            Locale locale = currentLocale;
+
+            ResourceBundle bundle = ResourceBundle.getBundle(
+                    "translation.messages",
+                    locale,
+                    new ResourceBundle.Control() {
+                        @Override
+                        public ResourceBundle newBundle(String baseName, Locale locale,
+                                                        String format, ClassLoader loader,
+                                                        boolean reload)
+                                throws IllegalAccessException, InstantiationException, IOException {
+
+                            String bundleName = toBundleName(baseName, locale);
+                            String resourceName = toResourceName(bundleName, "properties");
+
+                            try (InputStream stream = loader.getResourceAsStream(resourceName)) {
+                                if (stream == null) return null;
+                                return new PropertyResourceBundle(
+                                        new InputStreamReader(stream, StandardCharsets.UTF_8)
+                                );
+                            }
+                        }
+                    }
+            );
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/Production.fxml"),
+                    bundle
+            );
+
+            Parent root = loader.load();
+
+            // RTL support for Arabic
+            if (locale.getLanguage().equals("ar")) {
+                root.setNodeOrientation(javafx.geometry.NodeOrientation.RIGHT_TO_LEFT);
+            }
+
             setContent(root);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

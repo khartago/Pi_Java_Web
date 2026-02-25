@@ -1,10 +1,17 @@
 package controller;
 
+
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import java.util.ResourceBundle;
+import java.util.Locale;
 import model.Production;
 import model.ProductionPlante;
 import Services.ProductionService;
 import Services.ProductionPlanteService;
-
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,7 +24,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import java.sql.SQLException;
 import java.sql.Date;
-
+import Services.PdfService;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 public class ProductionController {
 
     @FXML private TabPane tabPane;
@@ -139,6 +150,56 @@ public class ProductionController {
         loadProductionPlantTab();
         addAccepterButtonToTable();
     }
+
+
+
+    @FXML
+    private void switchToEnglish() {
+        DashboardShellController.currentLocale = new Locale("en");
+        reloadPage();
+    }
+
+    @FXML
+    private void switchToFrench() {
+        DashboardShellController.currentLocale = new Locale("fr");
+        reloadPage();
+    }
+
+    @FXML
+    private void switchToArabic() {
+        DashboardShellController.currentLocale = new Locale("ar");
+        reloadPage();
+    }
+    private void reloadPage() {
+        try {
+
+            ResourceBundle bundle =
+                    ResourceBundle.getBundle(
+                            "translation.messages",
+                            DashboardShellController.currentLocale
+                    );
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/Production.fxml"),
+                    bundle
+            );
+
+            Parent root = loader.load();
+
+            if (DashboardShellController.currentLocale.getLanguage().equals("ar")) {
+                root.setNodeOrientation(javafx.geometry.NodeOrientation.RIGHT_TO_LEFT);
+            }
+
+            Stage stage = (Stage) tableProduction.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void loadProductionPlantTab() {
         try {
@@ -428,6 +489,39 @@ public class ProductionController {
             list.clear();
             list.addAll(productionService.afficher());
             updateStatistics();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR,
+                    "Erreur",
+                    e.getMessage());
+        }
+    }
+
+    @FXML
+    private void generatePdf() {
+
+        try {
+            List<Production> list = productionService.afficher();
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save PDF");
+
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
+            );
+
+            fileChooser.setInitialFileName("Production_Report.pdf");
+
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                PdfService pdfService = new PdfService();
+                pdfService.generateProductionPdf(list, file.getAbsolutePath());
+
+                showAlert(Alert.AlertType.INFORMATION,
+                        "Success",
+                        "PDF Generated Successfully!");
+            }
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     "Erreur",
