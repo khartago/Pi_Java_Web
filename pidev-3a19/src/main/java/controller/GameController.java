@@ -26,11 +26,20 @@ import javafx.application.Platform;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 public class GameController {
 
     @FXML
     private GridPane plantGrid;
-
+    @FXML
+    private ImageView avatarImage;
+    private MediaPlayer avatarVoice;
+    @FXML
+    private Label avatarText;
     private final ProductionService productionService = new ProductionService();
     @FXML
     private Label weatherLabel;
@@ -49,6 +58,7 @@ public class GameController {
     // ================= INITIALIZE =================
     @FXML
     public void initialize() {
+
         new Thread(() -> {
 
             double temp = WeatherService.getTemperature("Tunis");
@@ -71,12 +81,86 @@ public class GameController {
             loadPlantsFromDatabase();
 
             startGlobalTimer();
+            setupAvatar();
+            startAvatarMessages();
+            playAvatarVoice();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    private void setupAvatar() {
 
+        try {
+            Image avatar = new Image(
+                    getClass().getResource("/images/avatar.png").toExternalForm()
+            );
+
+            avatarImage.setImage(avatar);
+
+        } catch (Exception e) {
+            System.out.println("Avatar image not found!");
+            e.printStackTrace();
+        }
+
+        avatarText.setText("Welcome to FarmTech 🌱");
+    }
+    private void startAvatarMessages() {
+
+        String[] messages = {
+                "Welcome to FarmTech 🌱",
+                "Use 💧 water to grow plants.",
+                "Use 🌿 manure to increase survival time.",
+                "If you don’t water in time, plants will die.",
+                "Use 🪓 shovel to remove plants.",
+                "Good luck farmer 👨‍🌾!"
+        };
+
+        Timeline timeline = new Timeline();
+        Duration delay = Duration.seconds(3.5);
+
+        for (int i = 0; i < messages.length; i++) {
+
+            String msg = messages[i];
+
+            KeyFrame keyFrame = new KeyFrame(
+                    delay.multiply(i),
+                    e -> avatarText.setText(msg)
+            );
+
+            timeline.getKeyFrames().add(keyFrame);
+        }
+
+        timeline.setCycleCount(1);
+        timeline.play();
+    }
+    private void playAvatarVoice() {
+
+        try {
+
+            // 🔴 STOP previous voice if exists
+            if (avatarVoice != null) {
+                avatarVoice.stop();
+                avatarVoice.dispose();
+            }
+
+            String path = getClass()
+                    .getResource("/sounds/avatar.mp3")
+                    .toExternalForm();
+
+            Media media = new Media(path);
+            avatarVoice = new MediaPlayer(media);
+
+            avatarVoice.setVolume(0.8);
+            avatarVoice.setCycleCount(1); // prevent looping
+
+            avatarVoice.play();
+
+        } catch (Exception e) {
+            System.out.println("Voice file error");
+            e.printStackTrace();
+        }
+    }
     // ================= REVIVE ALL =================
     private void reviveAllPlantsOnStart() {
 
@@ -88,7 +172,8 @@ public class GameController {
 
                 plant.setStage(1);                 // ✅ START AT LEVEL 1
                 plant.setWaterCount(0);            // reset water
-                plant.setStatus("ALIVE");          // alive
+                plant.setStatus("ALIVE");
+                plant.setGrowthSpeed(1);
                 plant.setLastWaterTime(System.currentTimeMillis()); // reset timer
 
                 productionService.updateGameData(plant);
@@ -271,19 +356,50 @@ public class GameController {
 
             if (plant == null) return;
 
-            if (selectedTool == Tool.WATER) {
+            switch (selectedTool) {
 
-                plant.setStatus("ALIVE");
-                plant.setWaterCount(plant.getWaterCount() + 1);
-                plant.setLastWaterTime(System.currentTimeMillis());
+                case WATER:
 
-                if (plant.getWaterCount() >= 3 && plant.getStage() < 3) {
-                    plant.setStage(plant.getStage() + 1);
-                    plant.setWaterCount(0);
-                }
+                    plant.setStatus("ALIVE");
+                    plant.setWaterCount(plant.getWaterCount() + 1);
+                    plant.setLastWaterTime(System.currentTimeMillis());
 
-                productionService.updateGameData(plant);
-                updateSlotImage(slotMap.get(slotIndex), plant);
+                    if (plant.getWaterCount() >= 3 && plant.getStage() < 3) {
+                        plant.setStage(plant.getStage() + 1);
+                        plant.setWaterCount(0);
+                    }
+
+                    productionService.updateGameData(plant);
+                    updateSlotImage(slotMap.get(slotIndex), plant);
+                    break;
+
+
+                case MANURE:
+
+                    plant.setGrowthSpeed(plant.getGrowthSpeed() + 0.5);
+
+                    // Optional: reset timer so effect is visible immediately
+                    plant.setLastWaterTime(System.currentTimeMillis());
+
+                    productionService.updateGameData(plant);
+
+                    System.out.println("New speed: " + plant.getGrowthSpeed());
+                    break;
+
+
+                case SHOVEL:
+
+                    productionService.supprimer(plant.getId());
+
+                    // remove from local list
+                    plants.remove(plant);
+
+                    StackPane slot = slotMap.get(slotIndex);
+                    if (slot != null) {
+                        slot.getChildren().clear();
+                    }
+
+                    break;
             }
 
         } catch (Exception e) {
