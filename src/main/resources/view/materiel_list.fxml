@@ -43,9 +43,13 @@
             <HBox alignment="CENTER_LEFT" spacing="15">
                 <Label text="Gestion des Matériels" styleClass="page-title" />
                 <Region HBox.hgrow="ALWAYS" />
-                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
-                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
-                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+
+                <!-- FlowPane responsive -->
+                <FlowPane hgap="10" vgap="10" alignment="CENTER_RIGHT" prefWrapLength="520">
+                    <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+                    <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+                    <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+                </FlowPane>
             </HBox>
 
             <!-- Tableau -->

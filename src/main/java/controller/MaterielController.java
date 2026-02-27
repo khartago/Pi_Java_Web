@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import model.Materiel;
 import model.MaterielDAO;
 import model.Produit;
+import model.ProduitDAO;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;

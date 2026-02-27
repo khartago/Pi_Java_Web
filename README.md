@@ -44,7 +44,8 @@ Maven. La base de données MySQL se configure facilement via XAMPP/phpMyAdmin.
      nom        VARCHAR(100) NOT NULL,
      quantite   INT         NOT NULL,
      unite      VARCHAR(50) NOT NULL,
-     dateExpiration DATE
+     dateExpiration DATE,
+     imagePath   VARCHAR(255) NULL
    );
 
    CREATE TABLE materiel (
@@ -57,6 +58,29 @@ Maven. La base de données MySQL se configure facilement via XAMPP/phpMyAdmin.
      FOREIGN KEY (idProduit) REFERENCES produit(idProduit) ON DELETE CASCADE
    );
    ```
+
+5. Activer la **traçabilité produit + QR codes** :
+
+   ```sql
+   CREATE TABLE produit_historique (
+     idHistorique INT AUTO_INCREMENT PRIMARY KEY,
+     idProduit INT NOT NULL,
+     typeEvenement VARCHAR(50) NOT NULL,
+     quantiteAvant INT NULL,
+     quantiteApres INT NULL,
+     dateEvenement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     commentaire VARCHAR(255),
+     FOREIGN KEY (idProduit) REFERENCES produit(idProduit) ON DELETE CASCADE
+   );
+   ```
+
+### ✅ Si votre table `produit` existe déjà (ancienne version)
+
+Si vous aviez créé la table sans la colonne `imagePath`, exécutez :
+
+```sql
+ALTER TABLE produit ADD COLUMN imagePath VARCHAR(255) NULL;
+```
 
 4. Adapter éventuellement les constantes `URL`, `USER` et `PASSWORD` dans
    `src/main/java/model/DBConnection.java` afin qu’elles correspondent à votre
@@ -115,3 +139,36 @@ personnalisées davantage (ajout d’un logo, changement de couleurs, etc.).
 N’hésitez pas à évoluer cette base : ajout d’un champ de recherche, export CSV
 ou PDF, authentification utilisateur, ou encore déploiement sous forme
 d’installateur.
+
+## 🤖 Assistant IA (local)
+
+Un écran **Assistant IA** est disponible depuis la liste des produits :
+- recherche par **nom de produit**
+- recherche par **image** (match local sur imagePath / nom de fichier / hash)
+- affiche la **fiche produit** + les **matériels associés**
+
+## 📦 QR Code & Traçabilité
+
+- À chaque création / modification de produit, un **QR code** est généré automatiquement dans le dossier :
+  - `~/farmtech_qr_codes/produit_{id}_qr.png`
+- Le contenu du QR est de la forme `PROD:{idProduit}`.
+- Depuis la liste des produits, vous disposez de :
+  - un bouton **Traçabilité** → ouvre l’historique détaillé du produit (table `produit_historique`)
+  - un bouton **Scanner QR** → permet de choisir une image de QR, d’identifier le produit et d’afficher sa **date d’expiration + historique**
+
+## 💬 Chatbot IA dans la Marketplace (API)
+
+Un panneau **Chatbot** est disponible dans la vue **Marketplace**.
+
+### Configuration de la clé API
+
+Le chatbot utilise la variable d’environnement :
+- `OPENAI_API_KEY`
+
+Sous Windows (PowerShell), vous pouvez définir la clé ainsi (puis relancer le terminal / IDE) :
+
+```powershell
+setx OPENAI_API_KEY "VOTRE_CLE_API"
+```
+
+Ensuite lancez l’application et utilisez la Marketplace : le chatbot répondra via l’API.

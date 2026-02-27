@@ -1,0 +1,142 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                          🚀 GUIDE DE DÉMARRAGE                               ║
+║                      Gestion Produits Premium - CORRIGÉ                       ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+📋 CONTENU DU FICHIER
+────────────────────────────────────────────────────────────────────────────────
+1. Résumé des corrections
+2. Configuration requise
+3. Instructions de compilation
+4. Instructions d'exécution
+5. Dépannage
+
+═════════════════════════════════════════════════════════════════════════════════
+1️⃣  RÉSUMÉ DES CORRECTIONS EFFECTUÉES
+═════════════════════════════════════════════════════════════════════════════════
+
+✅ Erreur 1: EmailService.java - Imports manquants
+   → Ajout de: import jakarta.mail.internet.MimeMultipart;
+   → Ajout de: import jakarta.mail.internet.MimeBodyPart;
+   → Correction des appels: new MimeMultipart(...) au lieu de new jakarta.mail...
+
+✅ Erreur 2: MaterielDAO.java - Bloc catch vide
+   → Ajout de: e.printStackTrace(); dans le catch de la méthode update()
+
+✅ Erreur 3: MaterielController.java - Import manquant
+   → Ajout de: import model.ProduitDAO;
+
+═════════════════════════════════════════════════════════════════════════════════
+2️⃣  CONFIGURATION REQUISE
+═════════════════════════════════════════════════════════════════════════════════
+
+✅ Java Development Kit (JDK)
+   Version requise: 17 ou supérieur
+   Vérification: java -version
+
+✅ Maven
+   Version requise: 3.6 ou supérieur
+   Vérification: mvn -version
+
+✅ Base de données MySQL
+   Configuration: DBConnection.java (lignes 14-19)
+   - URL: jdbc:mysql://localhost:3306/stockdb
+   - User: root
+   - Password: (vide par défaut)
+
+✅ Variables d'environnement (optionnel)
+   Pour les emails:
+   - GMAIL_APP_PASSWORD: Mot de passe application Gmail
+
+═════════════════════════════════════════════════════════════════════════════════
+3️⃣  INSTRUCTIONS DE COMPILATION
+═════════════════════════════════════════════════════════════════════════════════
+
+🔹 Option 1: Utiliser Maven (recommandé)
+────────────────────────────────────────────
+Ouvrir un terminal et exécuter:
+
+  cd C:\Users\emnaf\Downloads\gestion-produits-premium\gestion-produits-premium
+  mvn clean compile
+
+Résultat attendu:
+  [INFO] BUILD SUCCESS
+
+🔹 Option 2: Utiliser IntelliJ IDEA
+────────────────────────────────────────────
+1. Ouvrir le projet dans IntelliJ IDEA
+2. File → Synchronize (Ctrl+Alt+Y)
+3. Build → Build Project (Ctrl+F9)
+
+Vérifier qu'il n'y a pas d'erreurs rouges dans l'éditeur.
+
+═════════════════════════════════════════════════════════════════════════════════
+4️⃣  INSTRUCTIONS D'EXÉCUTION
+═════════════════════════════════════════════════════════════════════════════════
+
+🔹 Option 1: Utiliser Maven
+────────────────────────────
+Terminal:
+  mvn javafx:run
+
+🔹 Option 2: Utiliser IntelliJ IDEA
+────────────────────────────────────
+1. Clic droit sur MainApp.java
+2. Select "Run MainApp.main()"
+   OU utiliser la combinaison Shift+F10
+
+🔹 Option 3: Ligne de commande (Java)
+──────────────────────────────────────
+  javac src/main/java/app/MainApp.java
+  java -cp target/classes:lib/* app.MainApp
+
+═════════════════════════════════════════════════════════════════════════════════
+5️⃣  DÉPANNAGE
+═════════════════════════════════════════════════════════════════════════════════
+
+❌ ERREUR: "cannot find symbol class MimeMultipart"
+✅ SOLUTION:
+   - Vérifier que EmailService.java a les imports corrects
+   - Relancer: mvn clean compile
+   - Vérifier que jakarta.mail est dans les dépendances pom.xml
+
+❌ ERREUR: "Error: Could not find or load main class app.MainApp"
+✅ SOLUTION:
+   - Vérifier que MainApp.java existe dans src/main/java/app/
+   - Vérifier que le projet est compilé: mvn clean compile
+   - Vérifier que JAVA_HOME est configuré correctement
+
+❌ ERREUR: "Connection to localhost:3306 refused"
+✅ SOLUTION:
+   - Vérifier que MySQL est démarré
+   - Vérifier la configuration dans DBConnection.java
+   - Créer la base de données: mysql> CREATE DATABASE stockdb;
+
+❌ ERREUR: "No suitable HttpClient found"
+✅ SOLUTION:
+   - Vérifier que Java 11+ est utilisé
+   - Utiliser java --version pour vérifier
+
+═════════════════════════════════════════════════════════════════════════════════
+📝 FICHIERS DE RÉFÉRENCE
+═════════════════════════════════════════════════════════════════════════════════
+
+Consultez les fichiers suivants pour plus d'informations:
+
+📄 CORRECTIONS_APPLIQUEES.md
+   → Résumé détaillé de toutes les corrections
+
+📄 VALIDATION_FINALE.txt
+   → Rapport complet de validation du projet
+
+═════════════════════════════════════════════════════════════════════════════════
+✅ VOUS ÊTES PRÊT À DÉMARRER !
+═════════════════════════════════════════════════════════════════════════════════
+
+Le projet a été corrigé et est maintenant prêt à compiler et s'exécuter.
+Suivez les instructions ci-dessus pour démarrer l'application.
+
+En cas de problème, consultez la section "Dépannage" ou les logs d'erreur.
+
+═════════════════════════════════════════════════════════════════════════════════
+

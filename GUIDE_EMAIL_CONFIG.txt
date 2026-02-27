@@ -1,0 +1,149 @@
+╔═════════════════════════════════════════════════════════════════════════════╗
+║              📧 GUIDE: CONFIGURATION DE LA NOTIFICATION EMAIL                ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+🎯 OBJECTIF: Configurer le système de notification d'expiration de produits par email
+
+
+📋 ÉTAPES DE CONFIGURATION
+═════════════════════════════════════════════════════════════════════════════════
+
+1️⃣  CRÉER UN MOT DE PASSE D'APPLICATION GMAIL
+────────────────────────────────────────────────
+
+✅ Accédez à votre compte Google:
+   https://myaccount.google.com/
+
+✅ Allez à "Sécurité" (menu latéral)
+
+✅ Activez l'authentification à 2 facteurs (si pas encore fait)
+
+✅ Recherchez "Mots de passe des applications"
+   https://myaccount.google.com/apppasswords
+
+✅ Sélectionnez:
+   - Appli: Mail
+   - Appareil: Windows / Mac / Linux
+
+✅ Cliquez sur "Générer"
+
+✅ Copiez le mot de passe généré (16 caractères avec espaces)
+   Exemple: "abcd efgh ijkl mnop"
+
+
+2️⃣  CONFIGURER LA VARIABLE D'ENVIRONNEMENT (Windows PowerShell)
+─────────────────────────────────────────────────────────────────
+
+✅ Ouvrez PowerShell en tant qu'administrateur
+
+✅ Exécutez cette commande (remplacer le mot de passe):
+   $env:GMAIL_APP_PASSWORD="votre_mot_de_passe_application"
+
+   Exemple:
+   $env:GMAIL_APP_PASSWORD="abcd efgh ijkl mnop"
+
+✅ Vérifiez que c'est bien défini:
+   $env:GMAIL_APP_PASSWORD
+
+✅ Pour rendre permanent (optionnel), ajoutez à votre profil PowerShell:
+   notepad $PROFILE
+
+   Puis ajoutez cette ligne:
+   $env:GMAIL_APP_PASSWORD="abcd efgh ijkl mnop"
+
+
+3️⃣  TESTER LA FONCTIONNALITÉ
+──────────────────────────────
+
+✅ Lancez l'application
+
+✅ Allez à l'onglet "Produits"
+
+✅ Cliquez sur le bouton "Notifier expirations"
+
+✅ Une fenêtre demandera votre email destinataire
+   Entrez votre adresse email (ex: votreemail@gmail.com)
+
+✅ Cliquez "OK"
+
+✅ L'email sera envoyé automatiquement avec:
+   - Liste des produits qui expirent dans les 7 prochains jours
+   - Liste des produits déjà expirés
+   - Mise en forme HTML professionnelle
+
+
+📊 DÉTAILS DU MESSAGE EMAIL
+═════════════════════════════════════════════════════════════════════════════════
+
+Sujet: TechFarm | Alerte expiration produits (J+7)
+
+Contenu:
+✅ En-tête avec logo TechFarm
+✅ Carte récapitulative (nombre produits qui expirent + expirés)
+✅ Tableau détaillé avec:
+   - Nom du produit
+   - Date d'expiration
+   - Quantité en stock
+   - Statut (Expire bientôt / Expiré)
+✅ Design professionnel et responsive
+
+
+🔧 DÉPANNAGE
+═════════════════════════════════════════════════════════════════════════════════
+
+❌ ERREUR: "Config manquante - Variable d'environnement GMAIL_APP_PASSWORD manquante"
+
+✅ SOLUTION:
+   1. Ouvrez PowerShell
+   2. Exécutez: $env:GMAIL_APP_PASSWORD="votre_mot_de_passe"
+   3. Relancez l'application
+   4. Cliquez à nouveau sur "Notifier expirations"
+
+
+❌ ERREUR: "Erreur API Gmail: (401) - Unauthorized"
+
+✅ SOLUTION:
+   1. Vérifiez que le mot de passe est correct (sans caractères supplémentaires)
+   2. Assurez-vous que l'authentification 2FA est activée
+   3. Régénérez un mot de passe d'application Gmail
+   4. Recommencez l'étape 2
+
+
+❌ ERREUR: "Connection timeout"
+
+✅ SOLUTION:
+   1. Vérifiez votre connexion Internet
+   2. Vérifiez que Gmail n'est pas bloqué par un firewall
+   3. Attendez quelques secondes et réessayez
+
+
+❌ ERREUR: "Invalid recipient email"
+
+✅ SOLUTION:
+   1. Entrez une adresse email valide (ex: nom@gmail.com)
+   2. Vérifiez qu'il n'y a pas d'espaces avant/après
+
+
+📝 NOTES IMPORTANTES
+═════════════════════════════════════════════════════════════════════════════════
+
+✅ L'email d'expédition est: techfarm.company@gmail.com
+   (Vous pouvez le changer dans ProduitController.java, ligne 206)
+
+✅ La fenêtre d'expiration est configurable (7 jours par défaut)
+   (Vous pouvez le modifier dans ProduitController.java, ligne 220)
+
+✅ Les emails sont en HTML avec design professionnel
+   (Généré par ExpirationNotifierService.java)
+
+✅ La variable d'environnement ne persiste que pour la session PowerShell actuelle
+   (À redéfinir à chaque redémarrage, ou ajouter au profil PowerShell)
+
+
+🚀 PRÊT À UTILISER!
+
+Votre système de notification d'expiration est maintenant configuré et prêt à envoyer
+des emails de notification automatiques pour les produits expirés.
+
+═════════════════════════════════════════════════════════════════════════════════
+

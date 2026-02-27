@@ -1,0 +1,225 @@
+╔═════════════════════════════════════════════════════════════════════════════╗
+║                  ✅ CHECKLIST: VÉRIFICATION FINALE                           ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+📋 VÉRIFICATIONS À EFFECTUER POUR S'ASSURER QUE TOUT FONCTIONNE
+
+
+═════════════════════════════════════════════════════════════════════════════════
+1️⃣  COMPILATION ET DÉMARRAGE
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Compiler le projet:
+  mvn clean compile
+
+  ✅ Attendu: BUILD SUCCESS
+
+☐ Exécuter l'application:
+  mvn javafx:run
+
+  ✅ Attendu: Fenêtre JavaFX s'affiche sans erreur
+
+
+═════════════════════════════════════════════════════════════════════════════════
+2️⃣  TEST DE LA PAGE PRODUITS
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ L'onglet "Produits" se charge correctement
+
+☐ Le tableau affiche les produits de la base de données
+
+☐ Les boutons sont visibles et fonctionnels:
+  ☐ Assistant IA
+  ☐ Traçabilité
+  ☐ Scanner QR
+  ☐ Marketplace
+  ☐ Ajouter
+  ☐ Modifier
+  ☐ Supprimer
+  ☐ Notifier expirations
+
+
+═════════════════════════════════════════════════════════════════════════════════
+3️⃣  TEST FONCTIONNALITÉ "TRAÇABILITÉ"
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Sélectionner un produit dans le tableau
+
+☐ Cliquer sur le bouton "Traçabilité"
+
+☐ Fenêtre modale s'ouvre avec:
+  ☐ Détails du produit (ID, Nom, Stock, Expiration)
+  ☐ Tableau d'historique vide ou rempli
+
+☐ Cliquer "Fermer" pour retourner
+
+
+═════════════════════════════════════════════════════════════════════════════════
+4️⃣  TEST FONCTIONNALITÉ "SCANNER QR"
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Cliquer sur le bouton "Scanner QR"
+
+☐ Fenêtre modale s'ouvre avec:
+  ☐ Bouton "Choisir une image"
+  ☐ Bouton "Ouvrir dossier QR"
+  ☐ Zone d'affichage du résultat
+
+☐ Cliquer "Fermer" pour retourner
+
+
+═════════════════════════════════════════════════════════════════════════════════
+5️⃣  TEST FONCTIONNALITÉ "NOTIFIER EXPIRATIONS"
+═════════════════════════════════════════════════════════════════════════════════
+
+✅ PRÉ-REQUIS: Configuration du mot de passe Gmail
+
+Ouvrez PowerShell et exécutez:
+  $env:GMAIL_APP_PASSWORD="votre_mot_de_passe_application"
+
+Consultez GUIDE_EMAIL_CONFIG.txt pour les détails
+
+☐ Cliquer sur le bouton "Notifier expirations"
+
+☐ Boîte de dialogue s'affiche:
+  ┌─────────────────────────────────────┐
+  │ Notification d'expiration           │
+  │ Entrez l'email destinataire:        │
+  │ [                               ]   │
+  │       [OK]        [Annuler]        │
+  └─────────────────────────────────────┘
+
+☐ Entrer une adresse email valide (ex: votreemail@gmail.com)
+
+☐ Cliquer "OK"
+
+☐ Attendre 2-3 secondes
+
+☐ Message de confirmation s'affiche:
+  "Email envoyé à votreemail@gmail.com. Produits concernés: X"
+
+  ✅ Attendu: Email reçu avec tableau formaté en HTML
+
+☐ Vérifier l'email reçu:
+  ☐ Sujet: "TechFarm | Alerte expiration produits (J+7)"
+  ☐ Design HTML professionnel
+  ☐ Tableau avec produits expirant bientôt
+  ☐ Tableau avec produits déjà expirés
+
+
+═════════════════════════════════════════════════════════════════════════════════
+6️⃣  TEST FONCTIONNALITÉ "MARKETPLACE"
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Cliquer sur le bouton "Marketplace"
+
+☐ Vue Marketplace s'affiche avec:
+  ☐ Cartes produits avec images
+  ☐ Filtres de recherche
+  ☐ Chatbot IA (optionnel)
+
+☐ Cliquer sur "Retour" pour revenir à Produits
+
+
+═════════════════════════════════════════════════════════════════════════════════
+7️⃣  TEST FONCTIONNALITÉ "ASSISTANT IA"
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Cliquer sur le bouton "Assistant IA"
+
+☐ Vue Assistant s'affiche avec:
+  ☐ Champ de recherche par nom
+  ☐ Option d'upload d'image
+  ☐ Tableau de résultats
+
+☐ Cliquer sur "Retour" pour revenir à Produits
+
+
+═════════════════════════════════════════════════════════════════════════════════
+8️⃣  TEST OPÉRATIONS CRUD
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ AJOUTER un produit:
+  ☐ Cliquer "Ajouter"
+  ☐ Formulaire s'affiche
+  ☐ Remplir les champs
+  ☐ Cliquer "Enregistrer"
+  ☐ Produit ajouté au tableau
+
+☐ MODIFIER un produit:
+  ☐ Sélectionner un produit
+  ☐ Cliquer "Modifier"
+  ☐ Formulaire s'affiche avec données
+  ☐ Modifier les champs
+  ☐ Cliquer "Enregistrer"
+  ☐ Produit modifié dans le tableau
+
+☐ SUPPRIMER un produit:
+  ☐ Sélectionner un produit
+  ☐ Cliquer "Supprimer"
+  ☐ Confirmation s'affiche
+  ☐ Cliquer "OK"
+  ☐ Produit supprimé du tableau
+
+
+═════════════════════════════════════════════════════════════════════════════════
+9️⃣  VÉRIFICATION DE LA BASE DE DONNÉES
+═════════════════════════════════════════════════════════════════════════════════
+
+☐ Base de données MySQL en cours d'exécution
+
+☐ Base de données "stockdb" créée
+
+☐ Tables existantes:
+  ☐ produit
+  ☐ materiel
+  ☐ produit_historique
+
+☐ Les données persistant correctement:
+  ☐ Ajouter un produit → Fermer et relancer l'app → Produit toujours là
+  ☐ Modifier un produit → Fermer et relancer l'app → Modification persistée
+
+
+═════════════════════════════════════════════════════════════════════════════════
+🔟 DÉPANNAGE EN CAS DE PROBLÈME
+═════════════════════════════════════════════════════════════════════════════════
+
+❌ ERREUR: "Cannot find symbol"
+✅ SOLUTION:
+   - Exécuter: mvn clean compile
+   - Vérifier les imports
+
+❌ ERREUR: "LoadException" sur un fichier FXML
+✅ SOLUTION:
+   - Vérifier que le gestionnaire d'événement existe
+   - Relancer: mvn clean compile
+
+❌ ERREUR: "Connection refused" (Base de données)
+✅ SOLUTION:
+   - Démarrer MySQL
+   - Créer la base: mysql> CREATE DATABASE stockdb;
+
+❌ ERREUR: "GMAIL_APP_PASSWORD manquante"
+✅ SOLUTION:
+   - Ouvrir PowerShell
+   - Exécuter: $env:GMAIL_APP_PASSWORD="mot_de_passe"
+   - Voir GUIDE_EMAIL_CONFIG.txt
+
+
+═════════════════════════════════════════════════════════════════════════════════
+✅ RÉSULTAT FINAL
+═════════════════════════════════════════════════════════════════════════════════
+
+Si toutes les cases ☐ sont cochées ✓, alors:
+
+✅ L'application compile sans erreur
+✅ L'interface s'affiche correctement
+✅ Tous les boutons fonctionnent
+✅ Les opérations CRUD fonctionnent
+✅ Les emails s'envoient correctement
+✅ La base de données persiste les données
+
+🎉 LE PROJET EST 100% FONCTIONNEL! 🎉
+
+═════════════════════════════════════════════════════════════════════════════════
+

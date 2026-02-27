@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MarketplaceDetailController"
+            styleClass="root"
+            stylesheets="@../css/style.css">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="marketplace-header">
+            <Button text="← Retour" onAction="#handleBack" styleClass="secondary-button"/>
+            <VBox spacing="2">
+                <Label text="Détails Produit" styleClass="page-title"/>
+                <Label text="Consultez les informations du produit" styleClass="page-subtitle"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <VBox styleClass="content-area" spacing="14">
+
+            <!-- Card / Container -->
+            <VBox styleClass="product-card" spacing="12">
+
+                <!-- Title + Badge -->
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="nomLabel" styleClass="product-title"/>
+                        <Label fx:id="uniteLabel" styleClass="muted-text"/>
+                    </VBox>
+
+                    <Label fx:id="badgeLabel"
+                           styleClass="status-badge"/>
+                </HBox>
+
+                <Separator styleClass="soft-separator"/>
+
+                <!-- Details grid -->
+                <GridPane hgap="12" vgap="10" styleClass="details-grid">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="140" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+
+                    <Label text="Stock :" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="stockLabel" styleClass="field-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Unité :" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="uniteLabel" styleClass="field-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="Expiration :" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="expLabel" styleClass="field-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                </GridPane>
+
+            </VBox>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+
+</BorderPane>

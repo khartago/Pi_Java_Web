@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-    Formulaire pour créer ou modifier un produit.
-    Contrôleur : controller.ProduitFormController
--->
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -15,14 +10,12 @@
             styleClass="root"
             stylesheets="@../css/style.css">
 
-    <!-- En-tête -->
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="form-header">
             <Label text="Formulaire Produit" styleClass="form-title"/>
         </HBox>
     </top>
 
-    <!-- Contenu principal -->
     <center>
         <VBox spacing="20" styleClass="form-container">
             <GridPane hgap="15" vgap="15" styleClass="form-grid">
@@ -42,21 +35,22 @@
 
                 <Label text="Date d'expiration :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
                 <DatePicker fx:id="dateExpirationPicker" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+
+                <!-- ✅ image -->
+                <Label text="Image :" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="field-label"/>
+                <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <TextField fx:id="imagePathField" promptText="Chemin image (png/jpg)..." HBox.hgrow="ALWAYS"/>
+                    <Button text="Choisir" onAction="#handleChooseImage" styleClass="secondary-button"/>
+                </HBox>
+
             </GridPane>
         </VBox>
     </center>
 
-    <!-- Actions -->
     <bottom>
         <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
-            <Button fx:id="cancelButton"
-                    text="Annuler"
-                    onAction="#handleCancel"
-                    styleClass="secondary-button"/>
-            <Button fx:id="saveButton"
-                    text="Enregistrer"
-                    onAction="#handleSave"
-                    styleClass="primary-button"/>
+            <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel" styleClass="secondary-button"/>
+            <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSave" styleClass="primary-button"/>
         </HBox>
     </bottom>
 

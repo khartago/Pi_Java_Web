@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MarketplaceController"
+            styleClass="root"
+            stylesheets="@../css/style.css">
+
+    <top>
+        <VBox>
+            <HBox styleClass="marketplace-header" spacing="10" alignment="CENTER_LEFT">
+
+                <Label text="Marketplace - Catalogue" styleClass="marketplace-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="← Retour Admin" onAction="#handleBackToAdmin" styleClass="secondary-button"/>
+            </HBox>
+
+            <HBox spacing="10" styleClass="marketplace-filters" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Rechercher un produit..." HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="uniteFilter" promptText="Unité"/>
+                <CheckBox fx:id="expiringSoonCheck" text="Expire bientôt (7j)"/>
+                <Button text="Filtrer" onAction="#handleFilter" styleClass="primary-button"/>
+                <Button text="Reset" onAction="#handleReset" styleClass="secondary-button"/>
+                <Separator/>
+                <Button text="❤️ Mes Favoris" onAction="#handleOpenFavoris" styleClass="info-button"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="marketplace-scroll">
+            <content>
+                <FlowPane fx:id="cardsPane"
+                          hgap="12" vgap="12" prefWrapLength="900"
+                          styleClass="marketplace-cards"/>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- Panneau Chatbot IA (structure uniquement, identité visuelle inchangée) -->
+    <right>
+        <VBox styleClass="marketplace-chat-panel" prefWidth="360" minWidth="320" maxWidth="420" spacing="10">
+            <Label text="Chatbot" styleClass="page-title"/>
+
+            <TextArea fx:id="chatArea"
+                      promptText="Posez une question sur un produit..."
+                      wrapText="true"
+                      editable="false"
+                      VBox.vgrow="ALWAYS"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="chatInput"
+                           promptText="Écrire un message..."
+                           onAction="#handleChatSend"
+                           HBox.hgrow="ALWAYS"/>
+                <Button fx:id="chatSendButton" text="Envoyer" onAction="#handleChatSend" styleClass="primary-button"/>
+                <ProgressIndicator fx:id="chatLoading" visible="false" managed="false" prefWidth="24" prefHeight="24"/>
+            </HBox>
+
+            <Label fx:id="chatHintLabel" text="" wrapText="true" styleClass="muted-text"/>
+        </VBox>
+    </right>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+</BorderPane>

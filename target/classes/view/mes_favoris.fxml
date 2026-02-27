@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MesFavorisController"
+            styleClass="root">
+
+    <!-- TOP: Header -->
+    <top>
+        <VBox spacing="0">
+            <!-- Header principal -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
+                <Label text="❤️ FARMTECH" styleClass="app-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Mes Favoris" styleClass="header-section" />
+            </HBox>
+
+            <!-- Navigation -->
+            <HBox spacing="0" styleClass="navigation-bar">
+                <Button text="◀ Retour au Marketplace" onAction="#handleBack" styleClass="nav-tab" />
+                <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CENTER: Contenu principal -->
+    <center>
+        <VBox spacing="20" styleClass="content-area">
+
+            <!-- Titre + Compteur + Bouton Vider -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Label fx:id="titleLabel" text="❤️ Mes Favoris" styleClass="page-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="clearButton" text="🗑️ Vider tous les favoris" onAction="#handleClearAll"
+                        styleClass="danger-button" />
+            </HBox>
+
+            <!-- Grille des produits -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <FlowPane fx:id="cardsPane"
+                          hgap="15" vgap="15"
+                          prefWrapLength="1200"
+                          styleClass="marketplace-cards" />
+            </ScrollPane>
+
+            <!-- Message vide -->
+            <VBox spacing="10" alignment="CENTER" style="-fx-padding: 60 20;" visible="false">
+                <Label fx:id="emptyLabel"
+                       text="Aucun favori pour le moment."
+                       style="-fx-font-size: 16; -fx-text-fill: #5F6368;"
+                       wrapText="true"
+                       textAlignment="CENTER" />
+                <Button text="Explorez le Marketplace" onAction="#handleBack" styleClass="primary-button" />
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+
+</BorderPane>
+

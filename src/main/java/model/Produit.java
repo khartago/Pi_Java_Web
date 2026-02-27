@@ -3,12 +3,6 @@ package model;
 import javafx.beans.property.*;
 import java.time.LocalDate;
 
-/**
- * Represents a product stocked in the inventory. Each product has an identifier, a name,
- * a quantity, a unit of measurement and an expiration date. Products can have many
- * associated pieces of equipment (materiels). The relationship is handled on the
- * {@link Materiel} side via a foreign key.
- */
 public class Produit {
     private final IntegerProperty idProduit = new SimpleIntegerProperty();
     private final StringProperty nom = new SimpleStringProperty();
@@ -16,15 +10,22 @@ public class Produit {
     private final StringProperty unite = new SimpleStringProperty();
     private final ObjectProperty<LocalDate> dateExpiration = new SimpleObjectProperty<>();
 
-    public Produit() {
-    }
+    // ✅ NOUVEAU : chemin image (local, resource ou URL)
+    private final StringProperty imagePath = new SimpleStringProperty();
+    private final DoubleProperty prixUnitaire = new SimpleDoubleProperty();
 
-    public Produit(int idProduit, String nom, int quantite, String unite, LocalDate dateExpiration) {
+
+
+    public Produit() {}
+
+    // ✅ constructeur complet (ajout imagePath)
+    public Produit(int idProduit, String nom, int quantite, String unite, LocalDate dateExpiration, String imagePath) {
         this.idProduit.set(idProduit);
         this.nom.set(nom);
         this.quantite.set(quantite);
         this.unite.set(unite);
         this.dateExpiration.set(dateExpiration);
+        this.imagePath.set(imagePath);
     }
 
     public int getIdProduit() {
@@ -85,6 +86,32 @@ public class Produit {
 
     public void setDateExpiration(LocalDate dateExpiration) {
         this.dateExpiration.set(dateExpiration);
+    }
+
+    // ✅ GET/SET imagePath
+    public String getImagePath() {
+        return imagePath.get();
+    }
+
+    public StringProperty imagePathProperty() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath.set(imagePath);
+    }
+
+    // ✅ GET/SET prixUnitaire
+    public double getPrixUnitaire() {
+        return prixUnitaire.get();
+    }
+
+    public DoubleProperty prixUnitaireProperty() {
+        return prixUnitaire;
+    }
+
+    public void setPrixUnitaire(double prixUnitaire) {
+        this.prixUnitaire.set(prixUnitaire);
     }
 
     @Override

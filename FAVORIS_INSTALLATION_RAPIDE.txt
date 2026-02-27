@@ -1,0 +1,86 @@
+╔═════════════════════════════════════════════════════════════════════════════╗
+║                                                                             ║
+║                   🚀 GUIDE INSTALLATION RAPIDE - FAVORIS                   ║
+║                                                                             ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+
+⚡ 3 ÉTAPES SIMPLES
+═════════════════════════════════════════════════════════════════════════════════
+
+ÉTAPE 1: Créer la table dans MySQL
+──────────────────────────────────
+
+Copiez et exécutez ce script SQL dans phpMyAdmin ou MySQL:
+
+---
+CREATE TABLE IF NOT EXISTS favoris (
+    idFavoris INT AUTO_INCREMENT PRIMARY KEY,
+    idProduit INT NOT NULL,
+    dateAjout TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_produit (idProduit),
+    FOREIGN KEY (idProduit) REFERENCES produit(idProduit) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+---
+
+Ou copiez-collez le contenu du fichier: create_favoris_table.sql
+
+
+ÉTAPE 2: Recompiler
+───────────────────
+
+mvn clean compile
+
+
+ÉTAPE 3: Exécuter
+─────────────────
+
+mvn javafx:run
+
+
+═════════════════════════════════════════════════════════════════════════════════
+✨ C'EST FAIT!
+═════════════════════════════════════════════════════════════════════════════════
+
+La fonctionnalité Favoris est maintenant active dans votre Marketplace!
+
+TESTER:
+  1. Allez à "Marketplace - Catalogue"
+  2. Cliquez sur "🤍 Ajouter" pour un produit
+  3. Cliquez sur "❤️ Mes Favoris" en haut
+  4. Vous verrez votre produit dans la liste des favoris!
+
+
+═════════════════════════════════════════════════════════════════════════════════
+🎯 FICHIERS IMPLIQUÉS
+═════════════════════════════════════════════════════════════════════════════════
+
+CRÉÉS:
+  ✓ src/main/java/model/FavorisDAO.java
+  ✓ src/main/java/controller/MesFavorisController.java
+  ✓ src/main/resources/view/mes_favoris.fxml
+  ✓ create_favoris_table.sql
+
+MODIFIÉS:
+  ✓ src/main/java/controller/MarketplaceController.java
+  ✓ src/main/resources/view/marketplace.fxml
+
+
+═════════════════════════════════════════════════════════════════════════════════
+❓ BESOIN D'AIDE?
+═════════════════════════════════════════════════════════════════════════════════
+
+Consultez: FAVORIS_DOCUMENTATION.md
+
+Pour:
+  • Configuration avancée
+  • Dépannage
+  • Améliorations futures
+  • Guide complet
+
+═════════════════════════════════════════════════════════════════════════════════
+
+Prêt à utiliser! 🎉
+
+═════════════════════════════════════════════════════════════════════════════════
+
