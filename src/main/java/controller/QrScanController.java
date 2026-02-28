@@ -17,10 +17,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.util.Objects;
 
-/**
- * Fenêtre simple pour scanner une image contenant un QR code produit
- * et afficher la date d'expiration + historique.
- */
+
 public class QrScanController {
 
     @FXML private Label selectedFileLabel;

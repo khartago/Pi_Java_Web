@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 import model.Produit;
 import model.FavorisDAO;
 import model.ProduitDAO;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Contrôleur pour la page "Mes Favoris" du Marketplace.
- * Affiche tous les produits marqués comme favoris par l'utilisateur.
- */
+
 public class MesFavorisController {
 
     @FXML private FlowPane cardsPane;
@@ -185,7 +184,7 @@ public class MesFavorisController {
     }
 
     @FXML
-    private void handleBack() {
+    private void handleBack(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marketplace.fxml"));
             Parent root = loader.load();
@@ -193,7 +192,7 @@ public class MesFavorisController {
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
-            Stage stage = (Stage) backButton.getScene().getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Marketplace - Catalogue");
         } catch (IOException e) {
