@@ -1,0 +1,47 @@
+<?xml version="1.0" enconding="UTF-8" ?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ArticleBaseController"
+            prefWidth="900" prefHeight="500"
+            stylesheets="@farmtech-theme.css">
+
+    <top>
+        <VBox>
+            <HBox styleClass="navbar" alignment="CENTER_LEFT" spacing="30.0">
+                <padding>
+                    <Insets top="16.0" right="40.0" bottom="16.0" left="40.0"/>
+                </padding>
+
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <ImageView fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
+                        <image>
+                            <Image url="@farmtech-logo.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="FARMTECH" styleClass="navbar-brand"/>
+                </HBox>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <Button text="Accueil" onAction="#handleHome" styleClass="navbar-link"/>
+                <Button text="À propos" onAction="#handleAbout" styleClass="navbar-link"/>
+                <Button text="Blog" onAction="#handleBlog" styleClass="navbar-link"/>
+                <Button text="Contact" onAction="#handleContact" styleClass="navbar-link"/>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <Button text="Connexion" onAction="#handleLogin" styleClass="navbar-button"/>
+                <Button text="Inscription" onAction="#handleRegister" styleClass="navbar-button-primary"/>
+            </HBox>
+        </VBox>
+    </top>
+
+
+
+</BorderPane>
