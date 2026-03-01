@@ -30,6 +30,7 @@
                 
                 <Button text="Accueil" onAction="#handleHome" styleClass="navbar-link"/>
                 <Button text="À propos" onAction="#handleAbout" styleClass="navbar-link"/>
+                <Button text="Blog" onAction="#handleBlog" styleClass="navbar-link"/>
                 <Button text="Contact" onAction="#handleContact" styleClass="navbar-link"/>
                 
                 <Pane HBox.hgrow="ALWAYS"/>

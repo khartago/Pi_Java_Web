@@ -14,4 +14,11 @@
     <modules>
         <module>pidev-3a19</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+            <version></version>
+        </dependency>
+    </dependencies>
 </project>
