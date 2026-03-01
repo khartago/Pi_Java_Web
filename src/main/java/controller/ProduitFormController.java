@@ -155,9 +155,16 @@ public class ProduitFormController {
         }
 
         // ====== Unité ======
+        // ====== Unité ======
         String unite = uniteField.getText();
         if (unite == null || unite.trim().isEmpty()) {
             errors.append("- L'unité est requise.\n");
+        } else {
+            unite = unite.trim().toLowerCase();
+
+            if (!(unite.equals("kg") || unite.equals("l") || unite.equals("piece"))) {
+                errors.append("- L'unité doit être : kg, l ou piece uniquement.\n");
+            }
         }
 
         // (optionnel) validation image : si rempli, vérifier extension

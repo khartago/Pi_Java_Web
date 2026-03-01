@@ -98,13 +98,35 @@ public class MaterielFormController {
     // ================= VALIDATION =================
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
+        // ====== Nom ======
+        String nom = nomField.getText();
 
-        if (nomField.getText() == null || nomField.getText().trim().isEmpty())
+        if (nom == null || nom.trim().isEmpty()) {
             errors.append("- Le nom du matériel est requis.\n");
+        } else {
+            nom = nom.trim();
 
-        if (etatField.getText() == null || etatField.getText().trim().isEmpty())
+            if (nom.length() < 2 || nom.length() > 50) {
+                errors.append("- Le nom doit contenir entre 2 et 50 caractères.\n");
+            }
+
+            if (!nom.matches("[a-zA-ZÀ-ÿ0-9 ]+")) {
+                errors.append("- Le nom ne doit contenir que des lettres, chiffres et espaces.\n");
+            }
+        }
+
+        // ====== Etat ======
+        String etat = etatField.getText();
+
+        if (etat == null || etat.trim().isEmpty()) {
             errors.append("- L'état du matériel est requis.\n");
+        } else {
+            etat = etat.trim().toLowerCase();
 
+            if (!(etat.equals("neuf") || etat.equals("usagé") || etat.equals("bon"))) {
+                errors.append("- L'état doit être : neuf, usagé ou bon.\n");
+            }
+        }
         LocalDate selectedDate = dateAchatPicker.getValue();
         if (selectedDate == null) {
             errors.append("- La date d'achat est requise.\n");

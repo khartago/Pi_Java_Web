@@ -166,6 +166,24 @@ public class ProduitController {
     }
 
     @FXML
+    private void handleOpenStatistics() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/statistiques.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+            Stage stage = (Stage) produitTable.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Statistiques et Rapports");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Erreur", "Impossible d'ouvrir les statistiques.");
+        }
+    }
+
+    @FXML
     private void handleTraceabilite() {
         Produit selected = produitTable.getSelectionModel().getSelectedItem();
         if (selected == null) {

@@ -45,6 +45,7 @@
 
                 <!-- FlowPane pour permettre le retour à la ligne si la fenêtre est petite (responsive) -->
                 <FlowPane hgap="10" vgap="10" alignment="CENTER_RIGHT" prefWrapLength="720">
+                    <Button text="📊 Statistiques" onAction="#handleOpenStatistics" styleClass="info-button" />
                     <Button text="Assistant IA" onAction="#handleOpenAssistant" styleClass="info-button" />
                     <Button text="Traçabilité" onAction="#handleTraceabilite" styleClass="secondary-button" />
                     <Button text="Scanner QR" onAction="#handleScanQr" styleClass="secondary-button" />

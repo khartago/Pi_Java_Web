@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: #f5f5f5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StatisticsController">
+    <!-- En-tête -->
+    <top>
+        <VBox style="-fx-background-color: #2196F3; -fx-padding: 20;">
+            <Label text="📊 Statistiques et Rapports" textFill="WHITE">
+                <font>
+                    <Font size="28.0" />
+                </font>
+            </Label>
+            <Label text="Analyse complète de votre inventaire" textFill="WHITE" style="-fx-font-size: 12; -fx-opacity: 0.9;" />
+        </VBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f5f5f5;">
+            <VBox style="-fx-padding: 20; -fx-spacing: 20;">
+
+                <!-- KPIs - Ligne 1 -->
+                <HBox spacing="15" style="-fx-fill-height: true;">
+                    <!-- Total Produits -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="📦 Total Produits" style="-fx-font-size: 12; -fx-text-fill: #666;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="totalProductsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #2196F3;" />
+                    </VBox>
+
+                    <!-- Stock Total -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="📊 Stock Total" style="-fx-font-size: 12; -fx-text-fill: #666;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="totalStockLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" />
+                    </VBox>
+
+                    <!-- Stock Moyen -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="📈 Stock Moyen" style="-fx-font-size: 12; -fx-text-fill: #666;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="averageStockLabel" text="0.0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #FF9800;" />
+                    </VBox>
+
+                    <!-- Santé -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="❤️ Score Santé" style="-fx-font-size: 12; -fx-text-fill: #666;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="healthScoreLabel" text="100.0%" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #9C27B0;" />
+                    </VBox>
+                </HBox>
+
+                <!-- KPIs - Risques -->
+                <HBox spacing="15" style="-fx-fill-height: true;">
+                    <!-- Produits Expirés -->
+                    <VBox style="-fx-border-color: #ffcdd2; -fx-border-radius: 8; -fx-background-color: #ffebee; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="⚠️ Expirés" style="-fx-font-size: 12; -fx-text-fill: #d32f2f;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="expiredLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #d32f2f;" />
+                    </VBox>
+
+                    <!-- Produits Expirant Bientôt -->
+                    <VBox style="-fx-border-color: #fff3cd; -fx-border-radius: 8; -fx-background-color: #fffbea; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="⏰ Expirant Bientôt" style="-fx-font-size: 12; -fx-text-fill: #f57f17;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="expiringLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #f57f17;" />
+                    </VBox>
+
+                    <!-- Faible Stock -->
+                    <VBox style="-fx-border-color: #c8e6c9; -fx-border-radius: 8; -fx-background-color: #f1f8e9; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="📦 Faible Stock" style="-fx-font-size: 12; -fx-text-fill: #558b2f;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="lowStockLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #558b2f;" />
+                    </VBox>
+
+                    <!-- Valeur Stock -->
+                    <VBox style="-fx-border-color: #bbdefb; -fx-border-radius: 8; -fx-background-color: #e3f2fd; -fx-padding: 20;" HBox.hgrow="ALWAYS">
+                        <Label text="💰 Valeur Stock" style="-fx-font-size: 12; -fx-text-fill: #1565c0;">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="totalValueLabel" text="0.00€" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1565c0;" />
+                    </VBox>
+                </HBox>
+
+                <!-- Graphiques -->
+                <HBox spacing="20" style="-fx-fill-height: true;">
+                    <!-- Top 10 Produits -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+                        <BarChart fx:id="stockChart" animated="true" prefHeight="300.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" />
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+
+                    <!-- Distribution par Unité -->
+                    <VBox style="-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-color: white; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+                        <BarChart fx:id="unitsChart" animated="true" prefHeight="300.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" />
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Pied de page -->
+    <bottom>
+        <HBox style="-fx-padding: 20; -fx-spacing: 10; -fx-background-color: white; -fx-border-color: #e0e0e0 #e0e0e0 #000000 #e0e0e0;">
+            <Button fx:id="refreshButton" text="🔄 Actualiser" style="-fx-font-size: 12; -fx-padding: 10 20;" HBox.hgrow="NEVER" />
+            <Button fx:id="exportButton" text="📥 Exporter en PDF" style="-fx-font-size: 12; -fx-padding: 10 20; -fx-background-color: #4CAF50; -fx-text-fill: white;" HBox.hgrow="NEVER" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="backButton" text="← Retour" style="-fx-font-size: 12; -fx-padding: 10 20;" HBox.hgrow="NEVER" />
+        </HBox>
+    </bottom>
+</BorderPane>
+
+
+
+
