@@ -121,6 +121,31 @@
                                    styleClass="feature-description" wrapText="true"/>
                             <Button text="Jouer" onAction="#handleGame" styleClass="hero-button"/>
                         </VBox>
+
+                        <VBox spacing="16.0"
+                              alignment="CENTER"
+                              styleClass="feature-card"
+                              prefWidth="220.0">
+
+                            <padding>
+                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                            </padding>
+
+                            <Label text="📰 News"
+                                   styleClass="feature-icon"/>
+
+                            <Label text="News Agricole"
+                                   styleClass="feature-title"/>
+
+                            <Label text="Suivez les dernières actualités agricoles en temps réel."
+                                   styleClass="feature-description"
+                                   wrapText="true"/>
+
+                            <Button text="Accéder"
+                                    onAction="#openNewsAgricole"
+                                    styleClass="hero-button"/>
+
+                        </VBox>
                     </HBox>
                 </VBox>
             </VBox>

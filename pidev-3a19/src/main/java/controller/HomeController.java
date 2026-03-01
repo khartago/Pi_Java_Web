@@ -60,7 +60,28 @@ public class HomeController {
     public void initialize() {
         System.out.println("Game Mode Loaded 🚀");
     }
+    @FXML
+    private void openNewsAgricole() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/news_agricole.fxml"));
 
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("News Agricole");
+
+            Scene scene = new Scene(root, 1000, 700); // 🔥 set size
+            stage.setScene(scene);
+
+            stage.setResizable(true);
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleGame(ActionEvent event) {
         try {

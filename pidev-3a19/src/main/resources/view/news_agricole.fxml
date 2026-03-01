@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.NewsAgricoleController">
+
+    <top>
+        <HBox alignment="CENTER" style="-fx-background-color:#1f4d2e; -fx-padding:20;">
+            <Label text="📰 Actualités Agricoles"
+                   style="-fx-text-fill:white; -fx-font-size:26px; -fx-font-weight:bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox fx:id="newsContainer"
+                  spacing="20"
+                  alignment="TOP_CENTER"
+                  style="-fx-padding:30;">
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
