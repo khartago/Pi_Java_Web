@@ -2,40 +2,65 @@ package Services;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class EmailService {
 
-    private final String sender = "tahajaballah07@gmail.com";
-    private final String password = "nphm ncyy cxlv kwtk";
+    private final String username;
+    private final String password;
 
-    public void sendPlantDeathMail(String plantName, int slotIndex) {
+    public EmailService() {
+        this.username = "tahajaballah07@gmail.com";
+        this.password = "nphm ncyy cxlv kwtk";
+    }
 
-        String host = "smtp.gmail.com";
+    public EmailService(String username, String appPassword) {
+        this.username = username;
+        this.password = appPassword;
+    }
 
+    private Session createSession() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        return Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+    }
 
-        Session session = Session.getInstance(props,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(sender, password);
-                    }
-                });
-
+    public void sendHtmlEmail(String to, String subject, String html, String fallbackText) {
         try {
+            Session session = createSession();
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username, "FARMTECH", StandardCharsets.UTF_8.name()));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
+            message.setSubject(subject, StandardCharsets.UTF_8.name());
+            Multipart multipart = new MimeMultipart("alternative");
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setText(fallbackText, StandardCharsets.UTF_8.name());
+            multipart.addBodyPart(textPart);
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(html, "text/html; charset=UTF-8");
+            multipart.addBodyPart(htmlPart);
+            message.setContent(multipart);
+            Transport.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur envoi email: " + e.getMessage(), e);
+        }
+    }
 
+    public void sendPlantDeathMail(String plantName, int slotIndex) {
+        try {
+            Session session = createSession();
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(sender));
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse("tahajaballah07@gmail.com")
-            );
-
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tahajaballah07@gmail.com"));
             message.setSubject("🌱 FARMTECH - Plant Alert");
 
             // ===== BEAUTIFUL HTML DESIGN =====

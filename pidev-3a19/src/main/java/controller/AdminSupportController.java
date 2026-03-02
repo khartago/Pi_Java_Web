@@ -2,8 +2,10 @@ package controller;
 
 import model.Diagnostique;
 import model.Probleme;
+import model.User;
 import Services.DiagnostiqueService;
 import Services.ProblemeService;
+import Services.UserService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,6 +20,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -38,13 +41,22 @@ public class AdminSupportController implements Initializable {
     private TableColumn<Probleme, String> typeColumn;
 
     @FXML
+    private TableColumn<Probleme, String> descriptionColumn;
+
+    @FXML
     private TableColumn<Probleme, String> graviteColumn;
 
     @FXML
     private TableColumn<Probleme, String> etatColumn;
 
     @FXML
+    private TableColumn<Probleme, String> assigneeColumn;
+
+    @FXML
     private TableColumn<Probleme, String> fermierColumn;
+
+    @FXML
+    private ComboBox<User> assignerCombo;
 
     @FXML
     private ComboBox<String> typeFilterCombo;
@@ -72,22 +84,44 @@ public class AdminSupportController implements Initializable {
 
     private ProblemeService problemeService = new ProblemeService();
     private DiagnostiqueService diagnostiqueService = new DiagnostiqueService();
+    private UserService userService = new UserService();
     private ObservableList<Probleme> filteredList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        descriptionColumn.setCellValueFactory(cellData -> {
+            Probleme p = cellData.getValue();
+            String desc = p != null ? p.getDescription() : null;
+            return new SimpleStringProperty(desc != null && !desc.isEmpty() ? desc : "—");
+        });
         graviteColumn.setCellValueFactory(new PropertyValueFactory<>("gravite"));
         etatColumn.setCellValueFactory(new PropertyValueFactory<>("etat"));
-        fermierColumn.setCellValueFactory(cellData ->
-            javafx.beans.binding.Bindings.createStringBinding(() -> "N/A"));
+        assigneeColumn.setCellValueFactory(cellData -> {
+            Probleme p = cellData.getValue();
+            if (p == null || p.getIdAdminAssignee() == null) return new SimpleStringProperty("—");
+            String nom = userService.getNomById(p.getIdAdminAssignee());
+            return new SimpleStringProperty(nom != null ? nom : "—");
+        });
+        fermierColumn.setCellValueFactory(cellData -> {
+            Probleme p = cellData.getValue();
+            if (p == null || p.getIdUtilisateur() == null) return new SimpleStringProperty("—");
+            String nom = userService.getNomById(p.getIdUtilisateur());
+            return new SimpleStringProperty(nom != null ? nom : "—");
+        });
+
+        assignerCombo.getItems().addAll(userService.getAdmins());
+        assignerCombo.setConverter(new javafx.util.StringConverter<User>() {
+            @Override public String toString(User u) { return u != null ? u.getNom() : ""; }
+            @Override public User fromString(String s) { return null; }
+        });
 
         typeFilterCombo.getItems().add("Tous");
         typeFilterCombo.setValue("Tous");
         graviteFilterCombo.getItems().addAll("Tous", "Faible", "Moyenne", "Élevée", "Critique");
         graviteFilterCombo.setValue("Tous");
-        etatFilterCombo.getItems().addAll("Tous", "EN_ATTENTE", "DIAGNOSTIQUE_DISPONIBLE");
+        etatFilterCombo.getItems().addAll("Tous", "EN_ATTENTE", "DIAGNOSTIQUE_DISPONIBLE", "REOUVERT", "CLOTURE");
         etatFilterCombo.setValue("Tous");
 
         triCombo.getItems().addAll("Date (plus récent)", "Date (plus ancien)", "Gravité", "Type");
@@ -184,6 +218,17 @@ public class AdminSupportController implements Initializable {
     }
 
     @FXML
+    private void handleAssigner() {
+        Probleme p = problemeTable.getSelectionModel().getSelectedItem();
+        User admin = assignerCombo.getValue();
+        if (p == null || admin == null) return;
+        problemeService.assignerProbleme(p.getId(), admin.getId());
+        p.setIdAdminAssignee(admin.getId());
+        applyFiltersAndSort();
+        assignerCombo.setValue(null);
+    }
+
+    @FXML
     private void handleResetFilters() {
         typeFilterCombo.setValue("Tous");
         graviteFilterCombo.setValue("Tous");
@@ -212,9 +257,15 @@ public class AdminSupportController implements Initializable {
             SupportDiagnosticFormController controller = loader.getController();
             controller.setProblemeId(selectedProbleme.getId());
 
-            Diagnostique existingDiagnostique = diagnostiqueService.afficherDiagnostiqueParProbleme(selectedProbleme.getId());
-            if (existingDiagnostique != null) {
-                controller.setDiagnostique(existingDiagnostique);
+            boolean isReouvert = "REOUVERT".equals(selectedProbleme.getEtat());
+            if (isReouvert) {
+                controller.setRevisionMode(true);
+                controller.setDiagnostiquesPrecedents(diagnostiqueService.getDiagnostiquesParProbleme(selectedProbleme.getId()));
+            } else {
+                Diagnostique existingDiagnostique = diagnostiqueService.afficherDiagnostiqueParProbleme(selectedProbleme.getId());
+                if (existingDiagnostique != null) {
+                    controller.setDiagnostique(existingDiagnostique);
+                }
             }
 
             Stage stage = new Stage();

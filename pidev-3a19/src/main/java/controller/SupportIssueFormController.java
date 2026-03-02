@@ -3,6 +3,7 @@ package controller;
 import model.Probleme;
 import model.User;
 import Services.ProblemeService;
+import Services.WeatherService;
 import Utils.ImageUploadHelper;
 import Utils.UserContext;
 import javafx.event.ActionEvent;
@@ -42,6 +43,12 @@ public class SupportIssueFormController {
     private ComboBox<String> graviteCombo;
 
     @FXML
+    private ComboBox<ProblemeService.PlantationOption> plantationCombo;
+
+    @FXML
+    private ComboBox<ProblemeService.ProduitOption> produitCombo;
+
+    @FXML
     private Button browsePhotosButton;
 
     @FXML
@@ -67,6 +74,12 @@ public class SupportIssueFormController {
         graviteCombo.setValue("Moyenne");
         applyMaxLength(typeField, MAX_TYPE_LENGTH);
         applyMaxLength(descriptionArea, MAX_DESCRIPTION_LENGTH);
+        if (plantationCombo != null) {
+            plantationCombo.getItems().addAll(problemeService.getPlantationsForCombo());
+        }
+        if (produitCombo != null) {
+            produitCombo.getItems().addAll(problemeService.getProduitsForCombo());
+        }
     }
 
     @FXML
@@ -202,6 +215,16 @@ public class SupportIssueFormController {
             if (currentUser != null) {
                 probleme.setIdUtilisateur(currentUser.getId());
             }
+            if (plantationCombo != null && plantationCombo.getValue() != null) {
+                probleme.setIdPlantation(plantationCombo.getValue().id);
+            }
+            if (produitCombo != null && produitCombo.getValue() != null) {
+                probleme.setIdProduit(produitCombo.getValue().id);
+            }
+            try {
+                String snapshot = new WeatherService().getWeatherSnapshotJson();
+                if (snapshot != null) probleme.setMeteoSnapshot(snapshot);
+            } catch (Exception ignored) { }
             int id = problemeService.ajouterProbleme(probleme);
 
             String photosValue = null;
@@ -213,8 +236,17 @@ public class SupportIssueFormController {
                     paths.add(relativePath);
                 }
                 photosValue = String.join(";", paths);
-                Probleme toUpdate = new Probleme(id, currentUser != null ? currentUser.getId() : null, type, description, gravite, now, "EN_ATTENTE", photosValue);
-                problemeService.modifierProbleme(toUpdate);
+                Probleme toUpdate = problemeService.getProblemeById(id);
+                if (toUpdate != null) {
+                    toUpdate.setPhotos(photosValue);
+                    if (plantationCombo != null && plantationCombo.getValue() != null) {
+                        toUpdate.setIdPlantation(plantationCombo.getValue().id);
+                    }
+                    if (produitCombo != null && produitCombo.getValue() != null) {
+                        toUpdate.setIdProduit(produitCombo.getValue().id);
+                    }
+                    problemeService.modifierProbleme(toUpdate);
+                }
             }
 
             Stage stage = getStage(event);

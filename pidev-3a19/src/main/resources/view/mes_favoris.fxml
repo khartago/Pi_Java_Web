@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MesFavorisController" spacing="0" styleClass="page-with-hero">
+    <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+        <Label text="Mes Favoris" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+        <Label text="Vos produits favoris en un coup d’œil" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+    </VBox>
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 12 20 12 20; -fx-background-color: white; -fx-border-width: 0 0 1 0; -fx-border-color: #E5EDE5;">
+        <Label fx:id="titleLabel" text="Mes Favoris" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Button fx:id="backButton" text="Retour au Marketplace" onAction="#handleBack" styleClass="secondary-button"/>
+        <Button fx:id="clearButton" text="Tout vider" onAction="#handleClearAll" styleClass="navbar-button"/>
+    </HBox>
+    <Label fx:id="emptyLabel" text="Aucun favori." visible="false" managed="true" style="-fx-padding: 20;"/>
+    <ScrollPane fitToWidth="true" styleClass="transparent-scroll">
+        <FlowPane fx:id="cardsPane" hgap="15" vgap="15" style="-fx-padding: 20;"/>
+    </ScrollPane>
+</VBox>

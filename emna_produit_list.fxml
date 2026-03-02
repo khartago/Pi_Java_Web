@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProduitController"
+            styleClass="root">
+
+    <!-- Barre d'en-tête -->
+    <top>
+        <VBox>
+            <!-- Header principal avec logo et titre -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
+                <ImageView fx:id="logoImage" fitHeight="35" fitWidth="35" preserveRatio="true">
+                    <image>
+                        <Image url="@/images/farmtech-logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="FARMTECH" styleClass="app-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Backoffice Admin" styleClass="header-section" />
+                <Label text="Accueil" styleClass="header-section" />
+                <Button text="Se déconnecter" styleClass="logout-button" />
+            </HBox>
+
+            <!-- Navigation avec tabs -->
+            <HBox spacing="0" styleClass="navigation-bar">
+                <Button text="Produits" styleClass="nav-tab, nav-tab-active" />
+                <Button text="Matériels" onAction="#handleVoirMateriels" styleClass="nav-tab" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Contenu central -->
+    <center>
+        <VBox spacing="15" styleClass="content-area">
+            <!-- Titre et boutons d'action -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Gestion des Produits" styleClass="page-title" />
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- FlowPane pour permettre le retour à la ligne si la fenêtre est petite (responsive) -->
+                <FlowPane hgap="10" vgap="10" alignment="CENTER_RIGHT" prefWrapLength="720">
+                    <Button text="📊 Statistiques" onAction="#handleOpenStatistics" styleClass="info-button" />
+                    <Button text="Assistant IA" onAction="#handleOpenAssistant" styleClass="info-button" />
+                    <Button text="Traçabilité" onAction="#handleTraceabilite" styleClass="secondary-button" />
+                    <Button text="Scanner QR" onAction="#handleScanQr" styleClass="secondary-button" />
+                    <Button text="Marketplace" onAction="#handleOpenMarketplace" styleClass="secondary-button" />
+                    <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+                    <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+                    <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+                    <Button text="Notifier expirations" onAction="#handleNotifierExpiration" styleClass="secondary-button" />
+                </FlowPane>
+            </HBox>
+
+            <!-- Tableau -->
+            <TableView fx:id="produitTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />
+                    <TableColumn fx:id="quantiteColumn" text="Quantité" prefWidth="150" />
+                    <TableColumn fx:id="uniteColumn" text="Unité" prefWidth="150" />
+                    <TableColumn fx:id="dateExpColumn" text="Date d'expiration" prefWidth="200" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+</BorderPane>

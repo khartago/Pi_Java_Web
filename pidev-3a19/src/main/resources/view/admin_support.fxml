@@ -10,7 +10,8 @@
             stylesheets="@farmtech-theme.css">
 
     <center>
-        <VBox spacing="15" styleClass="content-area">
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
+        <VBox spacing="15" styleClass="content-area" style="-fx-background-color: transparent;">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
             <Label text="Support — Problèmes &amp; diagnostics" styleClass="page-title"/>
             <VBox spacing="14">
@@ -32,6 +33,9 @@
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="Réinitialiser les filtres" onAction="#handleResetFilters" styleClass="secondary-button"/>
                     <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
+                    <Label text="Assigner à" styleClass="field-label"/>
+                    <ComboBox fx:id="assignerCombo" styleClass="modern-input" prefWidth="140" minWidth="120" promptText="Sélectionner admin"/>
+                    <Button text="Assigner" onAction="#handleAssigner" styleClass="secondary-button"/>
                     <Button fx:id="accepterDiagnosticButton" text="Accepter le diagnostic" onAction="#handleAccepterDiagnostic" styleClass="primary-button" visible="false"/>
                 </HBox>
             </VBox>
@@ -39,12 +43,15 @@
             <TableView fx:id="problemeTable" styleClass="table-view" prefHeight="280">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="45" minWidth="40"/>
-                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="220" minWidth="180"/>
+                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="160" minWidth="120"/>
+                    <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="280" minWidth="200"/>
                     <TableColumn fx:id="graviteColumn" text="Gravité" prefWidth="95" minWidth="80"/>
                     <TableColumn fx:id="etatColumn" text="État" prefWidth="115" minWidth="95"/>
+                    <TableColumn fx:id="assigneeColumn" text="Assigné à" prefWidth="100" minWidth="80"/>
                     <TableColumn fx:id="fermierColumn" text="Fermier" prefWidth="100" minWidth="80"/>
                 </columns>
             </TableView>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

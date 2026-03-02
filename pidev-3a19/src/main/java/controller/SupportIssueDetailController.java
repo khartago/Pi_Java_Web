@@ -9,10 +9,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.FileChooser;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +63,24 @@ public class SupportIssueDetailController {
     @FXML
     private Button exportPdfButton;
 
+    @FXML
+    private TitledPane feedbackPane;
+
+    @FXML
+    private TextArea feedbackCommentArea;
+
+    @FXML
+    private Button marquerResoluButton;
+
+    @FXML
+    private Button marquerNonResoluButton;
+
+    @FXML
+    private TitledPane meteoPane;
+
+    @FXML
+    private Label meteoLabel;
+
     private DiagnostiqueService diagnostiqueService = new DiagnostiqueService();
     private Probleme currentProbleme;
     private Diagnostique currentDiagnostique;
@@ -70,8 +93,8 @@ public class SupportIssueDetailController {
         dateLabel.setText(probleme.getDateDetection().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
         etatLabel.setText(probleme.getEtat());
 
-        // Pour le fermier : n'afficher que le diagnostic approuvé par l'admin
-        Diagnostique diagnostique = diagnostiqueService.afficherDiagnostiqueParProblemeApprouve(probleme.getId());
+        // Pour le fermier : n'afficher que le dernier diagnostic approuvé (révision active)
+        Diagnostique diagnostique = diagnostiqueService.getDiagnostiqueActif(probleme.getId());
         this.currentDiagnostique = diagnostique;
         if (diagnostique != null) {
             diagnosticStatusLabel.setText("Diagnostic disponible");
@@ -86,6 +109,27 @@ public class SupportIssueDetailController {
             solutionLabel.setText("-");
             resultatLabel.setText("-");
             medicamentLabel.setText("-");
+        }
+
+        // Afficher le feedback uniquement si diagnostic approuvé et pas encore de feedback
+        boolean showFeedback = diagnostique != null && diagnostique.isApprouve()
+                && (diagnostique.getFeedbackFermier() == null || diagnostique.getFeedbackFermier().isEmpty());
+        if (feedbackPane != null) {
+            feedbackPane.setVisible(showFeedback);
+            feedbackPane.setManaged(showFeedback);
+        }
+        if (feedbackCommentArea != null) feedbackCommentArea.clear();
+        if (marquerResoluButton != null) marquerResoluButton.setDisable(!showFeedback);
+        if (marquerNonResoluButton != null) marquerNonResoluButton.setDisable(!showFeedback);
+
+        String meteo = probleme.getMeteoSnapshot();
+        if (meteoPane != null && meteoLabel != null) {
+            boolean hasMeteo = meteo != null && !meteo.isEmpty();
+            meteoPane.setVisible(hasMeteo);
+            meteoPane.setManaged(hasMeteo);
+            if (hasMeteo) {
+                meteoLabel.setText(formatMeteoSnapshot(meteo));
+            }
         }
 
         photosFlowPane.getChildren().clear();
@@ -112,6 +156,50 @@ public class SupportIssueDetailController {
                     }
                 }
             }
+        }
+    }
+
+    @FXML
+    private void marquerResolu() {
+        doFeedback(DiagnostiqueService.FEEDBACK_RESOLU);
+    }
+
+    @FXML
+    private void marquerNonResolu() {
+        doFeedback(DiagnostiqueService.FEEDBACK_NON_RESOLU);
+    }
+
+    private void doFeedback(String resolu) {
+        if (currentDiagnostique == null) return;
+        String commentaire = feedbackCommentArea != null ? feedbackCommentArea.getText() : null;
+        if (commentaire != null) commentaire = commentaire.trim();
+        diagnostiqueService.enregistrerFeedback(currentDiagnostique.getId(), resolu, commentaire);
+        currentDiagnostique.setFeedbackFermier(resolu);
+        currentDiagnostique.setFeedbackCommentaire(commentaire);
+        currentDiagnostique.setDateFeedback(java.time.LocalDateTime.now());
+        if (currentProbleme != null) {
+            currentProbleme.setEtat("RESOLU".equals(resolu) ? "CLOTURE" : "REOUVERT");
+        }
+        if (feedbackPane != null) {
+            feedbackPane.setVisible(false);
+            feedbackPane.setManaged(false);
+        }
+        if (marquerResoluButton != null) marquerResoluButton.setDisable(true);
+        if (marquerNonResoluButton != null) marquerNonResoluButton.setDisable(true);
+        new Alert(Alert.AlertType.INFORMATION, "Merci pour votre retour.").showAndWait();
+    }
+
+    private String formatMeteoSnapshot(String json) {
+        try {
+            JsonObject o = new Gson().fromJson(json, JsonObject.class);
+            if (o == null) return json;
+            StringBuilder sb = new StringBuilder();
+            if (o.has("temp")) sb.append("Température: ").append(o.get("temp").getAsDouble()).append(" °C\n");
+            if (o.has("description")) sb.append("Conditions: ").append(o.get("description").getAsString()).append("\n");
+            if (o.has("humidity") && o.get("humidity").getAsInt() > 0) sb.append("Humidité: ").append(o.get("humidity").getAsInt()).append("%");
+            return sb.length() > 0 ? sb.toString() : json;
+        } catch (Exception e) {
+            return json;
         }
     }
 

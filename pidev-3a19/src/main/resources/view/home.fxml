@@ -111,6 +111,46 @@
                                    styleClass="feature-description" wrapText="true"/>
                             <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                            </padding>
+                            <Label text="🎮 Game Mode" styleClass="feature-icon"/>
+                            <Label text="Plant Simulation" styleClass="feature-title"/>
+                            <Label text="Gérez vos plantations comme un jeu interactif."
+                                   styleClass="feature-description" wrapText="true"/>
+                            <Button text="Jouer" onAction="#handleGame" styleClass="hero-button"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                            </padding>
+                            <Label text="📰 News" styleClass="feature-icon"/>
+                            <Label text="News Agricole" styleClass="feature-title"/>
+                            <Label text="Suivez les dernières actualités agricoles en temps réel."
+                                   styleClass="feature-description" wrapText="true"/>
+                            <Button text="Accéder" onAction="#openNewsAgricole" styleClass="hero-button"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                            </padding>
+                            <Label text="🛒 Marketplace" styleClass="feature-icon"/>
+                            <Label text="Catalogue produits" styleClass="feature-title"/>
+                            <Label text="Parcourez le catalogue produits (connexion requise)."
+                                   styleClass="feature-description" wrapText="true"/>
+                            <Button text="Voir le catalogue" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                            </padding>
+                            <Label text="🤖 Assistant" styleClass="feature-icon"/>
+                            <Label text="Assistant IA" styleClass="feature-title"/>
+                            <Label text="Recherche et infos produits (connexion requise)."
+                                   styleClass="feature-description" wrapText="true"/>
+                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                        </VBox>
                     </HBox>
                 </VBox>
             </VBox>

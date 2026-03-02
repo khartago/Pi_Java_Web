@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MarketplaceDetailController"
+            stylesheets="@farmtech-theme.css"
+            fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+            styleClass="transparent-scroll">
+<VBox spacing="12" style="-fx-background-color: transparent;">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    <Label text="Détails produit" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label fx:id="nomLabel" text="-"/>
+    <Label fx:id="stockLabel" text="-"/>
+    <Label fx:id="uniteLabel" text="-"/>
+    <Label fx:id="expLabel" text="-"/>
+    <Label fx:id="badgeLabel" text=""/>
+    <Button text="Retour au Marketplace" onAction="#handleBack"/>
+</VBox>
+</ScrollPane>

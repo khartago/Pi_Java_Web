@@ -17,8 +17,27 @@
                 </padding>
                 <Label fx:id="titleLabel" text="Diagnostic du problème" styleClass="title-label"/>
 
+                <TitledPane fx:id="problemeInfoPane" text="Problème signalé" expanded="true">
+                    <VBox spacing="6">
+                        <Label fx:id="problemeTypeLabel" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+                        <Label fx:id="problemeDescriptionLabel" wrapText="true" style="-fx-text-fill: #374151; -fx-font-size: 12px; -fx-padding: 4 0;"/>
+                    </VBox>
+                </TitledPane>
+
                 <Label text="Photos du problème" styleClass="field-label"/>
                 <FlowPane fx:id="photosFlowPane" hgap="10.0" vgap="10.0" style="-fx-padding: 8 0; -fx-border-color: #E5EDE5; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-background-color: #FAFBFA; -fx-padding: 10;"/>
+
+                <TitledPane fx:id="meteoPane" text="Météo au moment de la création" collapsible="true" expanded="false">
+                    <Label fx:id="meteoLabel" wrapText="true" style="-fx-padding: 8;"/>
+                </TitledPane>
+
+                <TitledPane fx:id="revisionsPane" text="Diagnostiques précédents (référence)" collapsible="true" expanded="false">
+                    <VBox fx:id="revisionsContent" spacing="8"/>
+                </TitledPane>
+
+                <TitledPane fx:id="similairesPane" text="Problèmes similaires résolus" collapsible="true" expanded="false">
+                    <VBox fx:id="similairesContent" spacing="8"/>
+                </TitledPane>
 
                 <Label text="Cause" styleClass="field-label"/>
                 <TextArea fx:id="causeArea" wrapText="true" prefRowCount="5" prefWidth="520" styleClass="modern-input diagnostic-text-area"/>

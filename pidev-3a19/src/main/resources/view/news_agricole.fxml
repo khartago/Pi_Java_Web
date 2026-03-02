@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.NewsAgricoleController">
+            fx:controller="controller.NewsAgricoleController"
+            stylesheets="@farmtech-theme.css">
 
     <top>
-        <HBox alignment="CENTER" style="-fx-background-color:#1f4d2e; -fx-padding:20;">
-            <Label text="📰 Actualités Agricoles"
-                   style="-fx-text-fill:white; -fx-font-size:26px; -fx-font-weight:bold;"/>
-        </HBox>
+        <VBox styleClass="page-with-hero">
+            <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+                <Label text="Actualités agricoles" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+                <Label text="Suivez les dernières actualités et conseils" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+            </VBox>
+        </VBox>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true">
+        <ScrollPane fitToWidth="true" styleClass="transparent-scroll">
             <VBox fx:id="newsContainer"
                   spacing="20"
                   alignment="TOP_CENTER"
-                  style="-fx-padding:30;">
-            </VBox>
+                  style="-fx-padding: 24;"/>
         </ScrollPane>
     </center>
 

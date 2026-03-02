@@ -4,12 +4,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8.0.171"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.AdminUsersController"
-      stylesheets="@farmtech-theme.css"
-      styleClass="content-area"
-      spacing="15">
+<ScrollPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AdminUsersController"
+            stylesheets="@farmtech-theme.css"
+            fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+            styleClass="transparent-scroll">
+<VBox spacing="15" styleClass="content-area" style="-fx-background-color: transparent;">
     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
@@ -29,3 +30,4 @@
         </columns>
     </TableView>
 </VBox>
+</ScrollPane>

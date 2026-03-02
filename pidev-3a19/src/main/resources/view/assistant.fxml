@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AssistantController"
+            stylesheets="@farmtech-theme.css"
+            fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+            styleClass="transparent-scroll">
+<VBox spacing="0" styleClass="page-with-hero" style="-fx-background-color: transparent;">
+    <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+        <Label text="Assistant" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+        <Label text="Recherchez un produit par nom ou par image" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+    </VBox>
+    <VBox spacing="12" style="-fx-padding: 20;">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <TextField fx:id="nomProduitField" promptText="Nom du produit" prefWidth="200"/>
+            <Button text="Rechercher par nom" onAction="#handleSearchByName" styleClass="primary-button"/>
+            <Button text="Retour" onAction="#handleBack" styleClass="secondary-button"/>
+        </HBox>
+    <HBox spacing="15" style="-fx-padding: 8 0 0 0;">
+        <VBox spacing="8">
+            <Label text="Recherche par image"/>
+            <Label fx:id="selectedImageLabel" text="Aucune image"/>
+            <ImageView fx:id="selectedImagePreview" fitWidth="120" fitHeight="120" preserveRatio="true"/>
+            <Button text="Choisir image" onAction="#handleChooseImage"/>
+            <Button text="Analyser image" onAction="#handleAnalyzeImage"/>
+        </VBox>
+        <TableView fx:id="resultsTable" prefWidth="320" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="resIdCol" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="resNomCol" text="Nom" prefWidth="120"/>
+                <TableColumn fx:id="resStockCol" text="Stock" prefWidth="70"/>
+                <TableColumn fx:id="resExpCol" text="Expiration" prefWidth="80"/>
+            </columns>
+        </TableView>
+        <VBox spacing="6">
+            <Label fx:id="detailTitleLabel" text="Fiche produit"/>
+            <ImageView fx:id="detailImageView" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+            <Label fx:id="detailIdLabel" text="-"/>
+            <Label fx:id="detailNomLabel" text="-"/>
+            <Label fx:id="detailStockLabel" text="-"/>
+            <Label fx:id="detailUniteLabel" text="-"/>
+            <Label fx:id="detailExpLabel" text="-"/>
+            <Label fx:id="detailImagePathLabel" text="-"/>
+            <Label fx:id="matchInfoLabel" text="-" style="-fx-font-size: 11px;"/>
+            <Label text="Matériels associés"/>
+            <TableView fx:id="materielTable" prefHeight="120">
+                <columns>
+                    <TableColumn fx:id="matIdCol" text="ID" prefWidth="40"/>
+                    <TableColumn fx:id="matNomCol" text="Nom" prefWidth="80"/>
+                    <TableColumn fx:id="matEtatCol" text="État" prefWidth="60"/>
+                    <TableColumn fx:id="matDateCol" text="Date" prefWidth="70"/>
+                    <TableColumn fx:id="matCoutCol" text="Coût" prefWidth="50"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+    </VBox>
+</VBox>
+</ScrollPane>

@@ -57,4 +57,32 @@ public class HomeController {
         }
     }
 
+    @FXML
+    private void handleGame(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root, 1200, 800);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    @FXML
+    private void openNewsAgricole() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/news_agricole.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("News Agricole");
+            stage.setScene(new Scene(root, 1000, 700));
+            stage.setResizable(true);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

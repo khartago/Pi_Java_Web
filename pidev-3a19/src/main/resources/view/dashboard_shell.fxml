@@ -13,28 +13,39 @@
 
     <top>
         <HBox styleClass="top-toolbar" alignment="CENTER_LEFT" spacing="16">
-            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <padding><Insets top="12" right="24" bottom="12" left="16"/></padding>
+            <Button fx:id="btnCollapseSidebar" text="≡" styleClass="sidebar-toggle" onAction="#toggleSidebar" style="-fx-font-size: 18px; -fx-min-width: 44; -fx-min-height: 36; -fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;"/>
             <Label fx:id="headerTitle" text="Backoffice Admin" styleClass="toolbar-title"/>
         </HBox>
     </top>
 
     <left>
-        <VBox fx:id="sidebar" styleClass="sidebar" spacing="0" prefWidth="250" minWidth="250" maxWidth="250">
-            <padding><Insets top="20" right="16" bottom="20" left="16"/></padding>
-            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="sidebar-brand">
-                <ImageView fitHeight="36" fitWidth="36" preserveRatio="true">
+        <VBox fx:id="sidebar" styleClass="sidebar" spacing="0" prefWidth="220" minWidth="56" maxWidth="220">
+            <padding><Insets top="12" right="12" bottom="20" left="12"/></padding>
+            <HBox fx:id="sidebarHeader" spacing="8" alignment="CENTER_LEFT" styleClass="sidebar-brand">
+                <ImageView fx:id="sidebarLogo" fitHeight="32" fitWidth="32" preserveRatio="true">
                     <image><Image url="@farmtech-logo.png"/></image>
                 </ImageView>
-                <Label text="FARMTECH" styleClass="navbar-brand"/>
+                <Label fx:id="sidebarBrandLabel" text="FARMTECH" styleClass="navbar-brand"/>
             </HBox>
             <Region VBox.vgrow="ALWAYS"/>
-            <Label text="Menu" styleClass="section-title" style="-fx-padding: 16 0 8 0;"/>
+            <VBox fx:id="sidebarContent" spacing="0">
+                <Label text="Menu" styleClass="section-title" style="-fx-padding: 16 0 8 0;"/>
             <Button fx:id="btnUtilisateurs" text="Utilisateurs" onAction="#showUtilisateurs" styleClass="sidebar-button" maxWidth="Infinity"/>
-            <Button fx:id="btnSupport" text="Problèmes &amp; diagnostics" onAction="#showSupport" styleClass="sidebar-button" maxWidth="Infinity" wrapText="true"/>
+            <Button fx:id="btnSupport" text="Problèmes &amp; Diagnostics" onAction="#showSupport" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnDiagnosticAnalytics" text="Statistiques diagnostic" onAction="#showDiagnosticAnalytics" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnSupportFarmer" text="Mes problèmes" onAction="#showSupportFarmer" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnProduits" text="Produits" onAction="#showProduits" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnMateriels" text="Matériels" onAction="#showMateriels" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnProduction" text="Production" onAction="#showProduction" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnGame" text="Jeu plantation" onAction="#showGame" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnNews" text="Actualités" onAction="#showNews" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnMarketplace" text="Marketplace" onAction="#showMarketplace" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnMesFavoris" text="Mes Favoris" onAction="#showMesFavoris" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnAssistant" text="Assistant IA" onAction="#showAssistant" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnQrScan" text="QR Scan" onAction="#showQrScan" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnStatistics" text="Statistiques" onAction="#showStatistics" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnTraceabilite" text="Traçabilité" onAction="#showTraceabilite" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Region VBox.vgrow="ALWAYS"/>
             <VBox spacing="4" style="-fx-padding: 12 0 12 0;">
                 <Label text="Météo" styleClass="section-title" style="-fx-padding: 0 0 4 0;"/>
@@ -43,6 +54,7 @@
             </VBox>
             <Separator/>
             <Button text="Déconnexion" onAction="#logout" styleClass="navbar-button" maxWidth="Infinity" style="-fx-margin: 8 0 0 0;"/>
+            </VBox>
         </VBox>
     </left>
 

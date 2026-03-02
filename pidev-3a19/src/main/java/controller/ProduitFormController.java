@@ -5,32 +5,32 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Produit;
 import model.ProduitDAO;
+import model.ProduitHistorique;
+import model.ProduitHistoriqueDAO;
+import Services.QrCodeService;
 
-import java.time.LocalDate;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
-/**
- * Controller for the product form. Handles both creation and update of
- * {@link Produit} instances. The DAO is injected by the caller.
- */
 public class ProduitFormController {
-    @FXML
-    private TextField nomField;
-    @FXML
-    private TextField quantiteField;
-    @FXML
-    private TextField uniteField;
-    @FXML
-    private DatePicker dateExpirationPicker;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button cancelButton;
+
+    @FXML private TextField nomField;
+    @FXML private TextField quantiteField;
+    @FXML private TextField uniteField;
+    @FXML private DatePicker dateExpirationPicker;
+    @FXML private TextField imagePathField;
+
+    @FXML private Button saveButton;
+    @FXML private Button cancelButton;
 
     private ProduitDAO produitDAO;
     private Produit produit;
+    private final ProduitHistoriqueDAO historiqueDAO = new ProduitHistoriqueDAO();
 
     public void setProduitDAO(ProduitDAO dao) {
         this.produitDAO = dao;
@@ -38,13 +38,19 @@ public class ProduitFormController {
 
     public void setProduit(Produit produit) {
         this.produit = (produit != null) ? produit : new Produit();
+
         if (produit != null) {
             nomField.setText(produit.getNom());
             quantiteField.setText(String.valueOf(produit.getQuantite()));
             uniteField.setText(produit.getUnite());
+
             if (produit.getDateExpiration() != null) {
                 dateExpirationPicker.setValue(produit.getDateExpiration());
             }
+
+            imagePathField.setText(produit.getImagePath());
+        } else {
+            imagePathField.clear();
         }
     }
 
@@ -52,13 +58,19 @@ public class ProduitFormController {
     private void handleSave() {
         if (!validateInput()) return;
 
+        boolean isNew = (produit.getIdProduit() == 0);
+        Integer quantiteAvant = isNew ? null : produit.getQuantite();
+
         produit.setNom(nomField.getText().trim());
         produit.setQuantite(Integer.parseInt(quantiteField.getText().trim()));
         produit.setUnite(uniteField.getText().trim());
         produit.setDateExpiration(dateExpirationPicker.getValue());
 
-        boolean success = (produit.getIdProduit() == 0) ?
-                produitDAO.insert(produit) : produitDAO.update(produit);
+        produit.setImagePath(imagePathField.getText() == null ? null : imagePathField.getText().trim());
+
+        boolean success = isNew
+                ? produitDAO.insert(produit)
+                : produitDAO.update(produit);
 
         if (!success) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -66,9 +78,25 @@ public class ProduitFormController {
             alert.setHeaderText("Impossible d'enregistrer le produit");
             alert.setContentText("Une erreur s'est produite lors de l'enregistrement.");
             alert.showAndWait();
-        } else {
-            closeWindow();
+            return;
         }
+
+        try {
+            Path qrPath = QrCodeService.generateProduitQr(produit.getIdProduit());
+            System.out.println("QR code généré pour le produit " + produit.getIdProduit() + " : " + qrPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ProduitHistorique h = new ProduitHistorique();
+        h.setIdProduit(produit.getIdProduit());
+        h.setTypeEvenement(isNew ? "CREATION" : "MISE_A_JOUR");
+        h.setQuantiteAvant(quantiteAvant);
+        h.setQuantiteApres(produit.getQuantite());
+        h.setCommentaire(isNew ? "Création du produit" : "Mise à jour du produit");
+        historiqueDAO.insertEvent(h);
+
+        closeWindow();
     }
 
     @FXML
@@ -76,10 +104,23 @@ public class ProduitFormController {
         closeWindow();
     }
 
+    @FXML
+    private void handleChooseImage() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Choisir une image");
+        fc.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File file = fc.showOpenDialog(saveButton.getScene().getWindow());
+        if (file != null) {
+            imagePathField.setText(file.getAbsolutePath());
+        }
+    }
+
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
 
-        // ====== Nom ======
         String nom = nomField.getText();
         if (nom == null || nom.trim().isEmpty()) {
             errors.append("- Le nom du produit est requis.\n");
@@ -93,7 +134,6 @@ public class ProduitFormController {
             }
         }
 
-        // ====== Quantité ======
         String quantiteText = quantiteField.getText();
         if (quantiteText == null || quantiteText.trim().isEmpty()) {
             errors.append("- La quantité est requise.\n");
@@ -106,10 +146,22 @@ public class ProduitFormController {
             }
         }
 
-        // ====== Unité ======
         String unite = uniteField.getText();
         if (unite == null || unite.trim().isEmpty()) {
             errors.append("- L'unité est requise.\n");
+        } else {
+            unite = unite.trim().toLowerCase();
+            if (!(unite.equals("kg") || unite.equals("l") || unite.equals("piece"))) {
+                errors.append("- L'unité doit être : kg, l ou piece uniquement.\n");
+            }
+        }
+
+        String img = imagePathField.getText();
+        if (img != null && !img.trim().isEmpty()) {
+            String lower = img.trim().toLowerCase();
+            if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg"))) {
+                errors.append("- L'image doit être au format png/jpg/jpeg.\n");
+            }
         }
 
         if (errors.length() > 0) {

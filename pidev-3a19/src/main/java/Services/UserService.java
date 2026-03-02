@@ -124,6 +124,32 @@ public class UserService implements IUserService {
         return null;
     }
 
+    /** Retourne les utilisateurs avec role ADMIN. */
+    public List<User> getAdmins() {
+        List<User> list = new ArrayList<>();
+        String req = "SELECT * FROM utilisateur WHERE role = 'ADMIN' ORDER BY nom";
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(req)) {
+            while (rs.next()) {
+                list.add(mapRowToUser(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public String getNomById(int id) {
+        String req = "SELECT nom FROM utilisateur WHERE id = ?";
+        try (PreparedStatement ste = con.prepareStatement(req)) {
+            ste.setInt(1, id);
+            ResultSet rs = ste.executeQuery();
+            if (rs.next()) return rs.getString("nom");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
     private User mapRowToUser(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String nom = rs.getString("nom");

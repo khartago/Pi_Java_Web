@@ -3,9 +3,11 @@ package controller;
 import model.Diagnostique;
 import model.DiagnosticSuggestion;
 import model.Probleme;
+import model.User;
 import Services.DiagnostiqueService;
 import Services.DiagnosticAIService;
 import Services.ProblemeService;
+import Utils.UserContext;
 import Utils.ImageUploadHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -16,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -24,12 +27,23 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SupportDiagnosticFormController {
 
     @FXML
     private Label titleLabel;
+
+    @FXML
+    private TitledPane problemeInfoPane;
+
+    @FXML
+    private Label problemeTypeLabel;
+
+    @FXML
+    private Label problemeDescriptionLabel;
 
     @FXML
     private TextArea causeArea;
@@ -58,11 +72,31 @@ public class SupportDiagnosticFormController {
     @FXML
     private FlowPane photosFlowPane;
 
+    @FXML
+    private TitledPane meteoPane;
+
+    @FXML
+    private Label meteoLabel;
+
+    @FXML
+    private TitledPane revisionsPane;
+
+    @FXML
+    private javafx.scene.layout.VBox revisionsContent;
+
+    @FXML
+    private TitledPane similairesPane;
+
+    @FXML
+    private javafx.scene.layout.VBox similairesContent;
+
     private DiagnostiqueService diagnostiqueService = new DiagnostiqueService();
     private ProblemeService problemeService = new ProblemeService();
     private DiagnosticAIService diagnosticAIService = new DiagnosticAIService();
     private int problemeId = -1;
     private Diagnostique currentDiagnostique = null;
+    private boolean revisionMode = false;
+    private List<Diagnostique> diagnostiquesPrecedents = null;
 
     private static final int MAX_CAUSE_SOLUTION_LENGTH = 2000;
 
@@ -83,7 +117,10 @@ public class SupportDiagnosticFormController {
 
     public void setProblemeId(int id) {
         this.problemeId = id;
+        refreshProblemeInfo();
         refreshPhotos();
+        refreshMeteo();
+        refreshSimilaires();
     }
 
     public void setDiagnostique(Diagnostique diagnostique) {
@@ -94,7 +131,117 @@ public class SupportDiagnosticFormController {
         solutionArea.setText(diagnostique.getSolutionProposee());
         medicamentArea.setText(diagnostique.getMedicament() != null ? diagnostique.getMedicament() : "");
         resultatCombo.setValue(diagnostique.getResultat());
+        refreshProblemeInfo();
         refreshPhotos();
+        refreshMeteo();
+        refreshSimilaires();
+    }
+
+    public void setRevisionMode(boolean revisionMode) {
+        this.revisionMode = revisionMode;
+        if (titleLabel != null) {
+            titleLabel.setText(revisionMode ? "Créer révision du diagnostic" : "Diagnostic du problème");
+        }
+        refreshRevisionsPane();
+    }
+
+    public void setDiagnostiquesPrecedents(List<Diagnostique> list) {
+        this.diagnostiquesPrecedents = list;
+        refreshRevisionsPane();
+    }
+
+    private void refreshProblemeInfo() {
+        if (problemeInfoPane == null || problemeTypeLabel == null || problemeDescriptionLabel == null) return;
+        if (problemeId == -1) return;
+        Probleme p = problemeService.getProblemeById(problemeId);
+        if (p == null) {
+            problemeInfoPane.setVisible(false);
+            problemeInfoPane.setManaged(false);
+            return;
+        }
+        problemeInfoPane.setVisible(true);
+        problemeInfoPane.setManaged(true);
+        problemeTypeLabel.setText("Type: " + (p.getType() != null ? p.getType() : "—"));
+        problemeDescriptionLabel.setText(p.getDescription() != null && !p.getDescription().isEmpty()
+                ? p.getDescription() : "Aucune description fournie.");
+    }
+
+    private void refreshRevisionsPane() {
+        if (revisionsPane == null || revisionsContent == null) return;
+        revisionsPane.setVisible(revisionMode && diagnostiquesPrecedents != null && !diagnostiquesPrecedents.isEmpty());
+        revisionsPane.setManaged(revisionsPane.isVisible());
+        revisionsContent.getChildren().clear();
+        if (diagnostiquesPrecedents == null) return;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        for (Diagnostique d : diagnostiquesPrecedents) {
+            Label label = new Label(
+                "Révision " + d.getNumRevision() + " - " + d.getDateDiagnostique().format(fmt)
+                + (d.isApprouve() ? " (approuvé)" : "")
+                + "\nCause: " + (d.getCause() != null ? d.getCause() : "-")
+                + "\nSolution: " + (d.getSolutionProposee() != null ? d.getSolutionProposee() : "-")
+            );
+            label.setWrapText(true);
+            label.setStyle("-fx-padding: 8; -fx-background-color: #F3F4F6; -fx-background-radius: 6; -fx-font-size: 12px;");
+            label.setMaxWidth(Double.MAX_VALUE);
+            revisionsContent.getChildren().add(label);
+        }
+    }
+
+    private void refreshMeteo() {
+        if (meteoPane == null || meteoLabel == null) return;
+        if (problemeId == -1) return;
+        Probleme p = problemeService.getProblemeById(problemeId);
+        String meteo = p != null ? p.getMeteoSnapshot() : null;
+        boolean hasMeteo = meteo != null && !meteo.isEmpty();
+        meteoPane.setVisible(hasMeteo);
+        meteoPane.setManaged(hasMeteo);
+        if (hasMeteo) {
+            try {
+                com.google.gson.JsonObject o = new com.google.gson.Gson().fromJson(meteo, com.google.gson.JsonObject.class);
+                if (o != null) {
+                    StringBuilder sb = new StringBuilder();
+                    if (o.has("temp")) sb.append("Température: ").append(o.get("temp").getAsDouble()).append(" °C\n");
+                    if (o.has("description")) sb.append("Conditions: ").append(o.get("description").getAsString()).append("\n");
+                    if (o.has("humidity") && o.get("humidity").getAsInt() > 0) sb.append("Humidité: ").append(o.get("humidity").getAsInt()).append("%");
+                    meteoLabel.setText(sb.length() > 0 ? sb.toString() : meteo);
+                } else {
+                    meteoLabel.setText(meteo);
+                }
+            } catch (Exception e) {
+                meteoLabel.setText(meteo);
+            }
+        }
+    }
+
+    private void refreshSimilaires() {
+        if (similairesPane == null || similairesContent == null) return;
+        if (problemeId == -1) return;
+        Probleme p = problemeService.getProblemeById(problemeId);
+        if (p == null || p.getType() == null) return;
+        List<Diagnostique> similaires = diagnostiqueService.getDiagnostiquesSimilaires(p.getType(), problemeId, 5);
+        similairesPane.setVisible(!similaires.isEmpty());
+        similairesPane.setManaged(!similaires.isEmpty());
+        similairesContent.getChildren().clear();
+        for (Diagnostique d : similaires) {
+            javafx.scene.control.Button copyBtn = new javafx.scene.control.Button("Copier");
+            copyBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand;");
+            javafx.scene.control.Label label = new javafx.scene.control.Label(
+                "Cause: " + (d.getCause() != null ? d.getCause() : "-") + "\n" +
+                "Solution: " + (d.getSolutionProposee() != null ? d.getSolutionProposee() : "-")
+            );
+            label.setWrapText(true);
+            label.setStyle("-fx-padding: 8; -fx-background-color: #F3F4F6; -fx-background-radius: 6; -fx-font-size: 12px;");
+            label.setMaxWidth(Double.MAX_VALUE);
+            copyBtn.setOnAction(e -> {
+                causeArea.setText(d.getCause() != null ? d.getCause() : "");
+                solutionArea.setText(d.getSolutionProposee() != null ? d.getSolutionProposee() : "");
+                medicamentArea.setText(d.getMedicament() != null ? d.getMedicament() : "");
+            });
+            javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(4);
+            card.getChildren().addAll(label, copyBtn);
+            card.setStyle("-fx-padding: 8; -fx-border-color: #E5E7EB; -fx-border-width: 1px; -fx-border-radius: 6;");
+            similairesContent.getChildren().add(card);
+        }
     }
 
     /** Affiche les photos du problème dans le formulaire (pour l'admin). */
@@ -201,7 +348,10 @@ public class SupportDiagnosticFormController {
         }
 
         try {
-            if (currentDiagnostique == null) {
+            User currentUser = UserContext.getCurrentUser();
+            Integer adminId = (currentUser != null && "ADMIN".equals(currentUser.getRole())) ? currentUser.getId() : null;
+
+            if (revisionMode) {
                 Diagnostique newDiagnostique = new Diagnostique(
                         problemeId,
                         cause,
@@ -210,6 +360,18 @@ public class SupportDiagnosticFormController {
                         resultat,
                         medicament.isEmpty() ? null : medicament
                 );
+                if (adminId != null) newDiagnostique.setIdAdminDiagnostiqueur(adminId);
+                diagnostiqueService.creerRevision(problemeId, newDiagnostique);
+            } else if (currentDiagnostique == null) {
+                Diagnostique newDiagnostique = new Diagnostique(
+                        problemeId,
+                        cause,
+                        solution,
+                        LocalDateTime.now(),
+                        resultat,
+                        medicament.isEmpty() ? null : medicament
+                );
+                if (adminId != null) newDiagnostique.setIdAdminDiagnostiqueur(adminId);
                 diagnostiqueService.ajouterDiagnostique(newDiagnostique);
             } else {
                 currentDiagnostique.setCause(cause);
@@ -217,6 +379,7 @@ public class SupportDiagnosticFormController {
                 currentDiagnostique.setMedicament(medicament.isEmpty() ? null : medicament);
                 currentDiagnostique.setResultat(resultat);
                 currentDiagnostique.setDateDiagnostique(LocalDateTime.now());
+                if (adminId != null) currentDiagnostique.setIdAdminDiagnostiqueur(adminId);
                 diagnostiqueService.modifierDiagnostique(currentDiagnostique);
             }
 

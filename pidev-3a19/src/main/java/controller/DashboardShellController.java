@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ import model.WeatherInfo;
 import Services.WeatherService;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -29,14 +31,30 @@ public class DashboardShellController {
 
     @FXML private StackPane contentArea;
     @FXML private Label headerTitle;
+    @FXML private VBox sidebar;
+    @FXML private VBox sidebarContent;
+    @FXML private HBox sidebarHeader;
+    @FXML private Label sidebarBrandLabel;
+    @FXML private Button btnCollapseSidebar;
     @FXML private Button btnUtilisateurs;
     @FXML private Button btnSupport;
+    @FXML private Button btnDiagnosticAnalytics;
     @FXML private Button btnSupportFarmer;
     @FXML private Button btnProduits;
     @FXML private Button btnMateriels;
     @FXML private Button btnProduction;
+    @FXML private Button btnGame;
+    @FXML private Button btnNews;
+    @FXML private Button btnMarketplace;
+    @FXML private Button btnMesFavoris;
+    @FXML private Button btnAssistant;
+    @FXML private Button btnQrScan;
+    @FXML private Button btnStatistics;
+    @FXML private Button btnTraceabilite;
     @FXML private Label weatherTempLabel;
     @FXML private Label weatherDescLabel;
+
+    public static Locale currentLocale = new Locale("fr");
 
     private User user;
     private Node adminUsersContent;
@@ -59,14 +77,33 @@ public class DashboardShellController {
         btnUtilisateurs.setManaged(isAdmin);
         btnSupport.setVisible(isAdmin);
         btnSupport.setManaged(isAdmin);
+        btnDiagnosticAnalytics.setVisible(isAdmin);
+        btnDiagnosticAnalytics.setManaged(isAdmin);
         btnSupportFarmer.setVisible(!isAdmin);
         btnSupportFarmer.setManaged(!isAdmin);
         btnProduits.setVisible(isAdmin);
         btnProduits.setManaged(isAdmin);
         btnMateriels.setVisible(isAdmin);
         btnMateriels.setManaged(isAdmin);
-        btnProduction.setVisible(!isAdmin);
-        btnProduction.setManaged(!isAdmin);
+        btnProduction.setVisible(isAdmin);
+        btnProduction.setManaged(isAdmin);
+        btnGame.setVisible(!isAdmin);
+        btnGame.setManaged(!isAdmin);
+        btnNews.setVisible(true);
+        btnNews.setManaged(true);
+        // Farmer-only: Marketplace, Favoris, Assistant, QR, Statistics, Traceabilité (not in backoffice)
+        btnMarketplace.setVisible(!isAdmin);
+        btnMarketplace.setManaged(!isAdmin);
+        btnMesFavoris.setVisible(!isAdmin);
+        btnMesFavoris.setManaged(!isAdmin);
+        btnAssistant.setVisible(!isAdmin);
+        btnAssistant.setManaged(!isAdmin);
+        btnQrScan.setVisible(!isAdmin);
+        btnQrScan.setManaged(!isAdmin);
+        btnStatistics.setVisible(!isAdmin);
+        btnStatistics.setManaged(!isAdmin);
+        btnTraceabilite.setVisible(!isAdmin);
+        btnTraceabilite.setManaged(!isAdmin);
 
         loadWeatherAsync();
 
@@ -141,6 +178,16 @@ public class DashboardShellController {
     }
 
     @FXML
+    private void showDiagnosticAnalytics() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/diagnostic_analytics.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void showSupportFarmer() {
         try {
             setContent(getFarmerContent());
@@ -182,10 +229,133 @@ public class DashboardShellController {
     @FXML
     private void showProduction() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/Production.fxml"));
+            java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("translation.messages", currentLocale);
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/view/Production.fxml"), bundle);
+            Parent root = loader.load();
             setContent(root);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showGame() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+            Stage gameStage = new Stage();
+            gameStage.setScene(new Scene(root, 1200, 800));
+            gameStage.setTitle("FARMTECH - Jeu plantation");
+            gameStage.setResizable(true);
+            gameStage.centerOnScreen();
+            gameStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showNews() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/news_agricole.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showMarketplace() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/marketplace.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showMesFavoris() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/mes_favoris.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showAssistant() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/assistant.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showQrScan() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/qr_scan.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showStatistics() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/statistiques.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showTraceabilite() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/traceabilite.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean sidebarCollapsed = false;
+
+    @FXML
+    private void toggleSidebar() {
+        sidebarCollapsed = !sidebarCollapsed;
+        if (sidebar != null) {
+            if (sidebarCollapsed) {
+                sidebar.setPrefWidth(56);
+                sidebar.setMinWidth(56);
+                sidebar.setMaxWidth(56);
+                if (sidebarContent != null) {
+                    sidebarContent.setVisible(false);
+                    sidebarContent.setManaged(false);
+                }
+                if (sidebarBrandLabel != null) {
+                    sidebarBrandLabel.setVisible(false);
+                    sidebarBrandLabel.setManaged(false);
+                }
+                if (btnCollapseSidebar != null) btnCollapseSidebar.setText("▶");
+            } else {
+                sidebar.setPrefWidth(220);
+                sidebar.setMinWidth(220);
+                sidebar.setMaxWidth(220);
+                if (sidebarContent != null) {
+                    sidebarContent.setVisible(true);
+                    sidebarContent.setManaged(true);
+                }
+                if (sidebarBrandLabel != null) {
+                    sidebarBrandLabel.setVisible(true);
+                    sidebarBrandLabel.setManaged(true);
+                }
+                if (btnCollapseSidebar != null) btnCollapseSidebar.setText("≡");
+            }
         }
     }
 

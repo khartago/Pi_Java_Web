@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.DiagnosticAnalyticsController"
+            fitToWidth="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
+            styleClass="transparent-scroll">
+    <VBox spacing="16" styleClass="page-with-hero" style="-fx-background-color: transparent;">
+        <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+            <Label text="Statistiques diagnostic" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+            <Label text="Taux de resolution, types de problemes, causes frequentes" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+        </VBox>
+        <VBox spacing="16" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="refreshButton" text="Rafraichir" onAction="#handleRefresh" styleClass="primary-button"/>
+            </HBox>
+            <Label text="Indicateurs cles" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <GridPane hgap="20" vgap="10">
+                <Label text="Taux de resolution :" styleClass="field-label"/>
+                <Label fx:id="tauxResolutionLabel" text="0%" GridPane.columnIndex="1"/>
+                <Label text="Duree moyenne diagnostic :" styleClass="field-label" GridPane.rowIndex="1"/>
+                <Label fx:id="dureeMoyenneLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <VBox fx:id="typesChartPane" prefWidth="450" minWidth="350" prefHeight="280"/>
+                <VBox fx:id="causesChartPane" prefWidth="450" minWidth="350" prefHeight="280"/>
+            </HBox>
+            <VBox fx:id="resolutionChartPane" prefWidth="400" minWidth="300" prefHeight="220"/>
+        </VBox>
+    </VBox>
+</ScrollPane>

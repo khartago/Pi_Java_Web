@@ -12,6 +12,11 @@ public class Probleme {
     private LocalDateTime dateDetection;
     private String etat;
     private String photos;
+    private Integer idPlantation;
+    private Integer idProduit;
+    /** JSON snapshot meteo au moment de la creation (temp, conditions, etc.) */
+    private String meteoSnapshot;
+    private Integer idAdminAssignee;
 
     public Probleme() {
     }
@@ -103,6 +108,15 @@ public class Probleme {
     public void setPhotos(String photos) {
         this.photos = photos;
     }
+
+    public Integer getIdPlantation() { return idPlantation; }
+    public void setIdPlantation(Integer idPlantation) { this.idPlantation = idPlantation; }
+    public Integer getIdProduit() { return idProduit; }
+    public void setIdProduit(Integer idProduit) { this.idProduit = idProduit; }
+    public String getMeteoSnapshot() { return meteoSnapshot; }
+    public void setMeteoSnapshot(String meteoSnapshot) { this.meteoSnapshot = meteoSnapshot; }
+    public Integer getIdAdminAssignee() { return idAdminAssignee; }
+    public void setIdAdminAssignee(Integer idAdminAssignee) { this.idAdminAssignee = idAdminAssignee; }
 
     @Override
     public String toString() {

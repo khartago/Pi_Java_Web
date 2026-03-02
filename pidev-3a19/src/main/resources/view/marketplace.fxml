@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MarketplaceController" spacing="0" styleClass="page-with-hero">
+    <!-- Hero -->
+    <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+        <Label text="Marketplace" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+        <Label text="Catalogue produits — recherchez, filtrez et gérez vos stocks" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+    </VBox>
+    <!-- Compact toolbar -->
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 12 20 12 20; -fx-background-color: white; -fx-border-width: 0 0 1 0; -fx-border-color: #E5EDE5;">
+        <TextField fx:id="searchField" promptText="Rechercher par nom" prefWidth="180"/>
+        <ComboBox fx:id="uniteFilter" prefWidth="100"/>
+        <CheckBox fx:id="expiringSoonCheck" text="Expire bientôt"/>
+        <Button text="Filtrer" onAction="#handleFilter" styleClass="primary-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="❤ Mes Favoris" onAction="#handleOpenFavoris" styleClass="secondary-button"/>
+        <Button text="Retour admin" onAction="#handleBackToAdmin" styleClass="navbar-button"/>
+    </HBox>
+    <!-- Content: cards + collapsible chat -->
+    <SplitPane dividerPositions="0.82">
+        <ScrollPane fitToWidth="true" styleClass="transparent-scroll">
+            <FlowPane fx:id="cardsPane" hgap="15" vgap="15" style="-fx-padding: 20;"/>
+        </ScrollPane>
+        <TitledPane text="Assistant IA" animated="true" expanded="false" style="-fx-padding: 0 8 0 0;">
+            <VBox spacing="8" style="-fx-padding: 8;">
+                <Label fx:id="chatHintLabel" style="-fx-font-size: 11px; -fx-text-fill: gray;"/>
+                <TextArea fx:id="chatArea" editable="false" wrapText="true" prefRowCount="10" prefWidth="260"/>
+                <HBox spacing="5">
+                    <TextField fx:id="chatInput" promptText="Votre question..." HBox.hgrow="ALWAYS" onAction="#handleChatSend"/>
+                    <ProgressIndicator fx:id="chatLoading" visible="false" managed="false"/>
+                    <Button fx:id="chatSendButton" text="Envoyer" onAction="#handleChatSend" styleClass="primary-button"/>
+                </HBox>
+            </VBox>
+        </TitledPane>
+    </SplitPane>
+</VBox>

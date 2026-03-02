@@ -1,33 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielController"
             styleClass="root"
-            stylesheets="@farmtech-theme.css">
+            stylesheets="@../css/style.css">
 
-    <!-- Contenu central -->
-    <center>
-        <VBox spacing="15" styleClass="content-area">
-            <!-- Sélecteur de produit (pour accès depuis le menu Matériels) -->
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Produit :" styleClass="field-label"/>
-                <ComboBox fx:id="produitCombo" prefWidth="280" promptText="Choisir un produit"/>
-            </HBox>
-            <!-- Titre et boutons d'action -->
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label text="Gestion des Matériels" styleClass="page-title" />
+    <top>
+        <VBox>
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
+                <ImageView fitHeight="35" fitWidth="35" preserveRatio="true">
+                    <image>
+                        <Image url="@farmtech-logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="FARMTECH" styleClass="app-title" />
                 <Region HBox.hgrow="ALWAYS" />
-                <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
-                <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
-                <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+                <Label text="Backoffice Admin" styleClass="header-section" />
+                <Label text="Accueil" styleClass="header-section" />
+                <Button text="Se déconnecter" styleClass="logout-button" />
             </HBox>
 
-            <!-- Tableau -->
-            <TableView fx:id="materielTable" styleClass="table-view" VBox.vgrow="ALWAYS">
+            <HBox spacing="0" styleClass="navigation-bar">
+                <Button text="Produits" onAction="#handleVoirProduits" styleClass="nav-tab" />
+                <Button text="Matériels" styleClass="nav-tab, nav-tab-active" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
+        <VBox spacing="15" styleClass="content-area" style="-fx-background-color: transparent;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox spacing="4">
+                    <Label fx:id="pageTitleLabel" text="Gestion des Matériels" styleClass="page-title" />
+                    <Label fx:id="productFilterHint" text="" visible="false" style="-fx-text-fill: #6B7280; -fx-font-size: 13px;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+
+                <FlowPane hgap="10" vgap="10" alignment="CENTER_RIGHT" prefWrapLength="520">
+                    <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
+                    <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
+                    <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
+                </FlowPane>
+            </HBox>
+
+            <TableView fx:id="materielTable" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
                     <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />
@@ -37,6 +60,7 @@
                 </columns>
             </TableView>
         </VBox>
+        </ScrollPane>
     </center>
 
     <padding>
