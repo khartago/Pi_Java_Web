@@ -33,7 +33,7 @@ public class HomeController {
         {
             Node source = (Node)event.getSource();
             Stage stage = (Stage)source.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/view/Blog.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/view/BlogDashboard.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setMaximized(true);
