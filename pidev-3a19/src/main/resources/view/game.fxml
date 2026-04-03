@@ -87,14 +87,10 @@
     <!-- ================= GAME AREA ================= -->
     <center>
         <AnchorPane styleClass="game-background">
-
-            <GridPane fx:id="plantGrid"
-                      hgap="70"
-                      vgap="45"
-                      AnchorPane.leftAnchor="500"
-                      AnchorPane.topAnchor="290">
-            </GridPane>
-
+            <StackPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                       AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                <GridPane fx:id="plantGrid" hgap="70" vgap="45" alignment="CENTER"/>
+            </StackPane>
         </AnchorPane>
     </center>
 

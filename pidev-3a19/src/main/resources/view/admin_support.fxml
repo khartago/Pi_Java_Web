@@ -42,7 +42,6 @@
             <Label fx:id="emptyMessageLabel" text="Aucun problème ne correspond aux critères." visible="false" style="-fx-text-fill: #6B7280; -fx-font-size: 14px;"/>
             <TableView fx:id="problemeTable" styleClass="table-view" prefHeight="280">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="45" minWidth="40"/>
                     <TableColumn fx:id="typeColumn" text="Type" prefWidth="160" minWidth="120"/>
                     <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="280" minWidth="200"/>
                     <TableColumn fx:id="graviteColumn" text="Gravité" prefWidth="95" minWidth="80"/>

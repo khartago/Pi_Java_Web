@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Après le scan App\ : sinon l’autoconfiguration écrase les arguments du constructeur
+    App\Service\ProblemePhotoStorage:
+        arguments:
+            $targetDirectory: '%kernel.project_dir%/public/uploads/problemes'
+
+    App\Service\ProblemePhotoPublicUrlResolver:
+        arguments:
+            $projectDir: '%kernel.project_dir%'

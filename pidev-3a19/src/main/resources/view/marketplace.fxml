@@ -19,7 +19,7 @@
         <Button text="Filtrer" onAction="#handleFilter" styleClass="primary-button"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="❤ Mes Favoris" onAction="#handleOpenFavoris" styleClass="secondary-button"/>
-        <Button text="Retour admin" onAction="#handleBackToAdmin" styleClass="navbar-button"/>
+        <Button text="Retour " onAction="#handleBackToAdmin" styleClass="navbar-button"/>
     </HBox>
     <!-- Content: cards + collapsible chat -->
     <SplitPane dividerPositions="0.82">

@@ -1,0 +1,106 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Utilisateurs — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-crud-page">
+    <header class="admin-crud-head">
+        <div>
+            <span class="page-eyebrow">Comptes</span>
+            <h1>Utilisateurs</h1>
+            <p class="page-lead">Recherche, tri et rôles.</p>
+        </div>
+        <a href="{{ path('admin_users_new') }}" class="btn btn-primary">Nouvel utilisateur</a>
+    </header>
+
+    <div class="admin-crud-panel">
+        <div class="admin-stat-strip" role="list">
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Total</span>
+                <span class="admin-stat-strip__val">{{ stats.total }}</span>
+            </div>
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Admin</span>
+                <span class="admin-stat-strip__val">{{ stats.byRole['ADMIN']|default(0) }}</span>
+            </div>
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Agriculteur</span>
+                <span class="admin-stat-strip__val">{{ stats.byRole['FARMER']|default(0) }}</span>
+            </div>
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Affichés</span>
+                <span class="admin-stat-strip__val">{{ users|length }}</span>
+                <span class="admin-stat-strip__sub">après filtre</span>
+            </div>
+        </div>
+
+        <form method="get" data-live-filter="1" class="filters-bar filters-bar--live" action="{{ path('admin_users_index') }}">
+            <div class="filters-bar__row">
+                <div class="filter-field form-row filter-field--grow" style="margin:0;">
+                    <label for="uq">Recherche</label>
+                    <input class="form-control" id="uq" name="q" value="{{ filters.q|default('') }}" maxlength="200" placeholder="Nom ou e-mail…" autocomplete="off">
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="urole">Rôle</label>
+                    <select class="form-control" id="urole" name="role">
+                        <option value="">Tous</option>
+                        <option value="ADMIN" {{ filters.role == 'ADMIN' ? 'selected' }}>ADMIN</option>
+                        <option value="FARMER" {{ filters.role == 'FARMER' ? 'selected' }}>FARMER</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="usort">Tri</label>
+                    <select class="form-control" id="usort" name="sort">
+                        <option value="id" {{ filters.sort == 'id' ? 'selected' }}>Id</option>
+                        <option value="nom" {{ filters.sort == 'nom' ? 'selected' }}>Nom</option>
+                        <option value="email" {{ filters.sort == 'email' ? 'selected' }}>E-mail</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="udir">Ordre</label>
+                    <select class="form-control" id="udir" name="dir">
+                        <option value="ASC" {{ filters.dir == 'ASC' ? 'selected' }}>Asc.</option>
+                        <option value="DESC" {{ filters.dir == 'DESC' ? 'selected' }}>Desc.</option>
+                    </select>
+                </div>
+                <div class="filters-bar__actions">
+                    <button type="submit" class="btn btn-secondary btn-sm btn-filter-fallback">Filtrer</button>
+                    <a href="{{ path('admin_users_index') }}" class="btn btn-ghost btn-sm">Réinit.</a>
+                </div>
+            </div>
+        </form>
+
+        {% if users is empty %}
+            <div class="empty-state" style="margin:0;border:none;border-radius:0;border-top:1px solid rgba(26,77,46,0.08);">
+                <strong>Aucun utilisateur</strong>
+                <p>Modifiez la recherche ou les filtres.</p>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Id</th><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u.id }}</td>
+                            <td><strong>{{ u.nom }}</strong></td>
+                            <td>{{ u.email }}</td>
+                            <td><span class="badge badge-muted">{{ u.role }}</span></td>
+                            <td class="table-actions">
+                                <a href="{{ path('admin_users_edit', {id: u.id}) }}">Modifier</a>
+                                <form method="post" action="{{ path('admin_users_delete', {id: u.id}) }}" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ u.id) }}">
+                                    <button type="submit" class="btn btn-danger-soft btn-sm">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

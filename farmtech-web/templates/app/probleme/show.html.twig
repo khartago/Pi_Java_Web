@@ -1,0 +1,68 @@
+{% extends 'front/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Problème #{{ probleme.id }} — FARMTECH{% endblock %}
+
+{% block front_content %}
+<section class="farmer-detail-head">
+    <span class="farmer-detail-head__eyebrow">Dossier n°{{ probleme.id }}</span>
+    <h1>{{ probleme.type }}</h1>
+    <div class="detail-meta">
+        <span class="badge badge-warn">{{ probleme.gravite }}</span>
+        <span class="badge badge-info">{{ pl.etat_label(probleme.etat) }}</span>
+        <span style="color:var(--color-muted);font-size:0.92rem;">{{ probleme.dateDetection|date('d/m/Y à H:i') }}</span>
+    </div>
+</section>
+
+<div class="detail-grid">
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Description</h3>
+        <p style="margin:0;line-height:1.65;">{{ probleme.description|nl2br }}</p>
+        {% if probleme.photos %}
+            <p style="margin-top:1rem;margin-bottom:0;"><strong>Photos</strong></p>
+            {% include '_includes/probleme_photo_gallery.html.twig' with { photos: probleme.photos } only %}
+        {% endif %}
+    </div>
+
+    {% if diagnostic %}
+    <div class="card card--highlight">
+        <h3 class="font-display" style="margin-top:0;">Diagnostic approuvé</h3>
+        <p><strong>Cause</strong></p>
+        <p style="margin-top:0.35rem;">{{ diagnostic.cause|nl2br }}</p>
+        <p style="margin-top:1rem;"><strong>Solution proposée</strong></p>
+        <p style="margin-top:0.35rem;">{{ diagnostic.solutionProposee|nl2br }}</p>
+        <p style="margin-top:1rem;"><strong>Résultat</strong> — {{ diagnostic.resultat }}</p>
+        {% if diagnostic.medicament %}
+            <p style="margin-top:1rem;"><strong>Traitement</strong></p>
+            <p style="margin-top:0.35rem;">{{ diagnostic.medicament|nl2br }}</p>
+        {% endif %}
+        <p style="color:var(--color-muted);font-size:0.88rem;margin-top:1.25rem;margin-bottom:0;">Révision {{ diagnostic.numRevision }} · {{ diagnostic.dateDiagnostique|date('d/m/Y H:i') }}</p>
+    </div>
+
+    {% if feedbackForm %}
+        <div class="card">
+            <h3 class="font-display" style="margin-top:0;">Votre avis</h3>
+            {{ form_start(feedbackForm) }}
+                {{ form_row(feedbackForm.feedbackFermier) }}
+                {{ form_row(feedbackForm.feedbackCommentaire) }}
+                <div class="form-actions" style="border:none;padding-top:0;margin-top:0;">
+                    <button class="btn btn-primary" type="submit">Envoyer le feedback</button>
+                </div>
+            {{ form_end(feedbackForm) }}
+        </div>
+    {% endif %}
+    {% else %}
+    <div class="card empty-state" style="border-style:solid;">
+        <strong>Pas encore de diagnostic approuvé</strong>
+        <p>Un administrateur pourra valider un diagnostic lié à ce signalement.</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="form-actions" style="border:none;margin-top:0;padding-top:0;">
+    {% if probleme.etat != 'CLOTURE' %}
+        <a href="{{ path('app_problemes_edit', {id: probleme.id}) }}" class="btn btn-ghost">Modifier</a>
+    {% endif %}
+    <a href="{{ path('app_problemes_index') }}" class="btn btn-primary">Retour à la liste</a>
+</div>
+{% endblock %}

@@ -135,11 +135,11 @@ public class SupportIssueDetailController {
         photosFlowPane.getChildren().clear();
         String photos = probleme.getPhotos();
         if (photos != null && !photos.isEmpty()) {
-            Path uploadsBase = ImageUploadHelper.getBaseUploadDir().getParent();
             for (String rel : photos.split(";")) {
                 String trimmed = rel.trim();
                 if (trimmed.isEmpty()) continue;
-                Path full = uploadsBase.resolve(trimmed);
+                Path full = ImageUploadHelper.resolveStoredPhotoPath(trimmed);
+                if (full == null) continue;
                 File f = full.toFile();
                 if (f.exists()) {
                     try {

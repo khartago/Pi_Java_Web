@@ -1,0 +1,53 @@
+{# Logo FarmTech (asset image / SVG selon déploiement) #}
+{% macro brand_logo(css_class, alt) %}
+<img src="{{ asset('images/farmtech-logo.png') }}?v=1" alt="{{ alt|default('FarmTech') }}" class="site-logo {{ css_class|default('') }}" loading="eager" decoding="async">
+{% endmacro %}
+
+{# Icônes SVG (stroke), couleur via currentColor #}
+{% macro sprout(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(24) }}" height="{{ size|default(24) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M12 22V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M12 11C8 5 4 6 4 11c0 5 4 8 8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12 11c4-6 8-5 8 1 0 5-4 7-8 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+{% endmacro %}
+
+{% macro dashboard(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(20) }}" height="{{ size|default(20) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M3 3h8v8H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M13 3h8v8h-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M3 13h8v8H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M13 13h8v8h-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+</svg>
+{% endmacro %}
+
+{% macro users(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(20) }}" height="{{ size|default(20) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/>
+    <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="17" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+    <path d="M21 20v-.5a3.5 3.5 0 0 0-3.5-3.5h-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>
+{% endmacro %}
+
+{% macro flag(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(20) }}" height="{{ size|default(20) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M4 22V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M4 15s2-1 5-1 6 2 9 2 5-1 5-1V4s-2 1-5 1-6-2-9-2-5 1-5 1v11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+</svg>
+{% endmacro %}
+
+{% macro clipboard(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(20) }}" height="{{ size|default(20) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+    <path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>
+{% endmacro %}
+
+{% macro log_out(size, class) %}
+<svg class="icon {{ class|default('') }}" width="{{ size|default(20) }}" height="{{ size|default(20) }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+{% endmacro %}

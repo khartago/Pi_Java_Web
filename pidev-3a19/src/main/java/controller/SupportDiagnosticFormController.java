@@ -251,11 +251,11 @@ public class SupportDiagnosticFormController {
         if (problemeId == -1) return;
         Probleme p = problemeService.getProblemeById(problemeId);
         if (p == null || p.getPhotos() == null || p.getPhotos().isEmpty()) return;
-        Path uploadsBase = ImageUploadHelper.getBaseUploadDir().getParent();
         for (String rel : p.getPhotos().split(";")) {
             String trimmed = rel.trim();
             if (trimmed.isEmpty()) continue;
-            Path full = uploadsBase.resolve(trimmed);
+            Path full = ImageUploadHelper.resolveStoredPhotoPath(trimmed);
+            if (full == null) continue;
             File f = full.toFile();
             if (f.exists()) {
                 try {

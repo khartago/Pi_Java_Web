@@ -60,13 +60,15 @@ public class GameController {
     public void initialize() {
 
         new Thread(() -> {
-
-            double temp = WeatherService.getTemperature("Tunis");
-
+            WeatherService ws = new WeatherService();
+            model.WeatherInfo info = ws.getCurrentWeather();
             Platform.runLater(() -> {
-                weatherLabel.setText("🌤 Tunis: " + temp + "°C");
+                if (info != null) {
+                    weatherLabel.setText("🌤 Tunis: " + String.format("%.0f", info.getTemperature()) + "°C - " + info.getDescription());
+                } else {
+                    weatherLabel.setText("🌤 Météo indisponible");
+                }
             });
-
         }).start();
         try {
 
@@ -206,10 +208,6 @@ public class GameController {
                 slotIndex++;
             }
         }
-
-        // ✅ WEATHER TEST HERE (inside method)
-        double temp = WeatherService.getTemperature("Tunis");
-        System.out.println("Temperature: " + temp);
     }
     // ================= BOARD =================
 

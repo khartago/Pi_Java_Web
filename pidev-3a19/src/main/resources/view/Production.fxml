@@ -89,8 +89,8 @@
         <tabs>
 
             <Tab text="%plantation" closable="false">
-
-                <VBox spacing="18">
+                <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
+                <VBox spacing="18" style="-fx-background-color: transparent;">
 
                     <padding>
                         <Insets top="12" right="0" bottom="12" left="0"/>
@@ -153,7 +153,7 @@
 
                     <TableView fx:id="tableProduction"
                                styleClass="table-view"
-                               VBox.vgrow="ALWAYS">
+                               minHeight="250" prefHeight="400">
 
                         <columns>
 
@@ -171,6 +171,7 @@
                     </TableView>
 
                 </VBox>
+                </ScrollPane>
 
             </Tab>
 

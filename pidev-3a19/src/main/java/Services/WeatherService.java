@@ -25,7 +25,6 @@ import java.util.Properties;
 public class WeatherService {
 
     private static final String OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
-    private static final String OPENWEATHER_API_KEY = "0779acbb9aee496ae9653db6b1f6a910";
 
     private final double defaultLat;
     private final double defaultLon;
@@ -136,9 +135,21 @@ public class WeatherService {
 
     /** OpenWeatherMap : température par ville (pour le jeu). */
     public static double getTemperature(String city) {
+        String apiKey = System.getenv("OPENWEATHER_API_KEY");
+        if (apiKey == null || apiKey.isBlank()) {
+            try (InputStream in = WeatherService.class.getResourceAsStream("/config.properties")) {
+                if (in != null) {
+                    Properties p = new Properties();
+                    p.load(in);
+                    apiKey = p.getProperty("openweather.api.key", "").trim();
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        if (apiKey == null || apiKey.isEmpty()) return -1;
         try {
             String urlString = "https://api.openweathermap.org/data/2.5/weather?q="
-                    + city + "&units=metric&appid=" + OPENWEATHER_API_KEY;
+                    + city + "&units=metric&appid=" + apiKey;
 
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

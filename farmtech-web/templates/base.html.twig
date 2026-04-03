@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr" data-turbo="false">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}FARMTECH{% endblock %}</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/farmtech-logo.png') }}?v=1">
+        <link rel="stylesheet" href="/styles/app.css?v=35">
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}
+            {{ importmap('app') }}
+        {% endblock %}
+    </head>
+    <body class="organic-app {% block body_class %}{% endblock %}">
+        <a class="skip-link" href="#main-content">Aller au contenu</a>
+        {% block flashes %}
+            {% include '_flash.html.twig' %}
+        {% endblock %}
+        {% block body %}{% endblock %}
+    </body>
+</html>

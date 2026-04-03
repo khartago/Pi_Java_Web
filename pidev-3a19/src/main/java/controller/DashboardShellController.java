@@ -15,6 +15,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.WeatherInfo;
 import Services.WeatherService;
@@ -242,8 +244,11 @@ public class DashboardShellController {
     private void showGame() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            double w = Math.min(1200, bounds.getWidth() * 0.9);
+            double h = Math.min(800, bounds.getHeight() * 0.9);
             Stage gameStage = new Stage();
-            gameStage.setScene(new Scene(root, 1200, 800));
+            gameStage.setScene(new Scene(root, w, h));
             gameStage.setTitle("FARMTECH - Jeu plantation");
             gameStage.setResizable(true);
             gameStage.centerOnScreen();

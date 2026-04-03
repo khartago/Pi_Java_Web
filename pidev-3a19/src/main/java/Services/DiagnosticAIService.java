@@ -82,13 +82,12 @@ public class DiagnosticAIService {
         String promptText = "Description du problème : " + (p.getDescription() != null ? p.getDescription() : "") + "\n\n" + PROMPT;
 
         List<Map<String, Object>> contentList = new ArrayList<>();
-        Path uploadsBase = ImageUploadHelper.getBaseUploadDir().getParent();
         if (p.getPhotos() != null && !p.getPhotos().isEmpty()) {
             for (String rel : p.getPhotos().split(";")) {
                 String trimmed = rel.trim();
                 if (trimmed.isEmpty()) continue;
-                Path fullPath = uploadsBase.resolve(trimmed);
-                if (!Files.exists(fullPath)) continue;
+                Path fullPath = ImageUploadHelper.resolveStoredPhotoPath(trimmed);
+                if (fullPath == null || !Files.exists(fullPath)) continue;
                 try {
                     byte[] bytes = Files.readAllBytes(fullPath);
                     String base64 = Base64.getEncoder().encodeToString(bytes);

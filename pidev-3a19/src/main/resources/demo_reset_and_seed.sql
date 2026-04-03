@@ -198,14 +198,14 @@ INSERT INTO materiel (nom, etat, dateAchat, cout, idProduit) VALUES
 ('Pulvérisateur 500L', 'Neuf', '2024-01-10', 3500, 5),
 ('Semoir pneumatique', 'Bon', '2022-09-20', 12000, 6);
 
--- Problèmes (avec météo snapshot simulé, photos = chemins relatifs uploads/)
+-- Problèmes (photos = chemins relatifs projet : uploads/problemes/... — même convention que farmtech-web)
 -- Photos: probleme 1 a 2 images, probleme 2 a 1 image (voir section Images ci-dessous)
 -- Run create_demo_images.ps1 to create placeholder files in uploads/problemes/
 INSERT INTO probleme (id_utilisateur, type, description, gravite, date_detection, etat, photos, id_plantation, id_produit, meteo_snapshot, id_admin_assignee) VALUES
-(3, 'Maladie fongique', 'Taches brunes sur les feuilles de tomates, apparues après une période humide. Les plants du rang 3 sont les plus touchés.', 'Moyenne', DATE_SUB(NOW(), INTERVAL 5 DAY), 'DIAGNOSTIQUE_DISPONIBLE', 'problemes/demo_1_0.png;problemes/demo_1_1.png', 1, 1, '{"temp":22.5,"description":"Partiellement nuageux","humidity":65,"timestamp":"2025-02-28T10:30:00"}', 2),
-(4, 'Ravageurs', 'Pucerons observés sur les poivrons. Colonies importantes sous les feuilles.', 'Faible', DATE_SUB(NOW(), INTERVAL 3 DAY), 'CLOTURE', 'problemes/demo_2_0.png', 3, 3, '{"temp":24.0,"description":"Ciel dégagé","humidity":55,"timestamp":"2025-03-01T14:00:00"}', 2),
+(3, 'Maladie fongique', 'Taches brunes sur les feuilles de tomates, apparues après une période humide. Les plants du rang 3 sont les plus touchés.', 'Moyenne', DATE_SUB(NOW(), INTERVAL 5 DAY), 'DIAGNOSTIQUE_DISPONIBLE', 'uploads/problemes/demo_1_0.png;uploads/problemes/demo_1_1.png', 1, 1, '{"temp":22.5,"description":"Partiellement nuageux","humidity":65,"timestamp":"2025-02-28T10:30:00"}', 2),
+(4, 'Ravageurs', 'Pucerons observés sur les poivrons. Colonies importantes sous les feuilles.', 'Faible', DATE_SUB(NOW(), INTERVAL 3 DAY), 'CLOTURE', 'uploads/problemes/demo_2_0.png', 3, 3, '{"temp":24.0,"description":"Ciel dégagé","humidity":55,"timestamp":"2025-03-01T14:00:00"}', 2),
 (3, 'Carence nutritive', 'Jaunissement des feuilles basses sur pommes de terre. Sol argileux, peu drainé.', 'Élevée', DATE_SUB(NOW(), INTERVAL 2 DAY), 'EN_ATTENTE', NULL, 2, 2, '{"temp":19.0,"description":"Pluie","humidity":90,"timestamp":"2025-03-02T08:15:00"}', NULL),
-(5, 'Maladie fongique', 'Mildiou suspecté sur tomates en serre. Humidité élevée ces derniers jours.', 'Critique', DATE_SUB(NOW(), INTERVAL 1 DAY), 'REOUVERT', 'problemes/demo_4_0.png', 4, 1, '{"temp":21.0,"description":"Couvert","humidity":85,"timestamp":"2025-03-02T16:45:00"}', 1);
+(5, 'Maladie fongique', 'Mildiou suspecté sur tomates en serre. Humidité élevée ces derniers jours.', 'Critique', DATE_SUB(NOW(), INTERVAL 1 DAY), 'REOUVERT', 'uploads/problemes/demo_4_0.png', 4, 1, '{"temp":21.0,"description":"Couvert","humidity":85,"timestamp":"2025-03-02T16:45:00"}', 1);
 
 -- Diagnostics
 INSERT INTO diagnostique (id_probleme, cause, solution_proposee, date_diagnostique, resultat, medicament, approuve, num_revision, feedback_fermier, feedback_commentaire, date_feedback, id_admin_diagnostiqueur) VALUES

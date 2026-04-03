@@ -35,9 +35,6 @@ public class AdminSupportController implements Initializable {
     private TableView<Probleme> problemeTable;
 
     @FXML
-    private TableColumn<Probleme, Integer> idColumn;
-
-    @FXML
     private TableColumn<Probleme, String> typeColumn;
 
     @FXML
@@ -89,7 +86,6 @@ public class AdminSupportController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         descriptionColumn.setCellValueFactory(cellData -> {
             Probleme p = cellData.getValue();

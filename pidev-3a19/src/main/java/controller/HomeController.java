@@ -3,9 +3,11 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class HomeController {
@@ -61,8 +63,11 @@ public class HomeController {
     private void handleGame(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            double w = Math.min(1200, bounds.getWidth() * 0.9);
+            double h = Math.min(800, bounds.getHeight() * 0.9);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
+            Scene scene = new Scene(root, w, h);
             stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
