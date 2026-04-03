@@ -42,3 +42,6 @@ config.properties
 
 # Uploaded images
 uploads/
+
+# temp / extracted ppt (dont commit)
+_pptx_extract/
