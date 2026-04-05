@@ -13,6 +13,13 @@ public class Diagnostique {
     private String medicament;
     /** true = visible par le fermier après acceptation admin, false = brouillon / en attente de révision */
     private boolean approuve;
+    /** Numéro de révision (1 = premier diagnostic, 2+ = révisions après réouverture) */
+    private int numRevision = 1;
+    private Integer idAdminDiagnostiqueur;
+    /** RESOLU, NON_RESOLU - feedback du fermier */
+    private String feedbackFermier;
+    private String feedbackCommentaire;
+    private LocalDateTime dateFeedback;
 
     public Diagnostique() {
     }
@@ -113,6 +120,17 @@ public class Diagnostique {
     public void setApprouve(boolean approuve) {
         this.approuve = approuve;
     }
+
+    public String getFeedbackFermier() { return feedbackFermier; }
+    public void setFeedbackFermier(String feedbackFermier) { this.feedbackFermier = feedbackFermier; }
+    public String getFeedbackCommentaire() { return feedbackCommentaire; }
+    public void setFeedbackCommentaire(String feedbackCommentaire) { this.feedbackCommentaire = feedbackCommentaire; }
+    public LocalDateTime getDateFeedback() { return dateFeedback; }
+    public void setDateFeedback(LocalDateTime dateFeedback) { this.dateFeedback = dateFeedback; }
+    public int getNumRevision() { return numRevision; }
+    public void setNumRevision(int numRevision) { this.numRevision = numRevision; }
+    public Integer getIdAdminDiagnostiqueur() { return idAdminDiagnostiqueur; }
+    public void setIdAdminDiagnostiqueur(Integer idAdminDiagnostiqueur) { this.idAdminDiagnostiqueur = idAdminDiagnostiqueur; }
 
     @Override
     public String toString() {

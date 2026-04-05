@@ -1,0 +1,88 @@
+.game-background {
+    -fx-background-color: linear-gradient(to bottom, #87CEEB, #4CAF50);
+}
+
+.game-navbar {
+    -fx-background-color: #2e7d32;
+}
+
+.game-title {
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.back-button {
+    -fx-background-color: white;
+    -fx-text-fill: #2e7d32;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+}
+
+.plant-card {
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8,0,0,4);
+}
+
+.water-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-background-radius: 15;
+}
+
+.manure-button {
+    -fx-background-color: #8D6E63;
+    -fx-text-fill: white;
+    -fx-background-radius: 15;
+}
+.game-background {
+    -fx-background-image: url("/images/game-bg.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 100% 100%;
+}
+
+.game-navbar {
+    -fx-background-color: rgba(0,0,0,0.4);
+}
+
+.game-title {
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.tool-button {
+    -fx-font-size: 18px;
+    -fx-background-radius: 10;
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+}
+
+.back-button {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.plant-slot {
+    -fx-background-color: transparent;
+}
+.tool-image-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+.tool-image-button:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+.tile {
+    -fx-background-color: transparent;
+}
+
+.tile:hover {
+    -fx-border-color: gold;
+    -fx-border-width: 3;
+}

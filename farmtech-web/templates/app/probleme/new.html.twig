@@ -1,0 +1,24 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Nouveau problème — FARMTECH{% endblock %}
+
+{% block front_content %}
+<section class="farmer-form-head">
+    <span class="farmer-form-head__eyebrow">Nouveau dossier</span>
+    <h1>Signaler un problème</h1>
+    <p class="page-lead">Ce que vous voyez sur la parcelle : quelques phrases et des photos suffisent pour lancer le suivi.</p>
+</section>
+<div class="card form-card form-card--wide">
+    {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.gravite) }}
+        {{ form_row(form.dateDetection) }}
+        {{ form_row(form.photoFiles) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+            <a href="{{ path('app_problemes_index') }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

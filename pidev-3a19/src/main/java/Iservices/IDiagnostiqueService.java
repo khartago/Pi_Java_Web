@@ -21,5 +21,8 @@ public interface IDiagnostiqueService {
 
     /** Marque le diagnostic comme approuvé pour qu'il soit visible au fermier. */
     void approuverDiagnostique(int idDiagnostique);
+
+    /** Enregistre le feedback du fermier (RESOLU ou NON_RESOLU) et met à jour l'état du problème. */
+    void enregistrerFeedback(int idDiagnostique, String resolu, String commentaire);
 }
 

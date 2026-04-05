@@ -11,12 +11,6 @@ import java.util.List;
  */
 public class MaterielDAO {
 
-    /**
-     * Fetches all materials associated with a specific product.
-     *
-     * @param produitId id of the product whose materials should be returned
-     * @return list of materials
-     */
     public List<Materiel> getAllByProduit(int produitId) {
         List<Materiel> materiels = new ArrayList<>();
         String sql = "SELECT idMateriel, nom, etat, dateAchat, cout, idProduit FROM materiel WHERE idProduit = ?";
@@ -42,12 +36,6 @@ public class MaterielDAO {
         return materiels;
     }
 
-    /**
-     * Inserts a new material into the database.
-     *
-     * @param m materiel to insert
-     * @return {@code true} if insertion succeeded
-     */
     public boolean insert(Materiel m) {
         String sql = "INSERT INTO materiel (nom, etat, dateAchat, cout, idProduit) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
@@ -76,12 +64,6 @@ public class MaterielDAO {
         return false;
     }
 
-    /**
-     * Updates an existing material.
-     *
-     * @param m material to update
-     * @return {@code true} if update succeeded
-     */
     public boolean update(Materiel m) {
         String sql = "UPDATE materiel SET nom = ?, etat = ?, dateAchat = ?, cout = ?, idProduit = ? WHERE idMateriel = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -103,12 +85,6 @@ public class MaterielDAO {
         return false;
     }
 
-    /**
-     * Deletes a material by its identifier.
-     *
-     * @param id id of the material to delete
-     * @return {@code true} if deletion succeeded
-     */
     public boolean delete(int id) {
         String sql = "DELETE FROM materiel WHERE idMateriel = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -121,12 +97,6 @@ public class MaterielDAO {
         return false;
     }
 
-    /**
-     * Retrieves a material by its identifier.
-     *
-     * @param id material id
-     * @return the material or {@code null} if not found
-     */
     public Materiel getById(int id) {
         String sql = "SELECT idMateriel, nom, etat, dateAchat, cout, idProduit FROM materiel WHERE idMateriel = ?";
         try (Connection conn = DBConnection.getConnection();

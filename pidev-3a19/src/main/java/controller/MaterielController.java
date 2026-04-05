@@ -8,8 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,9 +17,7 @@ import model.Materiel;
 import model.MaterielDAO;
 import model.Produit;
 import model.ProduitDAO;
-
 import java.io.IOException;
-import java.util.List;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -42,24 +38,24 @@ public class MaterielController {
     private TableColumn<Materiel, String> dateAchatColumn;
     @FXML
     private TableColumn<Materiel, Double> coutColumn;
+
     @FXML
-    private ComboBox<Produit> produitCombo;
+    private javafx.scene.control.Label pageTitleLabel;
+    @FXML
+    private javafx.scene.control.Label productFilterHint;
 
     private final MaterielDAO materielDAO = new MaterielDAO();
-    private final ProduitDAO produitDAO = new ProduitDAO();
     private ObservableList<Materiel> materiels;
     private Produit produit;
 
-    /**
-     * Injects the product whose materials should be displayed. Must be called
-     * before the window is shown.
-     *
-     * @param produit product to set
-     */
     public void setProduit(Produit produit) {
         this.produit = produit;
-        if (produitCombo != null && produit != null) {
-            produitCombo.getSelectionModel().select(produit);
+        if (pageTitleLabel != null) {
+            pageTitleLabel.setText(produit != null ? "Matériels de " + produit.getNom() : "Gestion des Matériels");
+        }
+        if (productFilterHint != null) {
+            productFilterHint.setVisible(produit == null);
+            productFilterHint.setText(produit == null ? "Sélectionnez un produit dans la liste Produits pour voir ses matériels associés." : "");
         }
         loadMateriels();
     }
@@ -78,75 +74,26 @@ public class MaterielController {
             }
         });
         coutColumn.setCellValueFactory(new PropertyValueFactory<>("cout"));
-
-        if (produitCombo != null) {
-            produitCombo.setCellFactory(lv -> new ListCell<Produit>() {
-                @Override
-                protected void updateItem(Produit item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null : item.getNom());
-                }
-            });
-            produitCombo.setButtonCell(new ListCell<Produit>() {
-                @Override
-                protected void updateItem(Produit item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null : item.getNom());
-                }
-            });
-            List<Produit> produits = produitDAO.getAll();
-            produitCombo.setItems(FXCollections.observableArrayList(produits));
-            produitCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal != null) {
-                    setProduit(newVal);
-                }
-            });
-            
-            // Check navigation context first for selected product
-            Produit contextProduit = NavigationContext.getInstance().getSelectedProduit();
-            if (contextProduit != null) {
-                // Verify the product still exists in the list
-                Produit foundProduit = produits.stream()
-                    .filter(p -> p.getIdProduit() == contextProduit.getIdProduit())
-                    .findFirst()
-                    .orElse(null);
-                if (foundProduit != null) {
-                    produitCombo.getSelectionModel().select(foundProduit);
-                    setProduit(foundProduit);
-                } else if (!produits.isEmpty()) {
-                    // Product from context no longer exists, select first
-                    produitCombo.getSelectionModel().selectFirst();
-                    setProduit(produits.get(0));
-                }
-            } else if (produit == null && !produits.isEmpty()) {
-                // No product selected, select first by default
-                produitCombo.getSelectionModel().selectFirst();
-                setProduit(produits.get(0));
-            }
+        if (productFilterHint != null && produit == null) {
+            productFilterHint.setVisible(true);
+            productFilterHint.setText("Sélectionnez un produit dans la liste Produits pour voir ses matériels associés.");
         }
     }
 
-    /**
-     * Loads the materials for the current product and displays them in the TableView.
-     */
     private void loadMateriels() {
         if (produit != null) {
             materiels = FXCollections.observableArrayList(materielDAO.getAllByProduit(produit.getIdProduit()));
             materielTable.setItems(materiels);
+        } else if (materielTable != null) {
+            materielTable.setItems(FXCollections.observableArrayList());
         }
     }
 
-    /**
-     * Opens the add material form.
-     */
     @FXML
     private void handleAjouter() {
         openMaterielForm(null);
     }
 
-    /**
-     * Opens the edit material form for the selected material.
-     */
     @FXML
     private void handleModifier() {
         Materiel selected = materielTable.getSelectionModel().getSelectedItem();
@@ -155,9 +102,6 @@ public class MaterielController {
         }
     }
 
-    /**
-     * Deletes the selected material after confirmation.
-     */
     @FXML
     private void handleSupprimer() {
         Materiel selected = materielTable.getSelectionModel().getSelectedItem();
@@ -181,18 +125,16 @@ public class MaterielController {
         }
     }
 
-    /**
-     * Navigates back to the products list view.
-     */
     @FXML
     private void handleVoirProduits() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/produit_list.fxml"));
             Parent root = loader.load();
 
-            // Ajouter explicitement le CSS si nécessaire
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            if (getClass().getResource("/css/style.css") != null) {
+                scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            }
 
             Stage stage = (Stage) materielTable.getScene().getWindow();
             stage.setScene(scene);
@@ -207,12 +149,6 @@ public class MaterielController {
         }
     }
 
-    /**
-     * Opens the materiel form in a modal window. Passes along the selected
-     * material (or null for creation) and the current product id.
-     *
-     * @param materiel material to edit or null
-     */
     private void openMaterielForm(Materiel materiel) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/materiel_form.fxml"));

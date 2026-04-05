@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block body_class %}theme-public{% endblock %}
+
+{% block title %}FARMTECH — Agriculture intelligente{% endblock %}
+
+{% block flashes %}{% endblock %}
+
+{% block body %}
+<header class="topnav landing-topnav">
+    <div class="topnav-inner">
+        <a href="{{ path('app_landing') }}" class="brand brand--logo" aria-label="FarmTech — accueil">{{ icons.brand_logo('site-logo--nav') }}</a>
+        <nav class="nav-links" aria-label="Navigation publique">
+            <a href="{{ path('app_login') }}">Connexion</a>
+            <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
+        </nav>
+    </div>
+</header>
+
+<main id="main-content" class="landing-wrap landing-wrap--v2" tabindex="-1">
+    {% include '_flash.html.twig' %}
+
+    <section class="landing-hero-v2">
+        <div class="landing-hero-v2__copy">
+            <span class="landing-hero-v2__eyebrow">FarmTech · Tunisie</span>
+            <h1 class="landing-hero-v2__title">Gestion intelligente des exploitations agricoles</h1>
+            <p class="landing-hero-v2__lead">Application Java et Web pour organiser, suivre et optimiser les activités agricoles au sein d’une solution numérique centralisée. Elle s’adresse aux petits exploitants qui font face à des contraintes financières — avec, dès aujourd’hui, un module de signalements de terrain et de diagnostics validés par l’administration.</p>
+            <div class="landing-hero-v2__actions">
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
+                <a href="{{ path('app_login') }}" class="btn btn-ghost">Se connecter</a>
+            </div>
+        </div>
+        <div class="landing-hero-v2__visual">
+            {% include '_includes/app_hero_image.html.twig' %}
+        </div>
+    </section>
+
+    <section class="landing-mission card" aria-labelledby="landing-mission-title">
+        <div class="landing-mission__grid">
+            <div class="landing-mission__text">
+                <h2 id="landing-mission-title" class="landing-mission__title">Une réponse aux réalités du terrain</h2>
+                <p class="landing-mission__p">En Tunisie, une grande partie des agriculteurs sont des petits exploitants disposant de parcelles, mais sans ressources suffisantes pour acheter à temps les intrants indispensables (semences, engrais, pesticides, matériel). L’accès au crédit reste limité par les garanties, les délais et les taux d’intérêt.</p>
+                <p class="landing-mission__p">FarmTech vise une application desktop et web permettant aux agriculteurs d’obtenir des intrants sans paiement immédiat, avec un remboursement après récolte, tout en assurant une gestion simple, sécurisée et transparente pour la société agricole — en levant la contrainte financière au début de saison pour améliorer production et revenus, et contribuer à réduire la pauvreté en milieu rural.</p>
+                <p class="landing-mission__p landing-mission__p--accent">En améliorant l’accès aux intrants et le suivi des problèmes sur le terrain, FarmTech participe aussi à la sécurité alimentaire et à une agriculture plus durable, en réduisant le risque de pénurie.</p>
+            </div>
+            <div class="landing-mission__visual">
+                <div class="landing-mission__frame">
+                    <img
+                        src="{{ asset('images/farmtech-mission.png') }}"
+                        alt=""
+                        width="640"
+                        height="480"
+                        class="landing-mission__img"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-features" aria-label="Fonctionnalités disponibles">
+        <article class="landing-feature-card">
+            <div class="landing-feature-card__icon" aria-hidden="true">
+                <img src="{{ asset('images/landing-feature-report.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
+            </div>
+            <h2 class="landing-feature-card__title">Signalements sur le terrain</h2>
+            <p class="landing-feature-card__text">Décrivez le problème observé, joignez des photos et indiquez la gravité : les informations sont structurées pour une prise en charge rapide par l’administration.</p>
+        </article>
+        <article class="landing-feature-card">
+            <div class="landing-feature-card__icon" aria-hidden="true">
+                <img src="{{ asset('images/landing-feature-diag.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
+            </div>
+            <h2 class="landing-feature-card__title">Diagnostics validés</h2>
+            <p class="landing-feature-card__text">Cause, mesures et traitement proposés après validation ; vous pouvez donner votre retour une fois le diagnostic publié — traçabilité et transparence.</p>
+        </article>
+        <article class="landing-feature-card">
+            <div class="landing-feature-card__icon" aria-hidden="true">
+                <img src="{{ asset('images/landing-feature-history.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
+            </div>
+            <h2 class="landing-feature-card__title">Historique et pilotage</h2>
+            <p class="landing-feature-card__text">Tableau de bord, liste des dossiers et états : vous voyez où en est chaque signalement, au même titre que les indicateurs agrégés côté administration.</p>
+        </article>
+    </section>
+
+    <section class="landing-bottom-cta card">
+        <div class="landing-bottom-cta__inner">
+            <h2 class="font-display landing-bottom-cta__title">Rejoindre FarmTech</h2>
+            <p class="landing-bottom-cta__text">Créez un compte agriculteur pour accéder au suivi des signalements et des diagnostics. Les évolutions futures (intrants, financement après récolte) s’appuieront sur cette même base numérique.</p>
+            <a href="{{ path('app_register') }}" class="btn btn-primary">S’inscrire</a>
+        </div>
+    </section>
+</main>
+{% endblock %}

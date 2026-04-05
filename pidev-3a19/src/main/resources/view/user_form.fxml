@@ -10,7 +10,8 @@
             stylesheets="@farmtech-theme.css">
 
     <center>
-        <VBox spacing="14" styleClass="content-area">
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
+        <VBox spacing="14" styleClass="content-area" style="-fx-background-color: transparent;">
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
             <Label fx:id="titleLabel" text="Nouvel utilisateur" styleClass="page-title"/>
 
@@ -33,5 +34,6 @@
                 <Button text="Enregistrer" onAction="#handleSave" styleClass="primary-button" defaultButton="true"/>
             </HBox>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

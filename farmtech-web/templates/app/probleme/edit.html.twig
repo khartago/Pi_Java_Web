@@ -1,0 +1,30 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Modifier problème #{{ probleme.id }} — FARMTECH{% endblock %}
+
+{% block front_content %}
+<section class="farmer-form-head">
+    <span class="farmer-form-head__eyebrow">Modifier le dossier</span>
+    <h1>Signalement n°{{ probleme.id }}</h1>
+    <p class="page-lead">Ajustez le texte ou les photos si la situation a évolué sur le terrain.</p>
+</section>
+<div class="card form-card form-card--wide">
+    {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.gravite) }}
+        {{ form_row(form.dateDetection) }}
+        {{ form_row(form.photoFiles) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+            <a href="{{ path('app_problemes_show', {id: probleme.id}) }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% if probleme.photos %}
+<div class="card form-card form-card--wide" style="margin-top:1rem;">
+    <strong>Aperçu des photos</strong>
+    {% include '_includes/probleme_photo_gallery.html.twig' with { photos: probleme.photos } only %}
+</div>
+{% endif %}
+{% endblock %}

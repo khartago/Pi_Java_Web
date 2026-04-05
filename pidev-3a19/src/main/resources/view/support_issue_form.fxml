@@ -33,6 +33,16 @@
                     <ComboBox fx:id="graviteCombo" prefHeight="44.0" styleClass="modern-input"/>
                 </VBox>
 
+                <VBox spacing="6.0">
+                    <Label text="Plantation concernée (optionnel)" styleClass="field-label"/>
+                    <ComboBox fx:id="plantationCombo" prefHeight="44.0" styleClass="modern-input" promptText="Aucune"/>
+                </VBox>
+
+                <VBox spacing="6.0">
+                    <Label text="Produit concerné (optionnel)" styleClass="field-label"/>
+                    <ComboBox fx:id="produitCombo" prefHeight="44.0" styleClass="modern-input" promptText="Aucun"/>
+                </VBox>
+
                 <VBox spacing="8.0">
                     <Label text="Photos du problème" styleClass="field-label"/>
                     <HBox spacing="12.0" alignment="CENTER_LEFT">

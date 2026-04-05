@@ -8,7 +8,13 @@ CREATE TABLE IF NOT EXISTS plantation (
     quantite INT NOT NULL,
     datePlante DATE NOT NULL,
     saison VARCHAR(100) NOT NULL,
-    etat VARCHAR(50) NOT NULL DEFAULT 'EN_ATTENTE'
+    etat VARCHAR(50) NOT NULL DEFAULT 'EN_ATTENTE',
+    stage INT DEFAULT 1,
+    water_count INT DEFAULT 0,
+    last_water_time BIGINT DEFAULT 0,
+    status VARCHAR(50) DEFAULT 'ALIVE',
+    growth_speed DOUBLE DEFAULT 1.0,
+    slot_index INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS production (

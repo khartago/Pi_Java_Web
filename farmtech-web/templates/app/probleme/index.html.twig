@@ -1,0 +1,143 @@
+{% extends 'front/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Mes problèmes — FARMTECH{% endblock %}
+
+{% block front_content %}
+{% set filtered = filters.q or filters.etat or filters.gravite %}
+{% set advanced = filters.etat or filters.gravite or (filters.sort|default('dateDetection')) != 'dateDetection' or (filters.dir|default('DESC')) != 'DESC' %}
+<div class="farmer-feed">
+    <header class="farmer-feed__hero">
+        <h1 class="farmer-feed__title">Mes signalements</h1>
+        <p class="farmer-feed__intro">Ce que vous avez vu sur la parcelle. Ouvrez un dossier pour relire le détail ou le diagnostic.</p>
+    </header>
+
+    <form method="get" class="farmer-feed__form" id="farmer-filters-form" role="search">
+        <div class="farmer-feed__toolbar">
+            <div class="farmer-feed__searchwrap">
+                <label class="visually-hidden" for="filter-q">Rechercher dans vos dossiers</label>
+                <input
+                    class="farmer-feed__input"
+                    id="filter-q"
+                    type="search"
+                    name="q"
+                    value="{{ filters.q|default('') }}"
+                    maxlength="200"
+                    placeholder="Rechercher…"
+                    autocomplete="off"
+                >
+                <button type="submit" class="farmer-feed__searchbtn" aria-label="Lancer la recherche">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+                </button>
+            </div>
+            <a href="{{ path('app_problemes_new') }}" class="btn btn-primary farmer-feed__new">Nouveau signalement</a>
+        </div>
+
+        <div class="farmer-feed__filters-trigger">
+        <details class="farmer-feed__more" {{ advanced ? 'open' : '' }}>
+            <summary class="farmer-feed__more-summary">
+                <span>Étape, gravité et tri</span>
+                {% if advanced %}
+                    <span class="farmer-feed__more-badge">actif</span>
+                {% endif %}
+            </summary>
+            <div class="farmer-feed__more-inner">
+                <div class="farmer-feed__fields">
+                    <div class="farmer-feed__field">
+                        <label for="filter-etat">Étape du dossier</label>
+                        <select class="form-control" id="filter-etat" name="etat">
+                            <option value="">Toutes</option>
+                            {% for label, val in constant('App\\Form\\ProblemeType::ETATS') %}
+                                <option value="{{ val }}" {{ filters.etat == val ? 'selected' }}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="farmer-feed__field">
+                        <label for="filter-grav">Gravité</label>
+                        <select class="form-control" id="filter-grav" name="gravite">
+                            <option value="">Toutes</option>
+                            {% for label, val in constant('App\\Form\\ProblemeType::GRAVITES') %}
+                                <option value="{{ val }}" {{ filters.gravite == val ? 'selected' }}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="farmer-feed__field">
+                        <label for="filter-sort">Trier par</label>
+                        <select class="form-control" id="filter-sort" name="sort">
+                            <option value="dateDetection" {{ filters.sort == 'dateDetection' ? 'selected' }}>Date</option>
+                            <option value="gravite" {{ filters.sort == 'gravite' ? 'selected' }}>Gravité</option>
+                            <option value="etat" {{ filters.sort == 'etat' ? 'selected' }}>Étape</option>
+                        </select>
+                    </div>
+                    <div class="farmer-feed__field">
+                        <label for="filter-dir">Ordre</label>
+                        <select class="form-control" id="filter-dir" name="dir">
+                            <option value="DESC" {{ filters.dir == 'DESC' ? 'selected' }}>Plus récent d’abord</option>
+                            <option value="ASC" {{ filters.dir == 'ASC' ? 'selected' }}>Plus ancien d’abord</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="farmer-feed__more-actions">
+                    <button type="submit" class="btn btn-primary">Mettre à jour la liste</button>
+                    <a href="{{ path('app_problemes_index') }}" class="btn btn-ghost">Effacer les filtres</a>
+                </div>
+            </div>
+        </details>
+        </div>
+    </form>
+
+    {% if problemes is not empty %}
+        <p class="farmer-feed__meta" role="status">
+            {{ problemes|length }} dossier{{ problemes|length > 1 ? 's' : '' }}{% if filtered %} · sur {{ stats.total }} au total{% endif %}
+        </p>
+    {% endif %}
+
+    {% if problemes is empty %}
+        <div class="farmer-feed__empty">
+            <img src="{{ asset('images/farmtech-empty.png') }}" alt="" class="farmer-feed__empty-img" width="140" height="140" loading="lazy" decoding="async">
+            <h2 class="farmer-feed__empty-title">Rien à afficher pour l’instant</h2>
+            <p class="farmer-feed__empty-text">Élargissez la recherche ou créez un signalement — vos dossiers apparaîtront ici.</p>
+            <a href="{{ path('app_problemes_new') }}" class="btn btn-primary">Signaler un problème</a>
+        </div>
+    {% else %}
+        {% set placeholderUrl = asset('images/thumb-placeholder.svg') %}
+        <ul class="farmer-feed__list" role="list">
+            {% for p in problemes %}
+            {% set desc_plain = p.description|striptags %}
+            {% set excerpt = desc_plain|length > 120 ? desc_plain|slice(0, 120) ~ '…' : desc_plain %}
+            {% set src = thumbUrls[p.id]|default(null) %}
+            <li>
+                <a href="{{ path('app_problemes_show', {id: p.id}) }}" class="probleme-card probleme-card--etat" data-etat="{{ p.etat }}">
+                    <div class="probleme-card__thumb-wrap">
+                        {% if src %}
+                            {% if src starts with 'http://' or src starts with 'https://' %}
+                                <img src="{{ src }}" alt="" class="probleme-card__thumb" width="80" height="80" loading="lazy" decoding="async">
+                            {% elseif src starts with '/' %}
+                                <img src="{{ src }}" alt="" class="probleme-card__thumb" width="80" height="80" loading="lazy" decoding="async">
+                            {% else %}
+                                <img src="{{ asset(src) }}" alt="" class="probleme-card__thumb" width="80" height="80" loading="lazy" decoding="async">
+                            {% endif %}
+                        {% else %}
+                            <div class="probleme-card__thumb probleme-card__thumb--empty" style="background-image:url('{{ placeholderUrl|e('html_attr') }}')" aria-hidden="true"></div>
+                        {% endif %}
+                    </div>
+                    <div class="probleme-card__body">
+                        <h2 class="probleme-card__title">{{ p.type }}</h2>
+                        <p class="probleme-card__excerpt">{{ excerpt }}</p>
+                        <div class="probleme-card__meta">
+                            <time datetime="{{ p.dateDetection|date('c') }}">{{ p.dateDetection|date('d/m/Y') }}</time>
+                            <span class="probleme-card__dot" aria-hidden="true">·</span>
+                            <span class="probleme-card__pill probleme-card__pill--grav">{{ p.gravite }}</span>
+                            <span class="probleme-card__pill probleme-card__pill--etat">{{ pl.etat_label(p.etat) }}</span>
+                        </div>
+                    </div>
+                    <span class="probleme-card__arrow" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

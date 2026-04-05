@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.MaterielFormController"
             styleClass="root"
-            stylesheets="@farmtech-theme.css">
+            stylesheets="@../css/style.css, @farmtech-theme.css">
 
-    <!-- En-tête -->
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="form-header">
             <Label text="Formulaire Matériel" styleClass="form-title"/>
         </HBox>
     </top>
 
-    <!-- Contenu principal -->
     <center>
-        <VBox spacing="20" styleClass="form-container">
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
+        <VBox spacing="20" styleClass="form-container" style="-fx-background-color: transparent;">
             <GridPane hgap="15" vgap="15" styleClass="form-grid">
                 <columnConstraints>
                     <ColumnConstraints minWidth="120" prefWidth="120"/>
@@ -27,21 +26,21 @@
                 </columnConstraints>
 
                 <Label text="Nom du matériel :" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="nomField" styleClass="modern-input" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
+                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="Entrez le nom du matériel"/>
 
                 <Label text="État :" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="etatField" styleClass="modern-input" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
+                <TextField fx:id="etatField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Ex: neuf, bon, usagé"/>
 
                 <Label text="Date d'achat :" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="field-label"/>
-                <DatePicker fx:id="dateAchatPicker" styleClass="modern-input" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
+                <DatePicker fx:id="dateAchatPicker" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
 
                 <Label text="Coût :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
-                <TextField fx:id="coutField" styleClass="modern-input" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
+                <TextField fx:id="coutField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Entrez le coût (ex: 1500.00)"/>
             </GridPane>
         </VBox>
+        </ScrollPane>
     </center>
 
-    <!-- Actions -->
     <bottom>
         <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
             <Button fx:id="cancelButton"

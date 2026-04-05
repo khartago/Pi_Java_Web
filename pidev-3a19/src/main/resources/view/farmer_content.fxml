@@ -8,20 +8,18 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controller.FarmerDashboardController"
       stylesheets="@farmtech-theme.css"
-      styleClass="content-area"
-      spacing="20">
-    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-    <HBox spacing="12" alignment="CENTER_LEFT">
-        <VBox spacing="4">
-            <Label text="Mes problèmes" styleClass="page-title"/>
-            <Label text="Gérez et suivez vos problèmes agricoles"
-                   style="-fx-text-fill: #6B7280; -fx-font-size: 13px;"/>
-        </VBox>
-        <Pane HBox.hgrow="ALWAYS"/>
+      spacing="0"
+      styleClass="page-with-hero">
+    <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+        <Label text="Mes problèmes" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+        <Label text="Gérez et suivez vos problèmes agricoles" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+    </VBox>
+    <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 16 24 16 24; -fx-background-color: white; -fx-border-width: 0 0 1 0; -fx-border-color: #E5EDE5;">
+        <Region HBox.hgrow="ALWAYS"/>
         <Button text="+ Nouveau problème" onAction="#handleNewProbleme" styleClass="primary-button"/>
     </HBox>
 
     <ScrollPane fitToWidth="true" styleClass="transparent-scroll" VBox.vgrow="ALWAYS">
-        <FlowPane fx:id="problemeCardsContainer" hgap="16.0" vgap="16.0" prefWrapLength="900.0"/>
+        <FlowPane fx:id="problemeCardsContainer" hgap="16.0" vgap="16.0" prefWrapLength="900.0" style="-fx-padding: 24;"/>
     </ScrollPane>
 </VBox>

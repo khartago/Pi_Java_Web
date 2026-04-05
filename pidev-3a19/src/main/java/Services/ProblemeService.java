@@ -9,7 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProblemeService implements IProblemeService {
 
@@ -22,7 +24,7 @@ public class ProblemeService implements IProblemeService {
     @Override
     public int ajouterProbleme(Probleme p) {
 
-        String req = "INSERT INTO probleme (id_utilisateur, type, description, gravite, date_detection, etat, photos) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO probleme (id_utilisateur, type, description, gravite, date_detection, etat, photos, id_plantation, id_produit, meteo_snapshot, id_admin_assignee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement ste = con.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
@@ -37,6 +39,22 @@ public class ProblemeService implements IProblemeService {
             ste.setTimestamp(5, Timestamp.valueOf(p.getDateDetection()));
             ste.setString(6, p.getEtat());
             ste.setString(7, p.getPhotos());
+            if (p.getIdPlantation() != null) {
+                ste.setInt(8, p.getIdPlantation());
+            } else {
+                ste.setNull(8, Types.INTEGER);
+            }
+            if (p.getIdProduit() != null) {
+                ste.setInt(9, p.getIdProduit());
+            } else {
+                ste.setNull(9, Types.INTEGER);
+            }
+            ste.setString(10, p.getMeteoSnapshot());
+            if (p.getIdAdminAssignee() != null) {
+                ste.setInt(11, p.getIdAdminAssignee());
+            } else {
+                ste.setNull(11, Types.INTEGER);
+            }
             ste.executeUpdate();
 
             ResultSet rs = ste.getGeneratedKeys();
@@ -54,7 +72,7 @@ public class ProblemeService implements IProblemeService {
     @Override
     public void modifierProbleme(Probleme p) {
 
-        String req = "UPDATE probleme SET id_utilisateur = ?, type = ?, description = ?, gravite = ?, date_detection = ?, etat = ?, photos = ? WHERE id = ?";
+        String req = "UPDATE probleme SET id_utilisateur = ?, type = ?, description = ?, gravite = ?, date_detection = ?, etat = ?, photos = ?, id_plantation = ?, id_produit = ?, meteo_snapshot = ?, id_admin_assignee = ? WHERE id = ?";
 
         try {
             PreparedStatement ste = con.prepareStatement(req);
@@ -69,7 +87,23 @@ public class ProblemeService implements IProblemeService {
             ste.setTimestamp(5, Timestamp.valueOf(p.getDateDetection()));
             ste.setString(6, p.getEtat());
             ste.setString(7, p.getPhotos());
-            ste.setInt(8, p.getId());
+            if (p.getIdPlantation() != null) {
+                ste.setInt(8, p.getIdPlantation());
+            } else {
+                ste.setNull(8, Types.INTEGER);
+            }
+            if (p.getIdProduit() != null) {
+                ste.setInt(9, p.getIdProduit());
+            } else {
+                ste.setNull(9, Types.INTEGER);
+            }
+            ste.setString(10, p.getMeteoSnapshot());
+            if (p.getIdAdminAssignee() != null) {
+                ste.setInt(11, p.getIdAdminAssignee());
+            } else {
+                ste.setNull(11, Types.INTEGER);
+            }
+            ste.setInt(12, p.getId());
             ste.executeUpdate();
             System.out.println("probleme mis a jour");
         } catch (SQLException e) {
@@ -142,6 +176,11 @@ public class ProblemeService implements IProblemeService {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    /** Retourne les problèmes réouverts (fermier a indiqué non résolu). */
+    public List<Probleme> getProblemesReouverts() {
+        return afficherProblemesParEtat("REOUVERT");
     }
 
     @Override
@@ -260,7 +299,127 @@ public class ProblemeService implements IProblemeService {
         LocalDateTime dateDetection = ts.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         String etat = rs.getString("etat");
         String photos = rs.getString("photos");
-        return new Probleme(id, idUtilisateur, type, description, gravite, dateDetection, etat, photos);
+        Integer idPlantation = null;
+        Integer idProduit = null;
+        try {
+            int pid = rs.getInt("id_plantation");
+            if (!rs.wasNull()) idPlantation = pid;
+        } catch (SQLException ignored) { }
+        try {
+            int prid = rs.getInt("id_produit");
+            if (!rs.wasNull()) idProduit = prid;
+        } catch (SQLException ignored) { }
+        String meteoSnapshot = null;
+        try {
+            meteoSnapshot = rs.getString("meteo_snapshot");
+        } catch (SQLException ignored) { }
+        Integer idAdminAssignee = null;
+        try {
+            int aid = rs.getInt("id_admin_assignee");
+            if (!rs.wasNull()) idAdminAssignee = aid;
+        } catch (SQLException ignored) { }
+        Probleme prob = new Probleme(id, idUtilisateur, type, description, gravite, dateDetection, etat, photos);
+        prob.setIdPlantation(idPlantation);
+        prob.setIdProduit(idProduit);
+        prob.setMeteoSnapshot(meteoSnapshot);
+        prob.setIdAdminAssignee(idAdminAssignee);
+        return prob;
+    }
+
+    /** Option pour ComboBox plantation (id, nom). */
+    public static class PlantationOption {
+        public final int id;
+        public final String nom;
+        public PlantationOption(int id, String nom) { this.id = id; this.nom = nom; }
+        @Override public String toString() { return nom; }
+    }
+
+    /** Option pour ComboBox produit (id, nom). */
+    public static class ProduitOption {
+        public final int id;
+        public final String nom;
+        public ProduitOption(int id, String nom) { this.id = id; this.nom = nom; }
+        @Override public String toString() { return nom; }
+    }
+
+    public List<PlantationOption> getPlantationsForCombo() {
+        List<PlantationOption> list = new ArrayList<>();
+        try (Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT id, nomPlant FROM plantation ORDER BY nomPlant")) {
+            while (rs.next()) {
+                list.add(new PlantationOption(rs.getInt("id"), rs.getString("nomPlant")));
+            }
+        } catch (SQLException e) {
+            // Table plantation peut ne pas exister
+        }
+        return list;
+    }
+
+    public List<ProduitOption> getProduitsForCombo() {
+        List<ProduitOption> list = new ArrayList<>();
+        try (Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT idProduit, nom FROM produit ORDER BY nom")) {
+            while (rs.next()) {
+                list.add(new ProduitOption(rs.getInt("idProduit"), rs.getString("nom")));
+            }
+        } catch (SQLException e) {
+            // Table produit peut ne pas exister
+        }
+        return list;
+    }
+
+    public Map<String, Long> getProblemesParPlantation() {
+        Map<String, Long> map = new LinkedHashMap<>();
+        String req = "SELECT COALESCE(p.nomPlant, 'Sans plantation') AS nom, COUNT(*) AS cnt " +
+                "FROM probleme pr LEFT JOIN plantation p ON pr.id_plantation = p.id GROUP BY pr.id_plantation ORDER BY cnt DESC";
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(req)) {
+            while (rs.next()) {
+                map.put(rs.getString("nom"), rs.getLong("cnt"));
+            }
+        } catch (SQLException e) {
+            // Colonnes peuvent être absentes
+        }
+        return map;
+    }
+
+    public void assignerProbleme(int idProbleme, int idAdmin) {
+        String req = "UPDATE probleme SET id_admin_assignee = ? WHERE id = ?";
+        try (PreparedStatement ste = con.prepareStatement(req)) {
+            ste.setInt(1, idAdmin);
+            ste.setInt(2, idProbleme);
+            ste.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Probleme> getProblemesParAdmin(int idAdmin) {
+        List<Probleme> list = new ArrayList<>();
+        String req = "SELECT * FROM probleme WHERE id_admin_assignee = ? ORDER BY date_detection DESC";
+        try (PreparedStatement ste = con.prepareStatement(req)) {
+            ste.setInt(1, idAdmin);
+            ResultSet rs = ste.executeQuery();
+            while (rs.next()) {
+                list.add(mapRowToProbleme(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public Map<String, Long> getProblemesParProduit() {
+        Map<String, Long> map = new LinkedHashMap<>();
+        String req = "SELECT COALESCE(prod.nom, 'Sans produit') AS nom, COUNT(*) AS cnt " +
+                "FROM probleme pr LEFT JOIN produit prod ON pr.id_produit = prod.idProduit GROUP BY pr.id_produit ORDER BY cnt DESC";
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(req)) {
+            while (rs.next()) {
+                map.put(rs.getString("nom"), rs.getLong("cnt"));
+            }
+        } catch (SQLException e) {
+            // Colonnes peuvent être absentes
+        }
+        return map;
     }
 }
 

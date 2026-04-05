@@ -1,0 +1,23 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouvel utilisateur — Admin{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero">
+    <span class="page-eyebrow">Création</span>
+    <h1>Nouvel utilisateur</h1>
+    <p class="page-lead">Définissez le rôle (agriculteur ou administrateur).</p>
+</section>
+<div class="card form-card">
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.motDePasse) }}
+        {{ form_row(form.role) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Créer</button>
+            <a href="{{ path('admin_users_index') }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

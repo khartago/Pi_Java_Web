@@ -15,6 +15,12 @@ import java.util.Set;
  */
 public class ImageUploadHelper {
 
+    /**
+     * Préfixe BDD + URL web (public/uploads/problemes) — aligné avec farmtech-web / Symfony.
+     * Ancien format {@code problemes/...} reste pris en charge par {@link #resolveStoredPhotoPath(String)}.
+     */
+    public static final String STORED_PHOTOS_PREFIX = "uploads/problemes";
+
     private static final String UPLOADS_BASE = "uploads";
     private static final String PROBLEMES_SUBDIR = "problemes";
     private static final long MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mo
@@ -72,7 +78,7 @@ public class ImageUploadHelper {
      * @param sourceFile chemin du fichier source
      * @param idProbleme ID du problème
      * @param index      index de l'image (0, 1, ...)
-     * @return le chemin relatif (ex. "problemes/1_1739123456_0.jpg") pour stockage en BDD
+     * @return le chemin relatif (ex. {@code uploads/problemes/1_1739123456_0.jpg}) pour stockage en BDD — même convention que le web
      */
     public static String copyWithUniqueName(Path sourceFile, int idProbleme, int index) throws IOException {
         ensureUploadDirExists();
@@ -87,6 +93,29 @@ public class ImageUploadHelper {
         Path targetDir = getBaseUploadDir();
         Path targetFile = targetDir.resolve(fileName);
         Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
-        return PROBLEMES_SUBDIR + "/" + fileName;
+        return STORED_PHOTOS_PREFIX + "/" + fileName;
+    }
+
+    /**
+     * Résout un segment stocké en colonne {@code probleme.photos} vers un chemin fichier local.
+     * Gère le format canonique {@code uploads/problemes/...} et l’ancien {@code problemes/...}.
+     * Les URL http(s) ne sont pas résolues ici (retourne {@code null}).
+     */
+    public static Path resolveStoredPhotoPath(String relative) {
+        if (relative == null || relative.isBlank()) {
+            return null;
+        }
+        String t = relative.trim().replace('\\', '/');
+        if (t.startsWith("http://") || t.startsWith("https://")) {
+            return null;
+        }
+        Path root = Paths.get(System.getProperty("user.dir"));
+        if (t.startsWith("uploads/")) {
+            return root.resolve(t).normalize();
+        }
+        if (t.startsWith("problemes/")) {
+            return root.resolve(UPLOADS_BASE).resolve(t).normalize();
+        }
+        return root.resolve(t).normalize();
     }
 }

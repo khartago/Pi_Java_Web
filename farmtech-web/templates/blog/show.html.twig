@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <article class="blog-post col-lg-8 mx-auto">
+        <header class="mb-4">
+            <h1>{{ article.title }}</h1>
+            <p class="text-muted">
+                By {{ article.authorName|default('Anonymous') }} on {{ article.createdAt|date('F j, Y') }}
+            </p>
+        </header>
+
+        <!-- Render Article Content -->
+        <div class="article-content mb-5">
+            {{ article.content|raw }} {# Use |raw if storing HTML, or format as Markdown if using a Markdown parser #}
+        </div>
+
+        <hr>
+
+        <!-- Comments Section -->
+        <section class="comments-section">
+            <h3>Comments ({{ comments|length }})</h3>
+
+            {% for comment in comments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ comment.authorName }} - {{ comment.createdAt|date('M d, Y H:i') }}
+                        </h6>
+                        <p class="card-text">{{ comment.content }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-muted">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </section>
+
+        <hr>
+
+        <!-- Comment Form -->
+        <section class="comment-form mt-4">
+            <h3>Leave a Comment</h3>
+            {{ form_start(commentForm) }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(commentForm.authorName) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(commentForm.authorEmail) }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form_row(commentForm.content) }}
+                </div>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            {{ form_end(commentForm) }}
+        </section>
+    </article>
+{% endblock %}

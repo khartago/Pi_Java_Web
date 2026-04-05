@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Moderate Comments{% endblock %}
+
+{% block body %}
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">Pending Comments</h1>
+
+        {% if comments is empty %}
+            <div class="alert alert-info">No pending comments.</div>
+        {% endif %}
+
+        {% for comment in comments %}
+            <div class="card mb-3 border-warning">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        On: <a href="{{ path('app_blog_show', {'slug': comment.article.slug}) }}">{{ comment.article.title }}</a>
+                    </h6>
+                    <p class="card-text"><strong>{{ comment.authorName }}</strong> ({{ comment.authorEmail }})</p>
+                    <p class="card-text bg-light p-2 rounded">{{ comment.content }}</p>
+
+                    <form method="post" class="d-inline">
+                        <button type="submit" formaction="{{ path('app_admin_approve_comment', {'id': comment.id}) }}"
+                                class="btn btn-success btn-sm">Approve</button>
+                        <button type="submit" formaction="{{ path('app_admin_delete_comment', {'id': comment.id}) }}"
+                                class="btn btn-danger btn-sm" onclick="return confirm('Delete this comment?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

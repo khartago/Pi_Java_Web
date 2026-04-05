@@ -17,7 +17,7 @@ public class ArticleService implements IArticleService {
     }
 
 
-    public void ajouterArticle(ArticleBase a){
+    public ArticleBase ajouterArticle(ArticleBase a){
         String req="INSERT INTO articletable (title, texte) VALUES (?,?)";
         try {
             PreparedStatement ste = con.prepareStatement(req);
@@ -29,6 +29,7 @@ public class ArticleService implements IArticleService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return a;
     }
 
     public void modifierArticle (ArticleBase a){
@@ -43,7 +44,7 @@ public class ArticleService implements IArticleService {
         }
     }
 
-    public void supprimerArticle(int id) {
+    public boolean supprimerArticle(int id) {
         String req="DELETE FROM articletable WHERE id=?";
         try {
             PreparedStatement ste=con.prepareStatement(req);
@@ -53,6 +54,7 @@ public class ArticleService implements IArticleService {
         } catch (SQLException e){
             throw new RuntimeException(e);
         }
+        return false;
     }
 
     public List<ArticleBase> afficherArticle() {
@@ -62,7 +64,7 @@ public class ArticleService implements IArticleService {
             Statement ste=con.createStatement();
             ResultSet rs= ste.executeQuery(req);
             while (rs.next()){
-                ArticleBase a=new ArticleBase(rs.getString("id"),rs.getString("titre"),rs.getString("texte"),rs.getDate("creationDate"),rs.getInt("likes"),rs.getInt("dislikes"),false);
+                ArticleBase a=new ArticleBase(rs.getInt("id"),rs.getString("titre"),rs.getString("texte"), rs.getDate("creationDate").toLocalDate(),rs.getInt("likes"),rs.getInt("dislikes"));
                 ArticleBase.add(a);
             }
         }

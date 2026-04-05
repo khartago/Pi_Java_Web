@@ -26,11 +26,9 @@ public class MaterielFormController {
     private Materiel materiel;
     private Produit produit;
 
-    // ================= INITIALIZE =================
     @FXML
     private void initialize() {
 
-        // Bloquer toutes les dates passées (création + modification)
         dateAchatPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -43,7 +41,6 @@ public class MaterielFormController {
         });
     }
 
-    // ================= SETTERS =================
     public void setMaterielDAO(MaterielDAO dao) {
         this.materielDAO = dao;
     }
@@ -66,18 +63,8 @@ public class MaterielFormController {
         }
     }
 
-    // ================= SAVE =================
     @FXML
     private void handleSave() {
-
-        if (produit == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Produit requis");
-            alert.setHeaderText(null);
-            alert.setContentText("Aucun produit n'est associé à cette vue. Revenez à la liste des produits, sélectionnez un produit puis ouvrez ses matériels.");
-            alert.showAndWait();
-            return;
-        }
 
         if (!validateInput()) return;
 
@@ -98,27 +85,45 @@ public class MaterielFormController {
         }
     }
 
-    // ================= CANCEL =================
     @FXML
     private void handleCancel() {
         closeWindow();
     }
 
-    // ================= VALIDATION =================
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
+        String nom = nomField.getText();
 
-        if (nomField.getText() == null || nomField.getText().trim().isEmpty())
+        if (nom == null || nom.trim().isEmpty()) {
             errors.append("- Le nom du matériel est requis.\n");
+        } else {
+            nom = nom.trim();
 
-        if (etatField.getText() == null || etatField.getText().trim().isEmpty())
+            if (nom.length() < 2 || nom.length() > 50) {
+                errors.append("- Le nom doit contenir entre 2 et 50 caractères.\n");
+            }
+
+            if (!nom.matches("[a-zA-ZÀ-ÿ0-9 ]+")) {
+                errors.append("- Le nom ne doit contenir que des lettres, chiffres et espaces.\n");
+            }
+        }
+
+        String etat = etatField.getText();
+
+        if (etat == null || etat.trim().isEmpty()) {
             errors.append("- L'état du matériel est requis.\n");
+        } else {
+            etat = etat.trim().toLowerCase();
 
+            if (!(etat.equals("neuf") || etat.equals("usagé") || etat.equals("bon"))) {
+                errors.append("- L'état doit être : neuf, usagé ou bon.\n");
+            }
+        }
         LocalDate selectedDate = dateAchatPicker.getValue();
         if (selectedDate == null) {
             errors.append("- La date d'achat est requise.\n");
         } else if (selectedDate.isBefore(LocalDate.now())) {
-            errors.append("- La date d'achat doit être aujourd’hui ou future.\n");
+            errors.append("- La date d'achat doit être aujourd'hui ou future.\n");
         }
 
         if (coutField.getText() == null || coutField.getText().trim().isEmpty()) {
@@ -144,7 +149,6 @@ public class MaterielFormController {
         return true;
     }
 
-    // ================= UTIL =================
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erreur");

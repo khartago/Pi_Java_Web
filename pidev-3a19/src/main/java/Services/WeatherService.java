@@ -2,11 +2,16 @@ package Services;
 
 import model.WeatherInfo;
 import com.google.gson.JsonObject;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -15,7 +20,7 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 /**
- * Service d'appel à l'API Open-Meteo pour la météo actuelle (gratuit, sans clé).
+ * Service météo : Open-Meteo (dashboard) + OpenWeatherMap (game).
  */
 public class WeatherService {
 
@@ -55,10 +60,7 @@ public class WeatherService {
         return (v != null && !v.trim().isEmpty()) ? v.trim() : null;
     }
 
-    /**
-     * Récupère la météo actuelle pour les coordonnées par défaut.
-     * Retourne null en cas d'erreur réseau ou réponse invalide.
-     */
+    /** Open-Meteo : météo pour le dashboard (sans clé). */
     public WeatherInfo getCurrentWeather() {
         return getCurrentWeather(defaultLat, defaultLon);
     }
@@ -112,5 +114,59 @@ public class WeatherService {
         if (code >= 85 && code <= 86) return "Averses de neige";
         if (code >= 95 && code <= 99) return "Orage";
         return "Variable";
+    }
+
+    /** Retourne un snapshot JSON de la meteo actuelle pour stockage dans probleme.meteo_snapshot. */
+    public String getWeatherSnapshotJson() {
+        WeatherInfo info = getCurrentWeather();
+        if (info == null) return null;
+        try {
+            com.google.gson.Gson gson = new com.google.gson.Gson();
+            return gson.toJson(java.util.Map.of(
+                    "temp", info.getTemperature(),
+                    "description", info.getDescription() != null ? info.getDescription() : "",
+                    "humidity", info.getHumidity() != null ? info.getHumidity() : 0,
+                    "timestamp", java.time.LocalDateTime.now().toString()
+            ));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** OpenWeatherMap : température par ville (pour le jeu). */
+    public static double getTemperature(String city) {
+        String apiKey = System.getenv("OPENWEATHER_API_KEY");
+        if (apiKey == null || apiKey.isBlank()) {
+            try (InputStream in = WeatherService.class.getResourceAsStream("/config.properties")) {
+                if (in != null) {
+                    Properties p = new Properties();
+                    p.load(in);
+                    apiKey = p.getProperty("openweather.api.key", "").trim();
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        if (apiKey == null || apiKey.isEmpty()) return -1;
+        try {
+            String urlString = "https://api.openweathermap.org/data/2.5/weather?q="
+                    + city + "&units=metric&appid=" + apiKey;
+
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            JSONObject jsonObject = new JSONObject(response.toString());
+            return jsonObject.getJSONObject("main").getDouble("temp");
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }

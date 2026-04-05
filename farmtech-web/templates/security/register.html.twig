@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block title %}Inscription — FARMTECH{% endblock %}
+
+{% block body_class %}theme-public{% endblock %}
+
+{% block flashes %}{% endblock %}
+
+{% block body %}
+<main id="main-content" class="shell shell--narrow" tabindex="-1">
+    {% include '_flash.html.twig' %}
+    <div class="auth-card">
+        <a href="{{ path('app_landing') }}" class="auth-brand" aria-label="FarmTech — accueil">{{ icons.brand_logo('site-logo--auth') }}</a>
+        <h1 class="font-display">Inscription</h1>
+        <p class="auth-lead">Créez un compte <strong>agriculteur</strong> pour signaler des problèmes et suivre les réponses de l’administration.</p>
+        {{ form_start(registrationForm, { attr: { 'data-turbo': 'false' } }) }}
+            {{ form_row(registrationForm.nom) }}
+            {{ form_row(registrationForm.email) }}
+            {{ form_row(registrationForm.plainPassword) }}
+            <button class="btn btn-primary" type="submit" style="width:100%;">Créer mon compte</button>
+        {{ form_end(registrationForm) }}
+        <p style="margin-top:1.5rem;text-align:center;">
+            <a href="{{ path('app_login') }}">Déjà inscrit ? Connexion</a>
+        </p>
+    </div>
+</main>
+{% endblock %}

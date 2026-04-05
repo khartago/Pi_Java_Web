@@ -43,6 +43,10 @@
                     <Label fx:id="etatLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
                 </GridPane>
 
+                <TitledPane fx:id="meteoPane" text="Météo au moment de la création" collapsible="true" expanded="false">
+                    <Label fx:id="meteoLabel" wrapText="true" style="-fx-padding: 8;"/>
+                </TitledPane>
+
                 <Separator/>
 
                 <Label text="Photos" styleClass="section-title"/>
@@ -62,6 +66,17 @@
                     <Label text="Médicament recommandé :" styleClass="field-label"/>
                     <Label fx:id="medicamentLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
                 </VBox>
+
+                <TitledPane fx:id="feedbackPane" text="Votre avis sur la solution" collapsible="false" expanded="true">
+                    <VBox spacing="10">
+                        <Label text="La solution proposée a-t-elle résolu votre problème ?"/>
+                        <TextArea fx:id="feedbackCommentArea" promptText="Commentaire (optionnel)" wrapText="true" prefRowCount="3"/>
+                        <HBox spacing="12">
+                            <Button fx:id="marquerResoluButton" text="Marquer comme résolu" onAction="#marquerResolu" styleClass="primary-button"/>
+                            <Button fx:id="marquerNonResoluButton" text="Non résolu" onAction="#marquerNonResolu" styleClass="secondary-button"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
             </VBox>
         </ScrollPane>
     </center>

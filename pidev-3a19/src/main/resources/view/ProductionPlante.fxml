@@ -10,7 +10,8 @@
             prefWidth="900" prefHeight="500"
             stylesheets="@farmtech-theme.css">
 
-    <VBox spacing="18" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+    <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+    <VBox spacing="18" style="-fx-background-color: transparent;">
         <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
         <Label text="Production plant (récoltes)" styleClass="section-title"/>
         <GridPane hgap="14" vgap="14">
@@ -38,4 +39,5 @@
             </columns>
         </TableView>
     </VBox>
+    </ScrollPane>
 </AnchorPane>
