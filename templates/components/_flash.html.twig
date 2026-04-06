@@ -1,0 +1,17 @@
+{% set flashes = app.flashes %}
+{% if flashes is not empty %}
+    <div class="flash-stack" aria-live="polite">
+        {% for label, messages in flashes %}
+            {% for message in messages %}
+                <div
+                    class="flash flash--{{ label }}"
+                    data-controller="flash"
+                    data-flash-delay-value="5000"
+                >
+                    <div>{{ message }}</div>
+                    <button type="button" class="flash__close" data-action="flash#dismiss" aria-label="Fermer">×</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

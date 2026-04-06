@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits | Farmtech{% endblock %}
+
+{% block body %}
+    <div class="page-grid">
+        <section class="hero">
+            <article class="hero__card">
+                <p class="hero__eyebrow">Phase 1 du port web</p>
+                <h1 class="hero__title">Piloter les produits et leurs matériels sans quitter le navigateur.</h1>
+               
+                <div class="hero__actions">
+                    <a class="button" href="{{ path('app_produit_new') }}">Nouveau produit</a>
+                    {% if selected_produit %}
+                        <a class="button-ghost" href="{{ path('app_materiel_new', { idProduit: selected_produit.idProduit }) }}">Ajouter un matériel</a>
+                    {% endif %}
+                </div>
+            </article>
+
+            <aside class="stats-strip" aria-label="Synthèse rapide">
+                <h2 class="stats-strip__title">Vue d’ensemble</h2>
+                <div class="stats-grid">
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Produits filtrés</span>
+                        <span class="stat-chip__value">{{ produits|length }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Produit actif</span>
+                        <span class="stat-chip__value">{{ selected_produit ? selected_produit.nom : 'Aucun' }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Matériels liés</span>
+                        <span class="stat-chip__value">{{ selected_produit ? selected_produit.materiels|length : 0 }}</span>
+                    </article>
+                </div>
+            </aside>
+        </section>
+
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Trouver un produit</h2>
+                    <p class="panel__copy">
+                        Les filtres sont portés par l’URL pour garder la navigation partageable et revenir facilement à un état précis.
+                    </p>
+                </div>
+            </div>
+
+            <form method="get" action="{{ path('app_produit_index') }}" class="filters">
+                <div class="field-group">
+                    <label for="recherche">Recherche par nom</label>
+                    <input class="input" id="recherche" name="recherche" type="search" value="{{ recherche }}" placeholder="Ex: lait, engrais, semence">
+                </div>
+
+                <div class="field-group">
+                    <label for="unite">Unité</label>
+                    <select class="select" id="unite" name="unite">
+                        <option value="">Toutes</option>
+                        {% for item in unites %}
+                            <option value="{{ item }}" {{ unite == item ? 'selected' }}>{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="button" type="submit">Appliquer</button>
+                <a class="button-ghost" href="{{ path('app_produit_index') }}">Réinitialiser</a>
+            </form>
+        </section>
+
+        {% if produits is empty %}
+            <section class="empty-state">
+                <h3>Aucun produit à afficher</h3>
+                <p>Commencez par créer un produit, puis rattachez-lui ses matériels depuis la fiche détaillée.</p>
+                <a class="button" href="{{ path('app_produit_new') }}">Créer le premier produit</a>
+            </section>
+        {% else %}
+            <section class="content-grid">
+                <aside class="stack-card">
+                    <div class="panel__header">
+                        <div>
+                            <h2 class="panel__title">Liste des produits</h2>
+                            <p class="panel__copy">Choisissez un produit pour afficher sa fiche complète.</p>
+                        </div>
+                    </div>
+
+                    <div class="product-list">
+                        {% for produit in produits %}
+                            <a
+                                class="product-link {{ selected_produit and selected_produit.idProduit == produit.idProduit ? 'is-selected' }}"
+                                href="{{ path('app_produit_show', { idProduit: produit.idProduit, recherche: recherche ?: null, unite: unite ?: null }) }}"
+                            >
+                                <div>
+                                    <h3 class="product-link__name">{{ produit.nom }}</h3>
+                                    <p class="product-link__meta">{{ produit.quantite }} {{ produit.unite }} en stock</p>
+                                </div>
+                                <span class="product-link__pill">{{ produit.dateExpirationLabel }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </aside>
+
+                <article class="detail-panel">
+                    {% if selected_produit %}
+                        <div class="detail-panel__head">
+                            <div>
+                                <p class="hero__eyebrow">Produit sélectionné</p>
+                                <h2 class="detail-panel__title">{{ selected_produit.nom }}</h2>
+                                <p class="detail-panel__subtitle">La gestion des matériels reste centrée sur ce produit.</p>
+                            </div>
+
+                            <div class="detail-panel__actions">
+                                <a class="button-ghost" href="{{ path('app_produit_edit', { idProduit: selected_produit.idProduit }) }}">Modifier</a>
+                                <a class="button" href="{{ path('app_materiel_new', { idProduit: selected_produit.idProduit }) }}">Ajouter un matériel</a>
+                                <form
+                                    method="post"
+                                    action="{{ path('app_produit_delete', { idProduit: selected_produit.idProduit }) }}"
+                                    class="inline-form"
+                                    data-controller="confirm"
+                                    data-confirm-message-value="Supprimer le produit {{ selected_produit.nom }} et tous ses matériels ?"
+                                    data-action="submit->confirm#submit"
+                                >
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-produit-' ~ selected_produit.idProduit) }}">
+                                    <button class="button-danger" type="submit">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="product-summary">
+                            <figure class="product-figure">
+                                <img src="{{ asset(selected_produit.imageAssetPath) }}" alt="Image du produit {{ selected_produit.nom }}">
+                            </figure>
+
+                            <dl class="definition-grid">
+                                <div class="definition-card">
+                                    <dt>ID produit</dt>
+                                    <dd>#{{ selected_produit.idProduit }}</dd>
+                                </div>
+                                <div class="definition-card">
+                                    <dt>Quantité</dt>
+                                    <dd>{{ selected_produit.quantite }}</dd>
+                                </div>
+                                <div class="definition-card">
+                                    <dt>Unité</dt>
+                                    <dd>{{ selected_produit.unite }}</dd>
+                                </div>
+                                <div class="definition-card">
+                                    <dt>Date d’expiration</dt>
+                                    <dd>{{ selected_produit.dateExpirationLabel }}</dd>
+                                </div>
+                                <div class="definition-card">
+                                    <dt>Image stockée</dt>
+                                    <dd>{{ selected_produit.imagePath ?? 'Aucune image' }}</dd>
+                                </div>
+                                <div class="definition-card">
+                                    <dt>Matériels liés</dt>
+                                    <dd>{{ selected_produit.materiels|length }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="section-divider">
+                            <h3>Matériels associés</h3>
+                            <a class="link-button" href="{{ path('app_materiel_new', { idProduit: selected_produit.idProduit }) }}">Ajouter un matériel</a>
+                        </div>
+
+                        {% if selected_produit.materiels is empty %}
+                            <div class="empty-state">
+                                <h3>Aucun matériel lié</h3>
+                                <p>Ajoutez le premier matériel depuis cette fiche pour garder un flux produit-first.</p>
+                                <a class="button" href="{{ path('app_materiel_new', { idProduit: selected_produit.idProduit }) }}">Créer un matériel</a>
+                            </div>
+                        {% else %}
+                            <div class="table-wrap">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>État</th>
+                                            <th>Date d’achat</th>
+                                            <th>Coût</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for materiel in selected_produit.materiels %}
+                                            <tr>
+                                                <td>{{ materiel.nom }}</td>
+                                                <td>{{ materiel.etat }}</td>
+                                                <td>{{ materiel.dateAchatLabel }}</td>
+                                                <td>{{ materiel.cout|number_format(2, ',', ' ') }}</td>
+                                                <td class="table__actions">
+                                                    <a class="link-button" href="{{ path('app_materiel_edit', { idMateriel: materiel.idMateriel }) }}">Modifier</a>
+                                                    <form
+                                                        method="post"
+                                                        action="{{ path('app_materiel_delete', { idMateriel: materiel.idMateriel }) }}"
+                                                        class="inline-form"
+                                                        data-controller="confirm"
+                                                        data-confirm-message-value="Supprimer le matériel {{ materiel.nom }} ?"
+                                                        data-action="submit->confirm#submit"
+                                                    >
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-materiel-' ~ materiel.idMateriel) }}">
+                                                        <button type="submit" class="link-button">Supprimer</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <h3>Sélectionnez un produit</h3>
+                            <p>Ajustez les filtres ou choisissez un élément dans la liste pour charger sa fiche détaillée.</p>
+                        </div>
+                    {% endif %}
+                </article>
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Produit sans image</title>
+  <desc id="desc">Illustration abstraite de remplacement pour un produit.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#edf4e9"/>
+      <stop offset="100%" stop-color="#d7e5cf"/>
+    </linearGradient>
+    <linearGradient id="shape" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#305f3f"/>
+      <stop offset="100%" stop-color="#6f8f67"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#bg)"/>
+  <circle cx="545" cy="92" r="84" fill="#ffffff" fill-opacity=".35"/>
+  <circle cx="88" cy="336" r="124" fill="#ffffff" fill-opacity=".42"/>
+  <g transform="translate(110 82)">
+    <rect x="0" y="46" width="276" height="198" rx="34" fill="#fffdf8" stroke="#305f3f" stroke-opacity=".12"/>
+    <path d="M36 204 112 126l58 56 54-68 52 90H36Z" fill="url(#shape)" fill-opacity=".9"/>
+    <circle cx="220" cy="102" r="28" fill="#d7e5cf"/>
+  </g>
+  <g transform="translate(376 118)">
+    <rect x="0" y="0" width="154" height="154" rx="32" fill="url(#shape)"/>
+    <path d="M77 34c20 0 36 16 36 36S97 106 77 106 41 90 41 70s16-36 36-36Zm-52 102h104v18H25z" fill="#f8f6ef" fill-opacity=".94"/>
+  </g>
+</svg>

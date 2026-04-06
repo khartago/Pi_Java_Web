@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ mode == 'creation' ? 'Nouveau produit' : 'Modifier le produit' }} | Farmtech
+{% endblock %}
+
+{% block body %}
+    <section class="sheet-layout">
+        <aside class="sheet-backdrop">
+            <p class="hero__eyebrow">Gestion produit</p>
+            <h2>{{ mode == 'creation' ? 'Créer un nouveau produit' : 'Mettre à jour la fiche produit' }}</h2>
+            
+        </aside>
+
+        <article class="sheet">
+            <div class="sheet__header">
+                <div>
+                    <h1 class="sheet__title">{{ mode == 'creation' ? 'Nouveau produit' : produit.nom }}</h1>
+                    <p class="sheet__copy">
+                        Les champs restent alignés sur l’entité `Produit` source : nom, quantité, unité, expiration et image.
+                    </p>
+                </div>
+
+                <a
+                    class="button-ghost"
+                    href="{{ path(back_route|default('app_produit_index'), back_route_params|default({})) }}"
+                >
+                    Retour
+                </a>
+            </div>
+
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+                {% if not form.vars.valid %}
+                    <div class="form-errors">
+                        {{ form_errors(form) }}
+                    </div>
+                {% endif %}
+
+                <div class="form-grid form-grid--two">
+                    <div class="field-group">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom) }}
+                        {% for error in form.nom.vars.errors %}
+                            <p class="field-error">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field-group">
+                        {{ form_label(form.quantite) }}
+                        {{ form_widget(form.quantite) }}
+                        {% for error in form.quantite.vars.errors %}
+                            <p class="field-error">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field-group">
+                        {{ form_label(form.unite) }}
+                        {{ form_widget(form.unite) }}
+                        {% for error in form.unite.vars.errors %}
+                            <p class="field-error">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="field-group">
+                        {{ form_label(form.dateExpiration) }}
+                        {{ form_widget(form.dateExpiration) }}
+                        {% for error in form.dateExpiration.vars.errors %}
+                            <p class="field-error">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div
+                    class="upload-preview"
+                    data-controller="file-preview"
+                    data-file-preview-placeholder-value="{{ asset('images/product-placeholder.svg') }}"
+                >
+                    <div class="upload-preview__figure">
+                        <img
+                            src="{{ current_image_path ? asset(current_image_path) : asset('images/product-placeholder.svg') }}"
+                            alt="Aperçu produit"
+                            data-file-preview-target="preview"
+                        >
+                    </div>
+
+                    <div class="field-group">
+                        {{ form_label(form.imageFile) }}
+                        {{ form_widget(form.imageFile, {
+                            attr: {
+                                class: 'input',
+                                'data-file-preview-target': 'input',
+                                'data-action': 'change->file-preview#update'
+                            }
+                        }) }}
+                        <p class="upload-preview__meta" data-file-preview-target="name">
+                            {{ current_image_path ? 'Image actuelle conservée tant qu’aucun nouveau fichier n’est envoyé.' : 'Aucun nouveau fichier sélectionné' }}
+                        </p>
+                        <p class="help-text">{{ form.imageFile.vars.help }}</p>
+                        {% for error in form.imageFile.vars.errors %}
+                            <p class="field-error">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <p class="help-text">
+                        {{ mode == 'creation' ? 'Le produit sera ensuite accessible depuis la vue principale.' : 'Les matériels déjà liés restent rattachés à ce produit.' }}
+                    </p>
+
+                    <div class="detail-panel__actions">
+                        <a
+                            class="button-ghost"
+                            href="{{ path(back_route|default('app_produit_index'), back_route_params|default({})) }}"
+                        >
+                            Annuler
+                        </a>
+                        <button class="button" type="submit">{{ submit_label }}</button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </article>
+    </section>
+{% endblock %}

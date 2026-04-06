@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Marketplace | Farmtech{% endblock %}
+
+{% block body %}
+    <div class="page-grid marketplace-page">
+        <section class="hero marketplace-hero">
+            <article class="hero__card marketplace-hero__card">
+                <p class="hero__eyebrow">Marketplace</p>
+                <h1 class="hero__title">Parcourir les produits, les materiels et leurs categories.</h1>
+                <p class="hero__copy">
+                    Cette vue expose un catalogue lisible pour les utilisateurs finaux : chaque carte produit affiche
+                    sa categorie calculee, le stock disponible et les materiels associes, sans modifier le moteur
+                    de gestion interne.
+                </p>
+                <div class="hero__actions">
+                    <a class="button" href="{{ path('app_produit_index') }}">Ouvrir le stock interne</a>
+                    <a class="button-ghost" href="{{ path('app_produit_new') }}">Ajouter un produit</a>
+                </div>
+            </article>
+
+            <aside class="stats-strip" aria-label="Synthese marketplace">
+                <h2 class="stats-strip__title">Indicateurs</h2>
+                <div class="stats-grid">
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Produits visibles</span>
+                        <span class="stat-chip__value">{{ cards|length }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Categories actives</span>
+                        <span class="stat-chip__value">{{ category_facets|length }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Materiels visibles</span>
+                        <span class="stat-chip__value">{{ materiel_total }}</span>
+                    </article>
+                </div>
+            </aside>
+        </section>
+
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Filtrer le catalogue</h2>
+                    <p class="panel__copy">Recherche par nom, unite ou categorie. Les filtres restent dans l'URL pour partager facilement la vue courante.</p>
+                </div>
+            </div>
+
+            <form method="get" action="{{ path('app_marketplace_index') }}" class="filters marketplace-filters">
+                <div class="field-group">
+                    <label for="recherche">Recherche produit</label>
+                    <input class="input" id="recherche" name="recherche" type="search" value="{{ recherche }}" placeholder="Ex: semence, lait, engrais">
+                </div>
+
+                <div class="field-group">
+                    <label for="unite">Unite</label>
+                    <select class="select" id="unite" name="unite">
+                        <option value="">Toutes</option>
+                        {% for item in unites %}
+                            <option value="{{ item }}" {{ unite == item ? 'selected' }}>{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="categorie">Categorie</label>
+                    <select class="select" id="categorie" name="categorie">
+                        <option value="">Toutes</option>
+                        {% for facet in category_facets %}
+                            <option value="{{ facet.name }}" {{ categorie == facet.name ? 'selected' }}>{{ facet.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="button" type="submit">Filtrer</button>
+                <a class="button-ghost" href="{{ path('app_marketplace_index') }}">Reinitialiser</a>
+            </form>
+        </section>
+
+        <section class="panel marketplace-categories" aria-label="Categories du marketplace">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Categories</h2>
+                    <p class="panel__copy">Chaque categorie est calculee automatiquement a partir des donnees produit deja existantes.</p>
+                </div>
+            </div>
+
+            <div class="market-chip-row">
+                <a
+                    class="market-chip {{ categorie == '' ? 'is-active' }}"
+                    href="{{ path('app_marketplace_index', { recherche: recherche ?: null, unite: unite ?: null }) }}"
+                >
+                    Toutes <span>{{ total_products }}</span>
+                </a>
+
+                {% for facet in category_facets %}
+                    <a
+                        class="market-chip {{ categorie == facet.name ? 'is-active' }}"
+                        href="{{ path('app_marketplace_index', { recherche: recherche ?: null, unite: unite ?: null, categorie: facet.name }) }}"
+                    >
+                        {{ facet.name }} <span>{{ facet.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if cards is empty %}
+            <section class="empty-state">
+                <h3>Aucun produit ne correspond aux filtres</h3>
+                <p>Essayez une autre combinaison de recherche ou revenez a toutes les categories.</p>
+                <a class="button" href="{{ path('app_marketplace_index') }}">Voir tout le catalogue</a>
+            </section>
+        {% else %}
+            <section class="market-grid" aria-label="Grille des produits marketplace">
+                {% for card in cards %}
+                    <article class="market-card">
+                        <figure class="market-card__media">
+                            <img
+                                src="{{ asset(card.produit.imageAssetPath) }}"
+                                alt="Image du produit {{ card.produit.nom }}"
+                                loading="lazy"
+                            >
+                        </figure>
+
+                        <header class="market-card__head">
+                            <p class="market-card__category">{{ card.category }}</p>
+                            <span class="product-link__pill">{{ card.produit.dateExpirationLabel }}</span>
+                        </header>
+
+                        <h2 class="market-card__title">{{ card.produit.nom }}</h2>
+                        <p class="market-card__meta">{{ card.produit.quantite }} {{ card.produit.unite }} disponibles</p>
+
+                        <dl class="market-card__stats">
+                            <div>
+                                <dt>Materiels</dt>
+                                <dd>{{ card.materielCount }}</dd>
+                            </div>
+                            <div>
+                                <dt>Produit</dt>
+                                <dd>#{{ card.produit.idProduit }}</dd>
+                            </div>
+                        </dl>
+
+                        {% if card.materielPreview is empty %}
+                            <p class="market-card__empty">Aucun materiel lie a ce produit.</p>
+                        {% else %}
+                            <ul class="market-card__list">
+                                {% for materielName in card.materielPreview %}
+                                    <li>{{ materielName }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        <div class="market-card__actions">
+                            <a class="button-ghost" href="{{ path('app_produit_show', { idProduit: card.produit.idProduit }) }}">Voir la fiche</a>
+                            <a class="button" href="{{ path('app_materiel_new', { idProduit: card.produit.idProduit }) }}">Ajouter materiel</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}
