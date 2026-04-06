@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}FarmTech{% endblock %}</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background: #1abc9c;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background: #ecf0f1;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #27ae60;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>🌿 FarmTech</h2>
+
+    <a href="{{ path('app_home') }}">Home</a>
+    <a href="{{ path('app_plantation_index') }}">Plantation</a>
+    <a href="{{ path('app_production_index') }}">Production</a>
+</div>
+
+<div class="content">
+    {% block body %}{% endblock %}
+</div>
+
+</body>
+</html>

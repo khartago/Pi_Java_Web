@@ -1,0 +1,91 @@
+{% extends 'base_da.html.twig' %}
+
+{% block body %}
+
+<style>
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #1e293b;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    margin-top: 5px;
+}
+
+.form-control:focus {
+    border-color: #22c55e;
+    outline: none;
+    box-shadow: 0 0 5px rgba(34,197,94,0.5);
+}
+
+.btn-submit {
+    width: 100%;
+    background: #22c55e;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background: #16a34a;
+}
+</style>
+
+<div class="form-container">
+    <h1>✏️ Modifier Production</h1>
+
+    {{ form_start(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.quantiteProduite) }}
+            {{ form_widget(form.quantiteProduite, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.dateRecolte) }}
+            {{ form_widget(form.dateRecolte, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.qualite) }}
+            {{ form_widget(form.qualite, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.etat) }}
+            {{ form_widget(form.etat, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <button type="submit" class="btn-submit">💾 Modifier</button>
+
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin-live-filters.js') }}?v=2" defer></script>
+{% endblock %}
+
+{% block body_class %}theme-admin{% endblock %}
+
+{# Les flashes sont dans la colonne principale pour ne pas chevaucher la sidebar #}
+{% block flashes %}{% endblock %}
+
+{% set _admin_route = app.request.attributes.get('_route') %}
+{% set _nav_signalements_active = _admin_route starts with 'admin_problemes' or _admin_route starts with 'admin_diagnostics' %}
+{% set admin_page_title = 'Administration' %}
+{% set admin_page_desc = 'Gestion de la plateforme FarmTech.' %}
+{% if _admin_route == 'admin_dashboard' %}
+    {% set admin_page_title = 'Tableau de bord' %}
+    {% set admin_page_desc = 'Vue synthétique : comptes, signalements et diagnostics.' %}
+{% elseif _admin_route starts with 'admin_users' %}
+    {% set admin_page_title = 'Utilisateurs' %}
+    {% set admin_page_desc = 'Comptes enregistrés, rôles et accès à l’application.' %}
+{% elseif _nav_signalements_active %}
+    {% set admin_page_title = 'Signalements' %}
+    {% set admin_page_desc = 'Signalements des agriculteurs et suivi des diagnostics.' %}
+{% endif %}
+
+{% block body %}
+<div class="admin-app">
+    <aside class="admin-sidebar" aria-label="Navigation administration">
+        <a href="{{ path('admin_dashboard') }}" class="admin-sidebar-brand" aria-label="FarmTech — tableau de bord admin">
+            <span class="admin-sidebar-logo-wrap">{{ icons.brand_logo('site-logo site-logo--admin') }}</span>
+            <span class="admin-sidebar-brand-sub">Administration</span>
+        </a>
+        <nav class="admin-sidebar-nav" aria-label="Menu principal">
+            <a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
+                {{ icons.dashboard(20) }} Tableau de bord
+            </a>
+            <a href="{{ path('admin_users_index') }}" class="{{ app.request.attributes.get('_route') starts with 'admin_users' ? 'active' : '' }}">
+                {{ icons.users(20) }} Utilisateurs
+            </a>
+            <a href="{{ path('admin_problemes_index') }}" class="{{ _nav_signalements_active ? 'active' : '' }}">
+                {{ icons.flag(20) }} Signalements
+            </a>
+        </nav>
+        <footer class="admin-sidebar-footer">
+            {% set admin_nom = app.user.nom ?? app.user.userIdentifier %}
+            {% set admin_email = app.user.email ?? '' %}
+            <div class="admin-sidebar-profile">
+                <span class="admin-sidebar-avatar" aria-hidden="true">{{ admin_nom|slice(0, 1)|upper }}</span>
+                <div class="admin-sidebar-profile-text">
+                    <span class="admin-sidebar-profile-name" title="{{ admin_nom }}">{{ admin_nom }}</span>
+                    {% if admin_email %}
+                        <span class="admin-sidebar-profile-email" title="{{ admin_email }}">{{ admin_email }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{{ path('app_logout') }}" class="admin-sidebar-logout">{{ icons.log_out(18) }} Déconnexion</a>
+        </footer>
+    </aside>
+
+    <div class="admin-workspace">
+        <header class="admin-topbar">
+            <div class="admin-topbar-start">
+                <div class="admin-topbar-icon" aria-hidden="true">
+                    {% if _admin_route == 'admin_dashboard' %}
+                        {{ icons.dashboard(22) }}
+                    {% elseif _admin_route starts with 'admin_users' %}
+                        {{ icons.users(22) }}
+                    {% elseif _nav_signalements_active %}
+                        {{ icons.flag(22) }}
+                    {% else %}
+                        {{ icons.dashboard(22) }}
+                    {% endif %}
+                </div>
+                <div class="admin-topbar-copy">
+                    <p class="admin-topbar-kicker">
+                        <span class="admin-topbar-badge">Console admin</span>
+                        <span class="admin-topbar-kicker-sep" aria-hidden="true">·</span>
+                        <span>FarmTech</span>
+                    </p>
+                    <p class="admin-topbar-title">{{ admin_page_title }}</p>
+                    <p class="admin-topbar-desc">{{ admin_page_desc }}</p>
+                </div>
+            </div>
+            <div class="admin-topbar-end">
+                <time class="admin-topbar-time" datetime="{{ 'now'|date('c') }}">{{ 'now'|date('d/m/Y') }}<span class="admin-topbar-time-sep">·</span>{{ 'now'|date('H:i') }}</time>
+            </div>
+        </header>
+        <main id="main-content" class="admin-main" tabindex="-1">
+            {% include '_flash.html.twig' %}
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}

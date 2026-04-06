@@ -1,0 +1,31 @@
+{% extends 'base_da.html.twig' %}
+
+{% block body %}
+
+<h1>📊 Dashboard Plantation</h1>
+
+<div style="display:flex; gap:20px; margin-bottom:20px;">
+
+    <div style="background:#27ae60; color:white; padding:20px; border-radius:10px;">
+        <h3>Total Plantations</h3>
+        <h2>{{ totalPlantations }}</h2>
+    </div>
+
+    <div style="background:#f39c12; color:white; padding:20px; border-radius:10px;">
+        <h3>Pending</h3>
+        <h2>{{ pending }}</h2>
+    </div>
+
+    <div style="background:#2980b9; color:white; padding:20px; border-radius:10px;">
+        <h3>Complete</h3>
+        <h2>{{ complete }}</h2>
+    </div>
+
+    <div style="background:#8e44ad; color:white; padding:20px; border-radius:10px;">
+        <h3>Total Production</h3>
+        <h2>{{ totalProductions }}</h2>
+    </div>
+
+</div>
+
+{% endblock %}

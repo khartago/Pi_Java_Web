@@ -1,0 +1,107 @@
+{% extends 'admin/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Signalements — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-crud-page">
+    <header class="admin-crud-head">
+        <div>
+            <span class="page-eyebrow">Administration</span>
+            <h1>Signalements</h1>
+            <p class="page-lead">Consultez les signalements et ouvrez le diagnostic associé depuis la colonne Actions.</p>
+        </div>
+        <a href="{{ path('admin_problemes_new') }}" class="btn btn-ghost">Créer un signalement</a>
+    </header>
+
+    <div class="admin-crud-panel">
+        <div class="admin-stat-strip" role="list">
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Total</span>
+                <span class="admin-stat-strip__val">{{ stats.total }}</span>
+            </div>
+            {% for etat, cnt in stats.byEtat %}
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">{{ pl.etat_label(etat) }}</span>
+                <span class="admin-stat-strip__val">{{ cnt }}</span>
+            </div>
+            {% endfor %}
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Affichés</span>
+                <span class="admin-stat-strip__val">{{ problemes|length }}</span>
+            </div>
+        </div>
+
+        <form method="get" data-live-filter="1" class="filters-bar filters-bar--live" action="{{ path('admin_problemes_index') }}">
+            <div class="filters-bar__row">
+                <div class="filter-field form-row filter-field--grow" style="margin:0;">
+                    <label for="pq">Recherche</label>
+                    <input class="form-control" id="pq" name="q" value="{{ filters.q|default('') }}" maxlength="200" placeholder="Description, type…" autocomplete="off">
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="petat">État</label>
+                    <select class="form-control" id="petat" name="etat">
+                        <option value="">Tous</option>
+                        {% for label, val in constant('App\\Form\\ProblemeType::ETATS') %}
+                            <option value="{{ val }}" {{ filters.etat == val ? 'selected' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pgrav">Gravité</label>
+                    <select class="form-control" id="pgrav" name="gravite">
+                        <option value="">Toutes</option>
+                        {% for label, val in constant('App\\Form\\ProblemeType::GRAVITES') %}
+                            <option value="{{ val }}" {{ filters.gravite == val ? 'selected' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filters-bar__actions">
+                    <button type="submit" class="btn btn-secondary btn-sm btn-filter-fallback">Filtrer</button>
+                    <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost btn-sm">Réinit.</a>
+                </div>
+            </div>
+        </form>
+
+        {% if problemes is empty %}
+            <div class="empty-state" style="margin:0;border:none;border-radius:0;border-top:1px solid rgba(26,77,46,0.08);">
+                <strong>Aucun problème</strong>
+                <p>Élargissez la recherche ou les filtres.</p>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>#</th><th>Utilisateur</th><th>Type</th><th>Gravité</th><th>État</th><th>Date</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in problemes %}
+                        <tr>
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.utilisateur ? p.utilisateur.email : '—' }}</td>
+                            <td>{{ p.type }}</td>
+                            <td><span class="badge badge-warn">{{ p.gravite }}</span></td>
+                            <td><span class="badge badge-info">{{ pl.etat_label(p.etat) }}</span></td>
+                            <td>{{ p.dateDetection|date('d/m/Y') }}</td>
+                            <td class="table-actions">
+                                {% set latest = latestDiagnosticByProbleme[p.id] ?? null %}
+                                {% if latest %}
+                                    <a href="{{ path('admin_diagnostics_edit', {id: latest.id}) }}">Diagnostic</a>
+                                {% else %}
+                                    <a href="{{ path('admin_diagnostics_new', {probleme: p.id}) }}">Diagnostic</a>
+                                {% endif %}
+                                <a href="{{ path('admin_problemes_edit', {id: p.id}) }}">Éditer</a>
+                                <form method="post" action="{{ path('admin_problemes_delete', {id: p.id}) }}" onsubmit="return confirm('Supprimer ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ p.id) }}">
+                                    <button type="submit" class="btn btn-danger-soft btn-sm" aria-label="Supprimer">Suppr.</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

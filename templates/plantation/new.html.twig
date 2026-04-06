@@ -1,0 +1,60 @@
+{% extends 'base_da.html.twig' %}
+
+{% block body %}
+<style>
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-container input,
+.form-container select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.form-container button {
+    background: #22c55e;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.form-container button:hover {
+    background: #16a34a;
+}
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #1e293b;
+}
+</style>
+
+<div class="form-container">
+    <h2>plantations</h2>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">💾 Save</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

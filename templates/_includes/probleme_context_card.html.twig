@@ -1,0 +1,18 @@
+{% import '_macros/probleme_labels.html.twig' as pl %}
+{# Variables: probleme (App\Entity\Probleme) #}
+<div class="card" style="margin-bottom:1.25rem;">
+    <h3 class="font-display" style="margin-top:0;">Signalement #{{ probleme.id }} — {{ probleme.type }}</h3>
+    <p style="margin:0 0 0.75rem;line-height:1.55;">{{ probleme.description|nl2br }}</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+        <span class="badge badge-warn">{{ probleme.gravite }}</span>
+        <span class="badge badge-info">{{ pl.etat_label(probleme.etat) }}</span>
+        <span style="color:var(--color-muted);font-size:0.9rem;">{{ probleme.dateDetection|date('d/m/Y H:i') }}</span>
+    </div>
+    {% if probleme.utilisateur %}
+        <p style="margin:0 0 0.75rem;font-size:0.9rem;color:var(--color-muted);">Agriculteur : {{ probleme.utilisateur.email }}</p>
+    {% endif %}
+    {% if probleme.photos %}
+        <p style="margin:0 0 0.35rem;font-weight:600;">Photos du signalement</p>
+        {% include '_includes/probleme_photo_gallery.html.twig' with { photos: probleme.photos } only %}
+    {% endif %}
+</div>

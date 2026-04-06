@@ -1,0 +1,13 @@
+{% set flash_messages = app.flashes %}
+{% if flash_messages is not empty %}
+<div class="flash-stack" role="status" aria-live="polite">
+    {% for label, messages in flash_messages %}
+        {% for message in messages %}
+            {% set tone = label == 'error' ? 'error' : (label == 'success' ? 'success' : 'info') %}
+            <div class="flash-item flash-item--{{ tone }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endif %}

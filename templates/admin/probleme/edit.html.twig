@@ -1,0 +1,31 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Problème #{{ probleme.id }} — Admin{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero">
+    <span class="page-eyebrow">Édition</span>
+    <h1>Problème #{{ probleme.id }}</h1>
+    <p class="page-lead">Modifier le signalement.</p>
+</section>
+<div class="card form-card form-card--wide">
+    {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.gravite) }}
+        {{ form_row(form.dateDetection) }}
+        {{ form_row(form.etat) }}
+        {{ form_row(form.photoFiles) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+            <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% if probleme.photos %}
+<div class="card form-card form-card--wide" style="margin-top:1rem;">
+    <strong>Photos actuelles</strong>
+    {% include '_includes/probleme_photo_gallery.html.twig' with { photos: probleme.photos } only %}
+</div>
+{% endif %}
+{% endblock %}

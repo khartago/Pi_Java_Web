@@ -1,0 +1,16 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block front_content %}
+<div class="container">
+    <h1>Dashboard</h1>
+
+    <p>Welcome {{ app.user.nom }}</p>
+
+    <div>
+        <h3>Stats</h3>
+        <p>Total: {{ stats.total }}</p>
+    </div>
+</div>
+{% endblock %}

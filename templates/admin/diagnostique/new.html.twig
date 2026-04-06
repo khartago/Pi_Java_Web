@@ -1,0 +1,32 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouveau diagnostic — Admin{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero">
+    <span class="page-eyebrow">Création</span>
+    <h1>Nouveau diagnostic</h1>
+    <p class="page-lead">{% if contextProbleme %}Contexte du signalement ci-dessous — saisissez le diagnostic.{% else %}Associez un diagnostic à un problème existant.{% endif %}</p>
+</section>
+{% if contextProbleme %}
+    {% include '_includes/probleme_context_card.html.twig' with { probleme: contextProbleme } only %}
+{% endif %}
+<div class="card form-card form-card--wide">
+    {{ form_start(form) }}
+        {% if form.probleme is defined %}
+            {{ form_row(form.probleme) }}
+        {% endif %}
+        {{ form_row(form.cause) }}
+        {{ form_row(form.solutionProposee) }}
+        {{ form_row(form.dateDiagnostique) }}
+        {{ form_row(form.resultat) }}
+        {{ form_row(form.medicament) }}
+        {{ form_row(form.approuve) }}
+        {{ form_row(form.numRevision) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+            <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
