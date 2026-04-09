@@ -1,0 +1,241 @@
+
+{% block body %}
+<style>
+.game-fullscreen {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: url('/images/game-bg.png') center/cover no-repeat;
+}
+
+/* TOOLS */
+.tools {
+    position: absolute;
+    top: 40px;
+    left: 80%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 50px;
+     z-index: 1000; 
+}
+
+.tools img {
+    width: 90px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tools img:hover {
+    transform: scale(1.2);
+}
+
+
+
+
+
+.game-area {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+     z-index: 1; 
+}
+.tools img.active {
+    border: 3px solid yellow;
+    border-radius: 10px;
+    transform: scale(1.2);
+}
+.tools img {
+    pointer-events: auto; /* ensure clickable */
+}
+/* all pots */
+.pot {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+}
+
+.pot img {
+    width: 80px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    pointer-events: none; /* 🔥 IMPORTANT */
+}
+.plant {
+    width: 80px;
+}
+
+.timer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+
+    padding: 4px 8px;
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+/* ROW 1 */
+.pot-0 { top: 280px; left: 500px; }
+.pot-1 { top: 280px; left: 730px; }
+.pot-2 { top: 280px; left: 960px; }
+.pot-3 { top: 300px; left: 1185px; }
+
+/* ROW 2 */
+.pot-4 { top: 530px; left: 500px; }
+.pot-5 { top: 510px; left: 730px; }
+.pot-6 { top: 510px; left: 960px; }
+.pot-7 { top: 510px; left: 1185px; }
+
+/* ROW 3 */
+.pot-8  { top: 700px; left: 500px; }
+.pot-9  { top: 725px; left: 730px; }
+.pot-10 { top: 725px; left: 960px; }
+.pot-11 { top: 730px; left: 1185px; }
+</style>
+
+<div class="game-fullscreen">
+
+    <!-- TOOLS -->
+    <div class="tools">
+<img src="/images/water.png" onclick="selectTool('water', this)">
+<img src="/images/manure.png" onclick="selectTool('manure', this)">
+<img src="/images/shovel.png" onclick="selectTool('shovel', this)">
+    </div>
+
+
+
+<div class="game-area">
+
+    {% for i in 0..11 %}
+        {% set plant = cards[i] ?? null %}
+
+        <div class="pot pot-{{ i }}" onclick="handleClick({{ i }})">
+
+            {% if plant %}
+                <img id="plant-{{ i }}" src="/images/{{ plant.name }}.png">
+                <div class="timer" id="timer-{{ i }}">30s</div>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</div>
+
+</div>
+
+<script>
+let selectedTool = null;
+
+function selectTool(tool, element) {
+    selectedTool = tool;
+
+    // remove active from all
+    document.querySelectorAll('.tools img').forEach(img => {
+        img.classList.remove('active');
+    });
+
+    // add active to clicked
+    element.classList.add('active');
+}
+
+/* INIT PLANTS */
+let plants = {};
+
+{% for card in cards %}
+plants[{{ card.index }}] = {
+    name: "{{ card.name }}",
+    timer: 30,
+    level: 1,
+    waterCount: 0,
+    alive: true
+};
+{% endfor %}
+
+/* INITIAL DISPLAY */
+function render() {
+    for (let i = 0; i < 12; i++) {
+        let plant = plants[i];
+
+        let img = document.getElementById('plant-' + i);
+        let timer = document.getElementById('timer-' + i);
+
+        if (!img || !timer) continue;
+
+        if (!plant) {
+            img.src = "";
+            timer.innerText = "";
+            continue;
+        }
+
+        if (!plant.alive) {
+            img.src = "/images/dead.png";
+            timer.innerText = "DEAD";
+            continue;
+        }
+
+        img.src = "/images/" + plant.name + "." + plant.level + ".png";
+        timer.innerText = plant.timer + "s";
+    }
+}
+
+/* TIMER LOOP */
+setInterval(() => {
+    for (let i in plants) {
+        let p = plants[i];
+
+        if (!p.alive) continue;
+
+        p.timer--;
+
+        if (p.timer <= 0) {
+            p.alive = false;
+        }
+    }
+
+    render();
+}, 1000);
+
+/* CLICK ACTION */
+function handleClick(i) {
+    let p = plants[i];
+
+    console.log("CLICK on plant", i, "tool:", selectedTool);
+
+    if (!selectedTool) {
+        alert("Select a tool first!");
+        return;
+    }
+
+    if (!p) return;
+
+    if (selectedTool === 'shovel') {
+        delete plants[i];
+    }
+
+    if (selectedTool === 'manure') {
+        p.timer += 15;
+    }
+
+    if (selectedTool === 'water') {
+        p.timer = 30;
+        p.waterCount++;
+
+        if (p.waterCount === 3 && p.level < 3) {
+            p.level++;
+            p.waterCount = 0;
+        }
+    }
+
+    render();
+}
+
+render();
+</script>
+
+{% endblock %}

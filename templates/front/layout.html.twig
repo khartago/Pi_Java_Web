@@ -19,7 +19,9 @@
         <nav class="farmer-nav" aria-label="Navigation">
             <a href="{{ path('app_home') }}" class="farmer-nav__link {{ front_route == 'app_home' ? 'is-active' }}" {% if front_route == 'app_home' %}aria-current="page"{% endif %}>Accueil</a>
             <a href="{{ path('app_problemes_index') }}" class="farmer-nav__link {{ front_route starts with 'app_problemes' ? 'is-active' }}" {% if front_route starts with 'app_problemes' %}aria-current="page"{% endif %}>Mes dossiers</a>
+            <a href="{{ path('app_game') }}">Game</a>
             <a href="{{ path('app_dashboard') }}">Dashboard</a>
+            
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('admin_dashboard') }}" class="farmer-nav__link farmer-nav__link--admin">Admin</a>
             {% endif %}
