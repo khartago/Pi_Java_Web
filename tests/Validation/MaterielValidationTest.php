@@ -32,7 +32,7 @@ class MaterielValidationTest extends KernelTestCase
 
         self::assertContains('Le nom doit contenir au moins 2 caractères.', $messages);
         self::assertContains('Le nom ne doit contenir que des lettres, chiffres et espaces.', $messages);
-        self::assertContains('L’état doit être : neuf, usagé ou bon.', $messages);
+        self::assertContains('L’état doit être : neuf, usagé, bon ou panne.', $messages);
         self::assertContains('La date d’achat doit être aujourd’hui ou passée.', $messages);
         self::assertContains('Le coût doit être positif ou nul.', $messages);
         self::assertContains('Le produit lié est requis.', $messages);

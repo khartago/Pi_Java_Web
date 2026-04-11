@@ -6,6 +6,11 @@ use App\Entity\Produit;
 use App\Form\ProduitType;
 use App\Repository\ProduitRepository;
 use App\Service\ProduitManager;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\SvgWriter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -13,6 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/produits')]
 class ProduitController extends AbstractController
@@ -118,6 +124,40 @@ class ProduitController extends AbstractController
         $this->addFlash('success', 'Le produit a été supprimé.');
 
         return $this->redirectToRoute('app_produit_index');
+    }
+
+    #[Route('/{idProduit<\d+>}/qr-code', name: 'app_produit_qr_code', methods: ['GET'])]
+    public function qrCode(#[MapEntity(mapping: ['idProduit' => 'idProduit'])] Produit $produit): Response
+    {
+        $absolutePath = $this->generateUrl('app_produit_show', [
+            'idProduit' => $produit->getIdProduit(),
+        ], UrlGeneratorInterface::ABSOLUTE_PATH);
+
+        $publicBaseUrl = trim((string) ($_ENV['APP_PUBLIC_BASE_URL'] ?? $_SERVER['APP_PUBLIC_BASE_URL'] ?? ''));
+        $targetUrl = $publicBaseUrl !== ''
+            ? rtrim($publicBaseUrl, '/').$absolutePath
+            : $this->generateUrl('app_produit_show', [
+                'idProduit' => $produit->getIdProduit(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $qrCode = new QrCode(
+            data: $targetUrl,
+            errorCorrectionLevel: ErrorCorrectionLevel::Low,
+            size: 240,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            foregroundColor: new Color(30, 30, 30),
+            backgroundColor: new Color(255, 255, 255),
+        );
+
+        $result = (new SvgWriter())->write($qrCode);
+
+        $response = new Response($result->getString());
+        $response->headers->set('Content-Type', $result->getMimeType());
+        $response->setPublic();
+        $response->setMaxAge(3600);
+
+        return $response;
     }
 
     private function renderListing(

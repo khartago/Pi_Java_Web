@@ -126,4 +126,24 @@ class ProduitWorkflowTest extends DatabaseWebTestCase
         self::assertSelectorExists(sprintf('a[href="/produits/%d/materiels/nouveau"]', $produit->getIdProduit()));
         self::assertSelectorExists(sprintf('form[action="/produits/%d/supprimer"]', $produit->getIdProduit()));
     }
+
+    public function testQrCodeEndpointReturnsSvgForProduit(): void
+    {
+        $produit = (new Produit())
+            ->setNom('Farine bio')
+            ->setQuantite(12)
+            ->setUnite('kg');
+
+        $this->entityManager->persist($produit);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', sprintf('/produits/%d/qr-code', $produit->getIdProduit()));
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('content-type', 'image/svg+xml');
+
+        $content = (string) $this->client->getResponse()->getContent();
+        self::assertStringContainsString('<svg', $content);
+        self::assertGreaterThan(500, strlen($content));
+    }
 }

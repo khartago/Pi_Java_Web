@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assistant IA | Farmtech{% endblock %}
+
+{% block body %}
+    <div class="page-grid assistant-page" data-controller="assistant" data-assistant-endpoint-value="{{ path('app_assistant_chat') }}" data-assistant-language-value="auto">
+        <section class="hero assistant-hero">
+            <article class="hero__card assistant-hero__card">
+                <p class="hero__eyebrow">Assistant IA</p>
+                <h1 class="hero__title">A quick guide for stock and marketplace questions.</h1>
+                <p class="hero__copy">
+                    Ask in FR or EN. The assistant answers without touching your database.
+                </p>
+                <div class="hero__actions">
+                    <button class="button" type="button" data-action="assistant#focusInput">Start chat</button>
+                    <a class="button-ghost" href="{{ path('app_marketplace_index') }}">Open marketplace</a>
+                </div>
+            </article>
+
+            <aside class="stats-strip assistant-tips" aria-label="Assistant tips">
+                <h2 class="stats-strip__title">Try asking</h2>
+                <ul class="assistant-tips__list">
+                    <li>What is the difference between products and materiel?</li>
+                    <li>Explain how marketplace filters work.</li>
+                    <li>Suggest unit names for liquids.</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="panel assistant-panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Conversation</h2>
+                    <p class="panel__copy">Messages stay in this browser tab.</p>
+                </div>
+                <div class="assistant-language" role="group" aria-label="Language">
+                    <button type="button" class="assistant-language__button" data-language="auto" data-assistant-target="languageButton" data-action="assistant#selectLanguage">Auto</button>
+                    <button type="button" class="assistant-language__button" data-language="fr" data-assistant-target="languageButton" data-action="assistant#selectLanguage">FR</button>
+                    <button type="button" class="assistant-language__button" data-language="en" data-assistant-target="languageButton" data-action="assistant#selectLanguage">EN</button>
+                    <button type="button" class="assistant-language__button" data-language="bilingual" data-assistant-target="languageButton" data-action="assistant#selectLanguage">FR+EN</button>
+                </div>
+            </div>
+
+            <div class="assistant-chat" data-assistant-target="messages" role="log" aria-live="polite">
+                <div class="assistant-message is-ai">
+                    <span class="assistant-message__meta">Assistant</span>
+                    <p class="assistant-message__text">Hi! Ask me anything about the stock, products, or marketplace.</p>
+                </div>
+            </div>
+
+            <form class="assistant-form" data-action="submit->assistant#send">
+                <label class="field-label" for="assistant-input">Your message</label>
+                <textarea
+                    id="assistant-input"
+                    class="textarea assistant-input"
+                    rows="4"
+                    placeholder="Type a question..."
+                    data-assistant-target="input"
+                    data-action="keydown->assistant#onKeydown"
+                ></textarea>
+                <div class="assistant-actions">
+                    <p class="assistant-status" data-assistant-target="status" aria-live="polite"></p>
+                    <button class="button" type="submit" data-assistant-target="send">Send</button>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

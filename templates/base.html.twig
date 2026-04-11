@@ -27,6 +27,9 @@
                     <a class="nav-pill {{ current_route starts with 'app_marketplace_' ? 'is-active' }}" href="{{ path('app_marketplace_index') }}">
                         Marketplace
                     </a>
+                    <a class="nav-pill {{ current_route starts with 'app_assistant_' ? 'is-active' }}" href="{{ path('app_assistant_index') }}">
+                        Assistant IA
+                    </a>
                     <a class="nav-pill {{ current_route starts with 'app_produit_' or current_route starts with 'app_materiel_' ? 'is-active' }}" href="{{ path('app_produit_index') }}">
                         Stock interne
                     </a>

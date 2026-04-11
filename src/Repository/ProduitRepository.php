@@ -93,4 +93,18 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @return list<Produit>
+     */
+    public function findLowStock(int $threshold): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.quantite <= :threshold')
+            ->setParameter('threshold', $threshold)
+            ->orderBy('p.quantite', 'ASC')
+            ->addOrderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

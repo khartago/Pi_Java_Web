@@ -26,5 +26,17 @@ services:
             $productUploadDir: '%app.product_upload_dir%'
             $productUploadPath: '%app.product_upload_path%'
 
+    App\Service\AiAssistantClient:
+        arguments:
+            $apiKey: '%env(OLLAMA_API_KEY)%'
+            $model: '%env(OLLAMA_MODEL)%'
+            $baseUrl: '%env(OLLAMA_BASE_URL)%'
+
+    App\Command\SendCriticalAlertsCommand:
+        arguments:
+            $alertFromEmail: '%env(ALERT_EMAIL_FROM)%'
+            $alertToEmail: '%env(ALERT_EMAIL_TO)%'
+            $stockThreshold: '%env(int:ALERT_STOCK_THRESHOLD)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

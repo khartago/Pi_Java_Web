@@ -58,7 +58,7 @@ final class MarketplaceController extends AbstractController
      *     materielCount: int,
      *     materielPreview: list<string>
      * }
-     */
+    */
     private function buildCard(Produit $produit): array
     {
         $materielNames = [];

@@ -29,4 +29,19 @@ class MaterielRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<Materiel>
+     */
+    public function findByEtatWithProduit(string $etat): array
+    {
+        return $this->createQueryBuilder('m')
+            ->innerJoin('m.produit', 'p')
+            ->addSelect('p')
+            ->andWhere('m.etat = :etat')
+            ->setParameter('etat', $etat)
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

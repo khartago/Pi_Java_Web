@@ -155,6 +155,13 @@
                                     <dt>Matériels liés</dt>
                                     <dd>{{ selected_produit.materiels|length }}</dd>
                                 </div>
+                                <div class="definition-card definition-card--qr">
+                                    <dt>QR code</dt>
+                                    <dd class="qr-code">
+                                        <img class="qr-code__image" src="{{ path('app_produit_qr_code', { idProduit: selected_produit.idProduit }) }}" alt="QR code de la fiche du produit {{ selected_produit.nom }}">
+                                        <span class="qr-code__hint">Scannez pour ouvrir la fiche.</span>
+                                    </dd>
+                                </div>
                             </dl>
                         </div>
 

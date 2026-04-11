@@ -32,8 +32,8 @@ class Materiel
     #[ORM\Column(name: 'etat', length: 50)]
     #[Assert\NotBlank(message: 'L’état du matériel est requis.')]
     #[Assert\Choice(
-        choices: ['neuf', 'usagé', 'bon'],
-        message: 'L’état doit être : neuf, usagé ou bon.'
+        choices: ['neuf', 'usagé', 'bon', 'panne'],
+        message: 'L’état doit être : neuf, usagé, bon ou panne.'
     )]
     private string $etat = '';
 

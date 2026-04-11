@@ -29,6 +29,7 @@ class MaterielType extends AbstractType
                     'Neuf' => 'neuf',
                     'Usagé' => 'usagé',
                     'Bon' => 'bon',
+                    'En panne' => 'panne',
                 ],
                 'placeholder' => 'Choisir un état',
                 'attr' => [
