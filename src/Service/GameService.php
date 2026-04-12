@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Repository\PlantationRepository;
-
+use App\Service\MailerService;
 class GameService
 {
     private PlantationRepository $repo;
@@ -12,7 +12,16 @@ class GameService
     {
         $this->repo = $repo;
     }
-    
+    public function checkPlant($plant, MailerService $mailerService)
+{
+    if ($plant->isDead() && !$plant->isNotified()) {
+        
+
+        $mailerService->sendPlantDeathEmail($plant->getName());
+
+        $plant->setNotified(true);
+    }
+}
 
 public function getGameCards(): array
 {
