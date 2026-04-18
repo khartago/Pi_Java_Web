@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Farmtech | Alertes critiques</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px 0;
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        .wrap {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 14px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .brand {
+            background: linear-gradient(120deg, #7fc89a, #5cae78);
+            color: #07210f;
+            padding: 16px 20px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .content {
+            padding: 18px 20px 20px;
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 22px;
+            line-height: 1.2;
+            color: #f9fafb;
+        }
+        p {
+            margin: 0 0 14px;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+        .stats {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 10px 0;
+            margin: 0 -10px 14px;
+        }
+        .stat {
+            border: 1px solid #273246;
+            border-radius: 10px;
+            padding: 12px;
+            width: 50%;
+            background: #0b1220;
+        }
+        .stat-label {
+            display: block;
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            display: block;
+            color: #f9fafb;
+            font-size: 25px;
+            font-weight: 700;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            border: 1px solid #273246;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th,
+        .table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #273246;
+            font-size: 13px;
+        }
+        .table th {
+            color: #d1d5db;
+            background: #162133;
+            font-weight: 600;
+        }
+        .table td {
+            color: #e5e7eb;
+            background: #0b1220;
+        }
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 3px 9px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .badge-danger {
+            color: #fecaca;
+            background: #4c1d1d;
+            border: 1px solid #7f1d1d;
+        }
+        .badge-warning {
+            color: #fde68a;
+            background: #422006;
+            border: 1px solid #78350f;
+        }
+        .section-title {
+            margin: 18px 0 8px;
+            color: #f3f4f6;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .muted {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <div class="brand">FARMTECH</div>
+        <div class="content">
+            <h1>Alerte stock et maintenance</h1>
+            <p>Bonjour, voici le rapport automatique des alertes critiques.</p>
+
+            <table role="presentation" class="stats">
+                <tr>
+                    <td class="stat">
+                        <span class="stat-label">Produits en stock bas (seuil {{ threshold }})</span>
+                        <span class="stat-value">{{ low_stock_count }}</span>
+                    </td>
+                    <td class="stat">
+                        <span class="stat-label">Matériels en panne</span>
+                        <span class="stat-value">{{ panne_count }}</span>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 class="section-title">Produits en stock bas</h2>
+            {% if low_stock_products is empty %}
+                <p>Aucun produit sous le seuil.</p>
+            {% else %}
+                <table class="table" role="presentation">
+                    <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Unité</th>
+                        <th>Statut</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for produit in low_stock_products %}
+                        <tr>
+                            <td>{{ produit.nom }}</td>
+                            <td>{{ produit.quantite }}</td>
+                            <td>{{ produit.unite }}</td>
+                            <td><span class="badge badge-warning">Stock bas</span></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <h2 class="section-title">Matériels en panne</h2>
+            {% if broken_materiels is empty %}
+                <p>Aucun matériel en panne.</p>
+            {% else %}
+                <table class="table" role="presentation">
+                    <thead>
+                    <tr>
+                        <th>Matériel</th>
+                        <th>Produit lié</th>
+                        <th>État</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for materiel in broken_materiels %}
+                        <tr>
+                            <td>{{ materiel.nom }}</td>
+                            <td>{{ materiel.produit ? materiel.produit.nom : 'N/A' }}</td>
+                            <td><span class="badge badge-danger">Panne</span></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <p class="muted">Cet email a été généré automatiquement par Farmtech (Stock interne).</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

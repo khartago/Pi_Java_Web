@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Marketplace | Farmtech{% endblock %}
 
@@ -111,9 +111,28 @@
                 <a class="button" href="{{ path('app_marketplace_index') }}">Voir tout le catalogue</a>
             </section>
         {% else %}
-            <section class="market-grid" aria-label="Grille des produits marketplace">
+            <p class="pagination-summary">
+                {{ pagination.from }}–{{ pagination.to }} sur {{ pagination.total_items }} produit{{ pagination.total_items > 1 ? 's' }}
+            </p>
+
+            <section class="market-grid" aria-label="Grille des produits marketplace" data-controller="favorites-filter">
+                <div class="market-toolbar">
+                    <button type="button"
+                            class="fav-filter-toggle"
+                            data-favorites-filter-target="toggle"
+                            data-action="favorites-filter#toggle"
+                            aria-pressed="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        Favoris uniquement
+                    </button>
+                </div>
+
+                <p class="market-empty-favs" hidden>Aucun favori parmi les produits affichés. Désactivez le filtre ou ajoutez des favoris.</p>
+
                 {% for card in cards %}
-                    <article class="market-card">
+                    <article class="market-card" data-product-id="{{ card.produit.idProduit }}">
                         <figure class="market-card__media">
                             <img
                                 src="{{ asset(card.produit.imageAssetPath) }}"
@@ -122,6 +141,25 @@
                             >
                         </figure>
 
+                        <button type="button"
+                                class="market-card__star"
+                                data-controller="favorite-btn"
+                                data-favorite-btn-product-id-value="{{ card.produit.idProduit }}"
+                                data-action="favorite-btn#toggle"
+                                aria-pressed="false"
+                                aria-label="Ajouter aux favoris">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </button>
+
+                        {% if card.promotion %}
+                            <div class="market-card__promo-badge">
+                                <span class="market-card__promo-label">{{ card.promotion.label }}</span>
+                                <span class="market-card__promo-name">{{ card.promotion.nom }}</span>
+                            </div>
+                        {% endif %}
+
                         <header class="market-card__head">
                             <p class="market-card__category">{{ card.category }}</p>
                             <span class="product-link__pill">{{ card.produit.dateExpirationLabel }}</span>
@@ -129,6 +167,17 @@
 
                         <h2 class="market-card__title">{{ card.produit.nom }}</h2>
                         <p class="market-card__meta">{{ card.produit.quantite }} {{ card.produit.unite }} disponibles</p>
+
+                        {% if card.produit.prix %}
+                            <p class="market-card__price">
+                                {% if card.discountedPrice and card.discountedPrice < card.produit.prix %}
+                                    <span class="market-card__price--old">{{ card.produit.prix|number_format(2, ',', ' ') }} €</span>
+                                    <span class="market-card__price--new">{{ card.discountedPrice|number_format(2, ',', ' ') }} €</span>
+                                {% else %}
+                                    {{ card.produit.prix|number_format(2, ',', ' ') }} €
+                                {% endif %}
+                            </p>
+                        {% endif %}
 
                         <dl class="market-card__stats">
                             <div>
@@ -152,12 +201,59 @@
                         {% endif %}
 
                         <div class="market-card__actions">
-                            <a class="button-ghost" href="{{ path('app_produit_show', { idProduit: card.produit.idProduit }) }}">Voir la fiche</a>
+                            <a class="button-ghost" href="{{ path('app_marketplace_show', { idProduit: card.produit.idProduit }) }}">Voir la fiche</a>
                             <a class="button" href="{{ path('app_materiel_new', { idProduit: card.produit.idProduit }) }}">Ajouter materiel</a>
                         </div>
                     </article>
                 {% endfor %}
             </section>
+
+            {% if pagination.total_pages > 1 %}
+                {% set query_base = { recherche: recherche ?: null, unite: unite ?: null, categorie: categorie ?: null } %}
+                <nav class="pagination" aria-label="Pagination du catalogue">
+                    {# Previous #}
+                    {% if pagination.page > 1 %}
+                        <a class="pagination__btn" href="{{ path('app_marketplace_index', query_base|merge({ page: pagination.page - 1 })) }}" aria-label="Page précédente">
+                            ← Précédent
+                        </a>
+                    {% else %}
+                        <span class="pagination__btn is-disabled" aria-disabled="true">← Précédent</span>
+                    {% endif %}
+
+                    {# Page numbers — compact window around current page #}
+                    <div class="pagination__pages">
+                        {% set start = max(1, pagination.page - 2) %}
+                        {% set end = min(pagination.total_pages, pagination.page + 2) %}
+
+                        {% if start > 1 %}
+                            <a class="pagination__page" href="{{ path('app_marketplace_index', query_base|merge({ page: 1 })) }}">1</a>
+                            {% if start > 2 %}<span class="pagination__ellipsis">…</span>{% endif %}
+                        {% endif %}
+
+                        {% for p in start..end %}
+                            {% if p == pagination.page %}
+                                <span class="pagination__page is-current" aria-current="page">{{ p }}</span>
+                            {% else %}
+                                <a class="pagination__page" href="{{ path('app_marketplace_index', query_base|merge({ page: p })) }}">{{ p }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if end < pagination.total_pages %}
+                            {% if end < pagination.total_pages - 1 %}<span class="pagination__ellipsis">…</span>{% endif %}
+                            <a class="pagination__page" href="{{ path('app_marketplace_index', query_base|merge({ page: pagination.total_pages })) }}">{{ pagination.total_pages }}</a>
+                        {% endif %}
+                    </div>
+
+                    {# Next #}
+                    {% if pagination.page < pagination.total_pages %}
+                        <a class="pagination__btn" href="{{ path('app_marketplace_index', query_base|merge({ page: pagination.page + 1 })) }}" aria-label="Page suivante">
+                            Suivant →
+                        </a>
+                    {% else %}
+                        <span class="pagination__btn is-disabled" aria-disabled="true">Suivant →</span>
+                    {% endif %}
+                </nav>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

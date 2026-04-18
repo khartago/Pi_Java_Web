@@ -1,0 +1,115 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Recommandations | FarmTech Admin{% endblock %}
+
+{% block body %}
+<div class="page-grid">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Intelligence du système</p>
+            <h1 class="hero__title">Recommandations produit → matériel</h1>
+            <p class="hero__copy">
+                Définissez manuellement les matériels recommandés pour chaque produit.
+                Ces recommandations apparaissent en priorité sur la fiche publique du produit,
+                avec un score boosté selon le niveau d'importance choisi.
+            </p>
+            <div class="hero__actions">
+                <a class="button" href="{{ path('app_recommandation_new') }}">+ Nouvelle recommandation</a>
+            </div>
+        </article>
+
+        <aside class="stats-strip">
+            <h2 class="stats-strip__title">Synthèse</h2>
+            <div class="stats-grid">
+                <div class="stat-chip">
+                    <span class="stat-chip__label">Total</span>
+                    <span class="stat-chip__value">{{ totalCount }}</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip__label">Actives</span>
+                    <span class="stat-chip__value">{{ activeCount }}</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip__label">Produits couverts</span>
+                    <span class="stat-chip__value">{{ grouped|length }}</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    {% if grouped is empty %}
+        <section class="panel">
+            <p class="dashboard-empty" style="text-align:center;padding:40px 0;">
+                Aucune recommandation pour le moment. Créez-en une pour enrichir l'algorithme de suggestion.
+            </p>
+        </section>
+    {% else %}
+        {% for group in grouped %}
+            <section class="panel reco-admin-group">
+                <div class="panel__header">
+                    <div>
+                        <h2 class="panel__title">
+                            <span class="reco-admin-group__icon">📦</span>
+                            {{ group.produit.nom }}
+                        </h2>
+                        <p class="panel__copy">
+                            {{ group.recos|length }} matériel{{ group.recos|length > 1 ? 's' }} recommandé{{ group.recos|length > 1 ? 's' }}
+                            · <a href="{{ path('app_marketplace_show', { idProduit: group.produit.idProduit }) }}" target="_blank">Voir fiche publique →</a>
+                        </p>
+                    </div>
+                </div>
+
+                <table class="reco-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Matériel</th>
+                            <th>État</th>
+                            <th>Priorité</th>
+                            <th>Raison</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reco in group.recos %}
+                            <tr class="{{ not reco.actif ? 'is-inactive' }}">
+                                <td><strong>{{ reco.materiel.nom }}</strong></td>
+                                <td>
+                                    <span class="reco-pill reco-pill--state-{{ reco.materiel.etat }}">{{ reco.materiel.etat }}</span>
+                                </td>
+                                <td>
+                                    <span class="reco-prio reco-prio--{{ reco.priorite }}">
+                                        {% for i in 1..5 %}
+                                            <span class="reco-prio__star {{ i <= reco.priorite ? 'is-filled' }}">★</span>
+                                        {% endfor %}
+                                        <span class="reco-prio__label">{{ reco.prioriteLabel }}</span>
+                                    </span>
+                                </td>
+                                <td class="reco-admin-table__reason">{{ reco.raison ?: '—' }}</td>
+                                <td>
+                                    <span class="reco-status {{ reco.actif ? 'reco-status--on' : 'reco-status--off' }}">
+                                        {{ reco.actif ? 'Actif' : 'Inactif' }}
+                                    </span>
+                                </td>
+                                <td class="reco-admin-table__actions">
+                                    <form method="post" action="{{ path('app_recommandation_toggle', { id: reco.idRecommandation }) }}" style="display:inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle-reco-' ~ reco.idRecommandation) }}">
+                                        <button class="reco-admin-btn" type="submit">{{ reco.actif ? 'Désactiver' : 'Activer' }}</button>
+                                    </form>
+                                    <a class="reco-admin-btn" href="{{ path('app_recommandation_edit', { id: reco.idRecommandation }) }}">Modifier</a>
+                                    <form method="post" action="{{ path('app_recommandation_delete', { id: reco.idRecommandation }) }}" style="display:inline;" onsubmit="return confirm('Supprimer cette recommandation ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-reco-' ~ reco.idRecommandation) }}">
+                                        <button class="reco-admin-btn reco-admin-btn--danger" type="submit">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endfor %}
+    {% endif %}
+
+</div>
+{% endblock %}

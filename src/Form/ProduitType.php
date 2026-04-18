@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -52,6 +53,17 @@ class ProduitType extends AbstractType
                 'input' => 'datetime_immutable',
                 'attr' => [
                     'class' => 'date-input',
+                ],
+            ])
+            ->add('prix', NumberType::class, [
+                'label' => 'Prix unitaire (€)',
+                'required' => false,
+                'scale' => 2,
+                'attr' => [
+                    'placeholder' => '0.00',
+                    'class' => 'number-input',
+                    'min' => 0,
+                    'step' => '0.01',
                 ],
             ])
             ->add('imageFile', FileType::class, [

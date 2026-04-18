@@ -21,6 +21,10 @@ class MaterielController extends AbstractController
         MaterielManager $materielManager,
     ): Response
     {
+        if (($response = $this->denyUserMode($request)) !== null) {
+            return $response;
+        }
+
         $materiel = (new Materiel())->setProduit($produit);
         $form = $this->createForm(MaterielType::class, $materiel);
         $form->handleRequest($request);
@@ -50,6 +54,10 @@ class MaterielController extends AbstractController
         MaterielManager $materielManager,
     ): Response
     {
+        if (($response = $this->denyUserMode($request)) !== null) {
+            return $response;
+        }
+
         $form = $this->createForm(MaterielType::class, $materiel);
         $form->handleRequest($request);
 
@@ -78,6 +86,10 @@ class MaterielController extends AbstractController
         MaterielManager $materielManager,
     ): Response
     {
+        if (($response = $this->denyUserMode($request)) !== null) {
+            return $response;
+        }
+
         if (!$this->isCsrfTokenValid('delete-materiel-'.$materiel->getIdMateriel(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
@@ -89,5 +101,20 @@ class MaterielController extends AbstractController
         return $this->redirectToRoute('app_produit_show', [
             'idProduit' => $produitId,
         ]);
+    }
+
+    private function denyUserMode(Request $request): ?Response
+    {
+        $uiMode = $request->hasSession()
+            ? (string) $request->getSession()->get('ui_mode', 'admin')
+            : 'admin';
+
+        if ($uiMode === 'admin') {
+            return null;
+        }
+
+        $this->addFlash('error', 'Cette section est réservée au mode Admin.');
+
+        return $this->redirectToRoute('app_marketplace_index');
     }
 }

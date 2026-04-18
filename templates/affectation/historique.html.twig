@@ -1,0 +1,130 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Historique des affectations | Farmtech{% endblock %}
+
+{% block body %}
+<div class="page-grid">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Gestion des affectations</p>
+            <h1 class="hero__title">Historique complet</h1>
+            <p class="hero__copy">
+                Consultez toutes les affectations passées et en cours.
+                Filtrez par matériel ou par employé pour retrouver rapidement un enregistrement.
+            </p>
+            <div class="hero__actions">
+                <a class="button" href="{{ path('app_affectation_new') }}">Nouvelle affectation</a>
+                <a class="button-ghost" href="{{ path('app_affectation_index') }}">Affectations actives</a>
+            </div>
+        </article>
+
+        <aside class="stats-strip" aria-label="Résumé historique">
+            <h2 class="stats-strip__title">Résumé</h2>
+            <div class="stats-grid">
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Total affectations</span>
+                    <span class="stat-chip__value">{{ affectations|length }}</span>
+                </article>
+                <article class="stat-chip">
+                    <span class="stat-chip__label">En cours</span>
+                    <span class="stat-chip__value">{{ affectations|filter(a => a.isActive)|length }}</span>
+                </article>
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Terminées</span>
+                    <span class="stat-chip__value">{{ affectations|filter(a => not a.isActive)|length }}</span>
+                </article>
+            </div>
+        </aside>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <h2 class="panel__title">Toutes les affectations</h2>
+                <p class="panel__copy">Filtrez par nom de matériel ou d'employé.</p>
+            </div>
+        </div>
+
+        <form method="get" action="{{ path('app_affectation_historique') }}" class="filters" style="grid-template-columns: minmax(0, 1fr) auto auto;">
+            <div class="field-group">
+                <label for="recherche">Rechercher</label>
+                <input
+                    class="input"
+                    id="recherche"
+                    name="recherche"
+                    type="search"
+                    value="{{ recherche }}"
+                    placeholder="Nom du matériel ou de l'employé…"
+                >
+            </div>
+            <button class="button" type="submit">Filtrer</button>
+            {% if recherche %}
+                <a class="button-ghost" href="{{ path('app_affectation_historique') }}">Effacer</a>
+            {% endif %}
+        </form>
+    </section>
+
+    {% if affectations is empty %}
+        <section class="empty-state">
+            <h3>Aucune affectation trouvée</h3>
+            {% if recherche %}
+                <p>Aucun résultat pour « {{ recherche }} ». Essayez un autre terme ou réinitialisez le filtre.</p>
+                <a class="button-ghost" href="{{ path('app_affectation_historique') }}">Voir tout l'historique</a>
+            {% else %}
+                <p>Aucune affectation n'a encore été enregistrée.</p>
+                <a class="button" href="{{ path('app_affectation_new') }}">Créer la première affectation</a>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="panel">
+            <div class="table-wrap">
+                <table class="table affectation-table">
+                    <thead>
+                        <tr>
+                            <th>Matériel</th>
+                            <th>Employé</th>
+                            <th>Poste</th>
+                            <th>Date affectation</th>
+                            <th>Date retour</th>
+                            <th>Durée</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aff in affectations %}
+                            <tr>
+                                <td>
+                                    <strong>{{ aff.materiel.nom }}</strong>
+                                    {% if aff.materiel.produit %}
+                                        <br><small style="color: var(--text-soft);">{{ aff.materiel.produit.nom }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ aff.employe.fullName }}</td>
+                                <td>{{ aff.employe.poste }}</td>
+                                <td>{{ aff.dateAffectation|date('d/m/Y') }}</td>
+                                <td>
+                                    {% if aff.isActive %}
+                                        <span class="aff-badge aff-badge--active">En cours</span>
+                                    {% else %}
+                                        <span class="aff-badge aff-badge--returned">{{ aff.dateRetour|date('d/m/Y') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ aff.duree }}</td>
+                                <td>
+                                    {% if aff.note %}
+                                        <span title="{{ aff.note }}" style="cursor: help;">{{ aff.note|length > 40 ? aff.note|slice(0, 40) ~ '…' : aff.note }}</span>
+                                    {% else %}
+                                        <span style="color: var(--text-soft);">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}

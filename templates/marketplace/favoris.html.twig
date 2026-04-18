@@ -1,0 +1,68 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mes favoris | FarmTech{% endblock %}
+
+{% block body %}
+<div class="page-grid favoris-page"
+     data-controller="favorites-page"
+     data-favorites-page-batch-url-value="{{ path('api_produits_batch') }}">
+
+    <section class="hero favoris-hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Mes favoris</p>
+            <h1 class="hero__title">
+                <span data-favorites-page-target="count">0</span> produit(s) épinglé(s)
+            </h1>
+            <p class="hero__copy">
+                Organisez vos produits par collections, ajoutez des notes personnelles,
+                partagez une liste ou exportez-la en CSV.
+            </p>
+            <div class="hero__actions">
+                <button class="button"
+                        type="button"
+                        data-favorites-page-target="shareBtn"
+                        data-action="favorites-page#share">
+                    📋 Partager la liste
+                </button>
+                <button class="button-ghost"
+                        type="button"
+                        data-favorites-page-target="exportBtn"
+                        data-action="favorites-page#export">
+                    📥 Exporter CSV
+                </button>
+                <button class="button-ghost"
+                        type="button"
+                        data-action="favorites-page#addCollection">
+                    + Nouvelle collection
+                </button>
+                <button class="button-ghost"
+                        type="button"
+                        data-action="favorites-page#clearAll">
+                    Tout retirer
+                </button>
+            </div>
+            <p class="favoris-share-result" data-favorites-page-target="shareResult" hidden></p>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <h2 class="panel__title">Collections</h2>
+            <a class="button-ghost" href="{{ path('app_marketplace_index') }}" style="min-height:38px;padding:0 14px;font-size:.88rem">
+                ← Retour au catalogue
+            </a>
+        </div>
+        <div class="fav-tabs" data-favorites-page-target="collectionTabs"></div>
+    </section>
+
+    <section data-favorites-page-target="grid" class="fav-grid"></section>
+
+    <section data-favorites-page-target="empty" class="favoris-empty panel" hidden>
+        <div class="favoris-empty__icon">⭐</div>
+        <h2>Aucun favori pour le moment</h2>
+        <p>Parcourez le catalogue et cliquez sur l'étoile des produits que vous voulez suivre.</p>
+        <a class="button" href="{{ path('app_marketplace_index') }}">Explorer le catalogue</a>
+    </section>
+
+</div>
+{% endblock %}

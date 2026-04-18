@@ -1,0 +1,139 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Employés | Farmtech{% endblock %}
+
+{% block body %}
+<div class="page-grid">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Gestion des affectations</p>
+            <h1 class="hero__title">Employés</h1>
+            <p class="hero__copy">
+                Gérez les employés auxquels des matériels peuvent être affectés.
+                Chaque employé peut recevoir plusieurs matériels simultanément.
+            </p>
+            <div class="hero__actions">
+                <a class="button" href="{{ path('app_employe_new') }}">Ajouter un employé</a>
+                <a class="button-ghost" href="{{ path('app_affectation_index') }}">Retour aux affectations</a>
+            </div>
+        </article>
+
+        <aside class="stats-strip" aria-label="Résumé employés">
+            <h2 class="stats-strip__title">Résumé</h2>
+            <div class="stats-grid">
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Total employés</span>
+                    <span class="stat-chip__value">{{ employes|length }}</span>
+                </article>
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Avec affectation active</span>
+                    <span class="stat-chip__value">{{ actif_par_employe|length }}</span>
+                </article>
+            </div>
+        </aside>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <h2 class="panel__title">Rechercher un employé</h2>
+            </div>
+        </div>
+        <form method="get" action="{{ path('app_affectation_employes') }}" class="filters" style="grid-template-columns: minmax(0, 1fr) auto auto;">
+            <div class="field-group">
+                <label for="recherche">Nom, prénom ou poste</label>
+                <input
+                    class="input"
+                    id="recherche"
+                    name="recherche"
+                    type="search"
+                    value="{{ recherche }}"
+                    placeholder="Rechercher un employé…"
+                >
+            </div>
+            <button class="button" type="submit">Rechercher</button>
+            {% if recherche %}
+                <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Effacer</a>
+            {% endif %}
+        </form>
+    </section>
+
+    {% if employes is empty %}
+        <section class="empty-state">
+            <h3>Aucun employé trouvé</h3>
+            {% if recherche %}
+                <p>Aucun résultat pour « {{ recherche }} ».</p>
+                <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Voir tous les employés</a>
+            {% else %}
+                <p>Commencez par enregistrer les membres de votre équipe.</p>
+                <a class="button" href="{{ path('app_employe_new') }}">Ajouter le premier employé</a>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Liste des employés</h2>
+                    <p class="panel__copy">{{ employes|length }} employé{{ employes|length > 1 ? 's' : '' }} trouvé{{ employes|length > 1 ? 's' : '' }}.</p>
+                </div>
+                <a class="button" href="{{ path('app_employe_new') }}">Ajouter un employé</a>
+            </div>
+
+            <div class="employe-grid">
+                {% for employe in employes %}
+                    {% set nb_actifs = actif_par_employe[employe.idEmploye] ?? 0 %}
+                    <article class="employe-card">
+                        <div class="employe-card__header">
+                            <div class="employe-card__avatar" aria-hidden="true">
+                                {{ employe.prenom|slice(0, 1)|upper }}{{ employe.nom|slice(0, 1)|upper }}
+                            </div>
+                            <div class="employe-card__info">
+                                <h3 class="employe-card__name">{{ employe.fullName }}</h3>
+                                <span class="employe-card__poste">{{ employe.poste }}</span>
+                            </div>
+                        </div>
+
+                        {% if employe.email %}
+                            <p class="employe-card__email">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <a href="mailto:{{ employe.email }}">{{ employe.email }}</a>
+                            </p>
+                        {% endif %}
+
+                        <div class="employe-card__stats">
+                            {% if nb_actifs > 0 %}
+                                <span class="aff-badge aff-badge--active">{{ nb_actifs }} affectation{{ nb_actifs > 1 ? 's' : '' }} active{{ nb_actifs > 1 ? 's' : '' }}</span>
+                            {% else %}
+                                <span class="aff-badge aff-badge--returned">Aucune affectation active</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="employe-card__actions">
+                            <a class="button-ghost" href="{{ path('app_affectation_new') }}">Affecter un matériel</a>
+                            <form
+                                method="post"
+                                action="{{ path('app_employe_delete', { id: employe.idEmploye }) }}"
+                                class="inline-form"
+                            >
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-employe-' ~ employe.idEmploye) }}">
+                                <button
+                                    type="submit"
+                                    class="button-danger"
+                                    onclick="return confirm('Supprimer {{ employe.fullName }} ? Ses affectations seront également supprimées.')"
+                                >
+                                    Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}

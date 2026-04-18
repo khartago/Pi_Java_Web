@@ -146,4 +146,15 @@ class ProduitWorkflowTest extends DatabaseWebTestCase
         self::assertStringContainsString('<svg', $content);
         self::assertGreaterThan(500, strlen($content));
     }
+
+    public function testSendAlertEmailEndpointRedirectsWithValidCsrf(): void
+    {
+        $crawler = $this->client->request('GET', '/produits');
+        self::assertResponseIsSuccessful();
+
+        $form = $crawler->filter('form[action="/produits/alertes/email"]')->form();
+        $this->client->submit($form);
+
+        self::assertResponseRedirects();
+    }
 }

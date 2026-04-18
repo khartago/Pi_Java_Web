@@ -44,4 +44,32 @@ class MaterielRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Returns all materiels with their parent produit eager-loaded.
+     * @return list<Materiel>
+     */
+    public function findAllWithProduit(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->innerJoin('m.produit', 'p')
+            ->addSelect('p')
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<array{produit_nom: string, total_cout: float, count: int}>
+     */
+    public function sumCostByProduit(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('p.nom AS produit_nom, SUM(m.cout) AS total_cout, COUNT(m.idMateriel) AS count')
+            ->innerJoin('m.produit', 'p')
+            ->groupBy('p.idProduit, p.nom')
+            ->orderBy('total_cout', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

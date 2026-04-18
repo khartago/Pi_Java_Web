@@ -1,0 +1,141 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Promotions | Farmtech{% endblock %}
+
+{% block body %}
+    <div class="page-grid">
+        <section class="hero">
+            <article class="hero__card">
+                <p class="hero__eyebrow">Gestion des promotions</p>
+                <h1 class="hero__title">Promotions et remises commerciales</h1>
+                <p class="hero__copy">
+                    Pilotez les offres appliquées aux produits du marketplace&nbsp;: pourcentage ou montant fixe,
+                    avec contrôle sur les dates, les quantités minimales et le cumul entre promotions.
+                </p>
+                <div class="hero__actions">
+                    <a class="button" href="{{ path('app_promotion_new') }}">+ Nouvelle promotion</a>
+                </div>
+            </article>
+
+            <aside class="stats-strip" aria-label="Synthèse des promotions">
+                <h2 class="stats-strip__title">Indicateurs</h2>
+                <div class="stats-grid">
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Total</span>
+                        <span class="stat-chip__value">{{ stats.total }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Actives</span>
+                        <span class="stat-chip__value">{{ stats.actives }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">À venir</span>
+                        <span class="stat-chip__value">{{ stats.upcoming }}</span>
+                    </article>
+                    <article class="stat-chip">
+                        <span class="stat-chip__label">Expirées</span>
+                        <span class="stat-chip__value">{{ stats.expired }}</span>
+                    </article>
+                </div>
+            </aside>
+        </section>
+
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Toutes les promotions</h2>
+                    <p class="panel__copy">Les promotions actives apparaissent en tête, suivies par les plus récentes.</p>
+                </div>
+                <a class="button" href="{{ path('app_promotion_new') }}">+ Nouvelle promotion</a>
+            </div>
+
+            {% if promotions is empty %}
+                <div class="empty-state">
+                    <h3>Aucune promotion enregistrée</h3>
+                    <p>Créez votre première promotion pour appliquer des remises ciblées sur vos produits.</p>
+                    <a class="button" href="{{ path('app_promotion_new') }}">Créer une promotion</a>
+                </div>
+            {% else %}
+                <div class="table-wrap">
+                    <table class="table promo-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Réduction</th>
+                                <th>Période</th>
+                                <th>Min qté</th>
+                                <th>Produits ciblés</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for promotion in promotions %}
+                                {% set status_key = 'inactive' %}
+                                {% set status_label = 'Désactivée' %}
+                                {% if promotion.actif %}
+                                    {% if promotion.currentlyActive %}
+                                        {% set status_key = 'active' %}
+                                        {% set status_label = 'Active' %}
+                                    {% elseif promotion.upcoming %}
+                                        {% set status_key = 'upcoming' %}
+                                        {% set status_label = 'À venir' %}
+                                    {% elseif promotion.expired %}
+                                        {% set status_key = 'expired' %}
+                                        {% set status_label = 'Expirée' %}
+                                    {% endif %}
+                                {% endif %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ promotion.nom }}</strong>
+                                        {% if promotion.description %}
+                                            {% set desc = promotion.description %}
+                                            <br><small style="color: var(--text-soft);">{{ desc|length > 60 ? desc|slice(0, 60) ~ '…' : desc }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ promotion.typeReduction == 'pourcentage' ? 'Pourcentage' : 'Montant fixe' }}</td>
+                                    <td><strong>{{ promotion.label }}</strong></td>
+                                    <td>
+                                        {{ promotion.dateDebut ? promotion.dateDebut|date('d/m/Y') : '—' }}
+                                        <span style="color: var(--text-soft);">→</span>
+                                        {{ promotion.dateFin ? promotion.dateFin|date('d/m/Y') : '—' }}
+                                    </td>
+                                    <td>{{ promotion.quantiteMin }}</td>
+                                    <td>{{ promotion.produits|length }}</td>
+                                    <td>
+                                        <span class="promo-status-badge promo-status-badge--{{ status_key }}">{{ status_label }}</span>
+                                    </td>
+                                    <td class="table__actions">
+                                        <form
+                                            method="post"
+                                            action="{{ path('app_promotion_toggle', { id: promotion.idPromotion }) }}"
+                                            class="inline-form"
+                                        >
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle-promotion-' ~ promotion.idPromotion) }}">
+                                            <button type="submit" class="promo-toggle-btn promo-toggle-btn--{{ promotion.actif ? 'off' : 'on' }}" title="{{ promotion.actif ? 'Désactiver' : 'Activer' }}">
+                                                {{ promotion.actif ? 'Désactiver' : 'Activer' }}
+                                            </button>
+                                        </form>
+                                        <a class="link-button" href="{{ path('app_promotion_edit', { id: promotion.idPromotion }) }}">Modifier</a>
+                                        <form
+                                            method="post"
+                                            action="{{ path('app_promotion_delete', { id: promotion.idPromotion }) }}"
+                                            class="inline-form"
+                                            data-controller="confirm"
+                                            data-confirm-message-value="Supprimer la promotion {{ promotion.nom }} ?"
+                                            data-action="submit->confirm#submit"
+                                        >
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete-promotion-' ~ promotion.idPromotion) }}">
+                                            <button type="submit" class="link-button">Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

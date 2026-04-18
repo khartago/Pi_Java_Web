@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Service\AiAssistantClient;
+use App\Service\AssistantContextBuilder;
+use App\Service\AssistantIntentRouter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,11 +20,21 @@ final class AssistantController extends AbstractController
     }
 
     #[Route('/assistant/chat', name: 'app_assistant_chat', methods: ['POST'])]
-    public function chat(Request $request, AiAssistantClient $client): JsonResponse
-    {
+    public function chat(
+        Request $request,
+        AiAssistantClient $client,
+        AssistantIntentRouter $router,
+        AssistantContextBuilder $contextBuilder,
+    ): JsonResponse {
+        // Admin-only endpoint — same guard used across the back-office
+        $uiMode = $request->hasSession() ? $request->getSession()->get('ui_mode', 'admin') : 'admin';
+        if ($uiMode !== 'admin') {
+            return $this->json(['error' => 'Assistant is only available in admin mode.'], Response::HTTP_FORBIDDEN);
+        }
+
         try {
             $payload = $request->toArray();
-        } catch (\JsonException $exception) {
+        } catch (\JsonException) {
             return $this->json(['error' => 'Invalid JSON payload.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -35,7 +47,19 @@ final class AssistantController extends AbstractController
             return $this->json(['error' => 'Message is required.'], Response::HTTP_BAD_REQUEST);
         }
 
-        $systemPrompt = $this->buildSystemPrompt($language);
+        // Detect intent from the latest user message
+        $lastUserMessage = '';
+        foreach (array_reverse($cleanMessages) as $msg) {
+            if ($msg['role'] === 'user') {
+                $lastUserMessage = $msg['content'];
+                break;
+            }
+        }
+
+        $intent = $router->detect($lastUserMessage, $language);
+        ['context' => $context, 'summary' => $summary] = $contextBuilder->build($intent);
+
+        $systemPrompt = $this->buildSystemPrompt($language, $context);
 
         try {
             $reply = $client->chat($systemPrompt, $cleanMessages);
@@ -46,11 +70,15 @@ final class AssistantController extends AbstractController
             }
 
             return $this->json(['error' => $exception->getMessage()], $status);
-        } catch (\Throwable $exception) {
+        } catch (\Throwable) {
             return $this->json(['error' => 'Assistant is unavailable right now.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json(['reply' => $reply]);
+        return $this->json([
+            'reply'   => $reply,
+            'intent'  => $intent->name,
+            'summary' => $summary,
+        ]);
     }
 
     /**
@@ -67,7 +95,7 @@ final class AssistantController extends AbstractController
                 continue;
             }
 
-            $role = $message['role'] ?? '';
+            $role    = $message['role'] ?? '';
             $content = $message['content'] ?? '';
 
             if (!is_string($role) || !is_string($content)) {
@@ -85,7 +113,7 @@ final class AssistantController extends AbstractController
             }
 
             $clean[] = [
-                'role' => $role,
+                'role'    => $role,
                 'content' => $this->limitText($content, 1200),
             ];
         }
@@ -97,18 +125,24 @@ final class AssistantController extends AbstractController
         return $clean;
     }
 
-    private function buildSystemPrompt(string $language): string
+    private function buildSystemPrompt(string $language, string $context): string
     {
         $language = strtolower($language);
 
         $languageHint = match ($language) {
-            'fr' => 'Reply in French.',
-            'en' => 'Reply in English.',
-            'bilingual' => 'Reply in French first, then English.',
-            default => 'Reply in the language used by the user. If mixed, use the most recent language.',
+            'fr'         => 'Reply in French.',
+            'en'         => 'Reply in English.',
+            'bilingual'  => 'Reply in French first, then English.',
+            default      => 'Reply in the language used by the user. If mixed, use the most recent language.',
         };
 
-        return 'You are the Farmtech Stock assistant for a Symfony web app. Be concise, practical, and friendly. Do not claim to access the database or perform actions. ' . $languageHint;
+        $base = 'You are the Farmtech Stock assistant for an agricultural management back-office. Be concise, practical, and friendly.';
+
+        if (trim($context) !== '') {
+            return $base . ' Answer using the STOCK_CONTEXT below. If the answer is not in the context, say you don\'t know but suggest checking the admin panel. ' . $languageHint . "\n\n" . $context;
+        }
+
+        return $base . ' You do not have live database access for this question — answer from general agricultural knowledge or say you don\'t know. ' . $languageHint;
     }
 
     private function limitText(string $text, int $max): string

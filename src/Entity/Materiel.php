@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MaterielRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -51,6 +53,17 @@ class Materiel
     #[ORM\JoinColumn(name: 'idProduit', referencedColumnName: 'idProduit', nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotNull(message: 'Le produit lié est requis.')]
     private ?Produit $produit = null;
+
+    /**
+     * @var Collection<int, Affectation>
+     */
+    #[ORM\OneToMany(mappedBy: 'materiel', targetEntity: Affectation::class, orphanRemoval: true)]
+    private Collection $affectations;
+
+    public function __construct()
+    {
+        $this->affectations = new ArrayCollection();
+    }
 
     public function getIdMateriel(): ?int
     {
@@ -120,5 +133,24 @@ class Materiel
     public function getDateAchatLabel(): string
     {
         return $this->dateAchat?->format('d/m/Y') ?? 'Non renseignée';
+    }
+
+    /**
+     * @return Collection<int, Affectation>
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function getAffectationActive(): ?Affectation
+    {
+        foreach ($this->affectations as $affectation) {
+            if ($affectation->isActive()) {
+                return $affectation;
+            }
+        }
+
+        return null;
     }
 }

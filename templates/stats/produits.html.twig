@@ -1,0 +1,285 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Statistiques produits | FarmTech Admin{% endblock %}
+
+{% block body %}
+{% set colors = ['#1a4d2e', '#2a7450', '#c88c14', '#b57a0a', '#8b5e3c', '#4a7a3c', '#6b9b6b', '#a08050'] %}
+
+<div class="page-grid stats-page">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Analyse</p>
+            <h1 class="hero__title">Statistiques produits</h1>
+            <p class="hero__copy">
+                Vue synthétique du catalogue : répartition, santé du stock, valeur,
+                expirations et classements. Données en temps réel.
+            </p>
+        </article>
+    </section>
+
+    {# ── Overview KPIs ── #}
+    <section class="stats-kpis">
+        <div class="stats-kpi">
+            <span class="stats-kpi__label">Produits</span>
+            <span class="stats-kpi__value">{{ stats.overview.total_products }}</span>
+        </div>
+        <div class="stats-kpi">
+            <span class="stats-kpi__label">Unités en stock</span>
+            <span class="stats-kpi__value">{{ stats.overview.total_quantity|number_format(0, ',', ' ') }}</span>
+        </div>
+        <div class="stats-kpi stats-kpi--accent">
+            <span class="stats-kpi__label">Valeur totale</span>
+            <span class="stats-kpi__value">{{ stats.overview.total_value|number_format(0, ',', ' ') }} €</span>
+        </div>
+        <div class="stats-kpi">
+            <span class="stats-kpi__label">Qté moy. / produit</span>
+            <span class="stats-kpi__value">{{ stats.overview.avg_qty_per_prod }}</span>
+        </div>
+        <div class="stats-kpi stats-kpi--warn">
+            <span class="stats-kpi__label">En promotion</span>
+            <span class="stats-kpi__value">{{ stats.overview.with_promo }}</span>
+        </div>
+        <div class="stats-kpi">
+            <span class="stats-kpi__label">Matériels liés</span>
+            <span class="stats-kpi__value">{{ stats.overview.total_materiels }}</span>
+        </div>
+    </section>
+
+    <div class="stats-grid-2">
+
+        {# ── Donut : par catégorie ── #}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Répartition par catégorie</h2>
+                    <p class="panel__copy">Nombre de produits dans chaque catégorie auto-détectée.</p>
+                </div>
+            </div>
+
+            {% if stats.by_category is empty %}
+                <p class="dashboard-empty">Aucune donnée.</p>
+            {% else %}
+                <div class="stats-donut-wrap">
+                    {% set gradientStops = [] %}
+                    {% set cursor = 0 %}
+                    {% for item in stats.by_category %}
+                        {% set color = colors[loop.index0 % colors|length] %}
+                        {% set gradientStops = gradientStops|merge([color ~ ' ' ~ cursor ~ '%']) %}
+                        {% set cursor = cursor + item.percent %}
+                        {% set gradientStops = gradientStops|merge([color ~ ' ' ~ cursor ~ '%']) %}
+                    {% endfor %}
+
+                    <div class="stats-donut" style="background: conic-gradient({{ gradientStops|join(', ') }});">
+                        <div class="stats-donut__hole">
+                            <span class="stats-donut__total">{{ stats.overview.total_products }}</span>
+                            <span class="stats-donut__label">produits</span>
+                        </div>
+                    </div>
+
+                    <ul class="stats-legend">
+                        {% for item in stats.by_category %}
+                            {% set color = colors[loop.index0 % colors|length] %}
+                            <li>
+                                <span class="stats-legend__dot" style="background:{{ color }}"></span>
+                                <span class="stats-legend__name">{{ item.name }}</span>
+                                <span class="stats-legend__value">{{ item.count }} ({{ item.percent }}%)</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </section>
+
+        {# ── Bars : par unité ── #}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Répartition par unité</h2>
+                    <p class="panel__copy">kg, litres, pièces.</p>
+                </div>
+            </div>
+
+            {% if stats.by_unit is empty %}
+                <p class="dashboard-empty">Aucune donnée.</p>
+            {% else %}
+                <div class="stats-bars">
+                    {% for item in stats.by_unit %}
+                        <div class="stats-bar-row">
+                            <span class="stats-bar-row__label">{{ item.name }}</span>
+                            <div class="stats-bar-row__track">
+                                <div class="stats-bar-row__fill" style="width: {{ item.percent }}%; background: {{ colors[loop.index0 % colors|length] }};">
+                                    <span class="stats-bar-row__count">{{ item.count }}</span>
+                                </div>
+                            </div>
+                            <span class="stats-bar-row__pct">{{ item.percent }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        {# ── Santé du stock ── #}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Santé du stock</h2>
+                    <p class="panel__copy">Seuil bas configuré à {{ stats.threshold }} unités.</p>
+                </div>
+            </div>
+
+            {% set totalHealth = stats.stock_health.out + stats.stock_health.low + stats.stock_health.healthy + stats.stock_health.over %}
+            <div class="stats-stack-bar">
+                {% if totalHealth > 0 %}
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--danger"
+                         style="flex: {{ stats.stock_health.out }};" title="Rupture">
+                        {% if stats.stock_health.out > 0 %}{{ stats.stock_health.out }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--warn"
+                         style="flex: {{ stats.stock_health.low }};" title="Stock bas">
+                        {% if stats.stock_health.low > 0 %}{{ stats.stock_health.low }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--ok"
+                         style="flex: {{ stats.stock_health.healthy }};" title="Stock sain">
+                        {% if stats.stock_health.healthy > 0 %}{{ stats.stock_health.healthy }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--info"
+                         style="flex: {{ stats.stock_health.over }};" title="Surstock">
+                        {% if stats.stock_health.over > 0 %}{{ stats.stock_health.over }}{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <ul class="stats-stack-legend">
+                <li><span class="dot dot--danger"></span> Rupture : <strong>{{ stats.stock_health.out }}</strong></li>
+                <li><span class="dot dot--warn"></span> Stock bas : <strong>{{ stats.stock_health.low }}</strong></li>
+                <li><span class="dot dot--ok"></span> Sain : <strong>{{ stats.stock_health.healthy }}</strong></li>
+                <li><span class="dot dot--info"></span> Surstock : <strong>{{ stats.stock_health.over }}</strong></li>
+            </ul>
+        </section>
+
+        {# ── Expirations ── #}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Expirations</h2>
+                    <p class="panel__copy">Fenêtre : 30 prochains jours.</p>
+                </div>
+            </div>
+
+            {% set totalExp = stats.expirations.expired + stats.expirations.soon + stats.expirations.ok + stats.expirations.none %}
+            <div class="stats-stack-bar">
+                {% if totalExp > 0 %}
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--danger" style="flex: {{ stats.expirations.expired }};" title="Expirés">
+                        {% if stats.expirations.expired > 0 %}{{ stats.expirations.expired }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--warn" style="flex: {{ stats.expirations.soon }};" title="Expirent bientôt">
+                        {% if stats.expirations.soon > 0 %}{{ stats.expirations.soon }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--ok" style="flex: {{ stats.expirations.ok }};" title="OK">
+                        {% if stats.expirations.ok > 0 %}{{ stats.expirations.ok }}{% endif %}
+                    </div>
+                    <div class="stats-stack-bar__seg stats-stack-bar__seg--neutral" style="flex: {{ stats.expirations.none }};" title="Sans date">
+                        {% if stats.expirations.none > 0 %}{{ stats.expirations.none }}{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <ul class="stats-stack-legend">
+                <li><span class="dot dot--danger"></span> Expirés : <strong>{{ stats.expirations.expired }}</strong></li>
+                <li><span class="dot dot--warn"></span> &lt; 30 jours : <strong>{{ stats.expirations.soon }}</strong></li>
+                <li><span class="dot dot--ok"></span> OK : <strong>{{ stats.expirations.ok }}</strong></li>
+                <li><span class="dot dot--neutral"></span> Sans date : <strong>{{ stats.expirations.none }}</strong></li>
+            </ul>
+        </section>
+
+    </div>
+
+    {# ── Top 10 par quantité ── #}
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <h2 class="panel__title">Top 10 produits par quantité en stock</h2>
+            </div>
+        </div>
+
+        {% if stats.top_qty is empty %}
+            <p class="dashboard-empty">Aucun produit.</p>
+        {% else %}
+            {% set maxQty = stats.top_qty[0].quantite > 0 ? stats.top_qty[0].quantite : 1 %}
+            <div class="stats-hbars">
+                {% for item in stats.top_qty %}
+                    <a class="stats-hbar" href="{{ path('app_produit_show', { idProduit: item.produit.idProduit }) }}">
+                        <span class="stats-hbar__rank">#{{ loop.index }}</span>
+                        <span class="stats-hbar__name">{{ item.produit.nom }}</span>
+                        <div class="stats-hbar__track">
+                            <div class="stats-hbar__fill" style="width: {{ (item.quantite / maxQty * 100)|round }}%;"></div>
+                        </div>
+                        <span class="stats-hbar__value">{{ item.quantite }} {{ item.unite }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    {# ── Top 5 valeur ── #}
+    {% if stats.top_value is not empty %}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Top 5 produits par valeur stockée</h2>
+                    <p class="panel__copy">Prix unitaire × quantité en stock.</p>
+                </div>
+            </div>
+
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Produit</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité</th>
+                        <th>Valeur totale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.top_value %}
+                        <tr>
+                            <td>#{{ loop.index }}</td>
+                            <td>
+                                <a href="{{ path('app_produit_show', { idProduit: item.produit.idProduit }) }}">{{ item.produit.nom }}</a>
+                            </td>
+                            <td>{{ item.produit.prix|number_format(2, ',', ' ') }} €</td>
+                            <td>{{ item.produit.quantite }} {{ item.produit.unite }}</td>
+                            <td><strong>{{ item.value|number_format(2, ',', ' ') }} €</strong></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+
+    {# ── Valeur stock par catégorie ── #}
+    {% if stats.value_by_category is not empty %}
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Valeur stockée par catégorie</h2>
+                </div>
+            </div>
+            <div class="stats-bars">
+                {% for item in stats.value_by_category %}
+                    <div class="stats-bar-row">
+                        <span class="stats-bar-row__label">{{ item.name }}</span>
+                        <div class="stats-bar-row__track">
+                            <div class="stats-bar-row__fill" style="width: {{ item.percent }}%; background: {{ colors[loop.index0 % colors|length] }};">
+                                <span class="stats-bar-row__count">{{ item.count|number_format(0, ',', ' ') }} €</span>
+                            </div>
+                        </div>
+                        <span class="stats-bar-row__pct">{{ item.percent }}%</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}

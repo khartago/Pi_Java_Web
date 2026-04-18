@@ -1,0 +1,66 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{{ mode == 'new' ? 'Nouvelle recommandation' : 'Modifier recommandation' }} | FarmTech Admin{% endblock %}
+
+{% block body %}
+<div class="page-grid">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Intelligence système</p>
+            <h1 class="hero__title">
+                {{ mode == 'new' ? 'Nouvelle recommandation' : 'Modifier la recommandation' }}
+            </h1>
+            <p class="hero__copy">
+                Lier un matériel à un produit avec un niveau de priorité. Le score algorithmique sera boosté
+                de <strong>10 × priorité</strong> points (priorité 5 = +50 pts).
+            </p>
+        </article>
+    </section>
+
+    <section class="panel">
+        {{ form_start(form) }}
+        <div class="reco-form-grid">
+            <div class="field-group">
+                {{ form_label(form.produit) }}
+                {{ form_widget(form.produit, { attr: { class: 'select' } }) }}
+                {{ form_errors(form.produit) }}
+            </div>
+
+            <div class="field-group">
+                {{ form_label(form.materiel) }}
+                {{ form_widget(form.materiel, { attr: { class: 'select' } }) }}
+                {{ form_errors(form.materiel) }}
+            </div>
+
+            <div class="field-group">
+                {{ form_label(form.priorite) }}
+                {{ form_widget(form.priorite, { attr: { class: 'select' } }) }}
+                <p class="help-text">1 = Optionnel · 3 = Recommandé · 5 = Essentiel</p>
+                {{ form_errors(form.priorite) }}
+            </div>
+
+            <div class="field-group field-group--full">
+                {{ form_label(form.raison) }}
+                {{ form_widget(form.raison, { attr: { class: 'textarea' } }) }}
+                <p class="help-text">Pourquoi ce matériel est-il recommandé pour ce produit ? (affiché sur la fiche publique)</p>
+                {{ form_errors(form.raison) }}
+            </div>
+
+            <div class="field-group field-group--checkbox field-group--full">
+                {{ form_widget(form.actif) }}
+                {{ form_label(form.actif) }}
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top:20px;display:flex;gap:10px;">
+            <button class="button" type="submit">
+                {{ mode == 'new' ? 'Créer la recommandation' : 'Enregistrer' }}
+            </button>
+            <a class="button-ghost" href="{{ path('app_recommandation_index') }}">Annuler</a>
+        </div>
+        {{ form_end(form) }}
+    </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Affectations | Farmtech{% endblock %}
+
+{% block body %}
+<div class="page-grid">
+
+    <section class="hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Gestion des affectations</p>
+            <h1 class="hero__title">Affectations de matériels</h1>
+            <p class="hero__copy">
+                Suivez en temps réel quels matériels sont affectés à quels employés.
+                Enregistrez les retours et consultez l'historique complet des affectations.
+            </p>
+            <div class="hero__actions">
+                <a class="button" href="{{ path('app_affectation_new') }}">Nouvelle affectation</a>
+                <a class="button-ghost" href="{{ path('app_affectation_historique') }}">Voir l'historique</a>
+                <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Gérer les employés</a>
+            </div>
+        </article>
+
+        <aside class="stats-strip" aria-label="Synthèse des affectations">
+            <h2 class="stats-strip__title">Vue d'ensemble</h2>
+            <div class="stats-grid">
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Affectations actives</span>
+                    <span class="stat-chip__value">{{ affectations|length }}</span>
+                </article>
+                <article class="stat-chip">
+                    <span class="stat-chip__label">Employés enregistrés</span>
+                    <span class="stat-chip__value">{{ total_employes }}</span>
+                </article>
+            </div>
+        </aside>
+    </section>
+
+    <section class="panel">
+        <div class="panel__header">
+            <div>
+                <h2 class="panel__title">Affectations en cours</h2>
+                <p class="panel__copy">Matériels actuellement affectés à un employé (sans date de retour).</p>
+            </div>
+            <a class="button" href="{{ path('app_affectation_new') }}">Nouvelle affectation</a>
+        </div>
+
+        {% if affectations is empty %}
+            <div class="empty-state">
+                <h3>Aucune affectation active</h3>
+                <p>Tous les matériels sont disponibles. Créez une affectation pour attribuer un équipement à un employé.</p>
+                <a class="button" href="{{ path('app_affectation_new') }}">Créer la première affectation</a>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table class="table affectation-table">
+                    <thead>
+                        <tr>
+                            <th>Matériel</th>
+                            <th>État</th>
+                            <th>Employé</th>
+                            <th>Poste</th>
+                            <th>Date d'affectation</th>
+                            <th>Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aff in affectations %}
+                            <tr>
+                                <td>
+                                    <strong>{{ aff.materiel.nom }}</strong>
+                                    {% if aff.materiel.produit %}
+                                        <br><small style="color: var(--text-soft);">{{ aff.materiel.produit.nom }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="aff-etat-pill aff-etat-pill--{{ aff.materiel.etat }}">{{ aff.materiel.etat|capitalize }}</span>
+                                </td>
+                                <td>{{ aff.employe.fullName }}</td>
+                                <td>{{ aff.employe.poste }}</td>
+                                <td>{{ aff.dateAffectation|date('d/m/Y') }}</td>
+                                <td>{{ aff.duree }}</td>
+                                <td class="table__actions">
+                                    <form
+                                        method="post"
+                                        action="{{ path('app_affectation_retourner', { id: aff.idAffectation }) }}"
+                                        class="inline-form"
+                                    >
+                                        <input type="hidden" name="_token" value="{{ csrf_token('retourner-affectation-' ~ aff.idAffectation) }}">
+                                        <button type="submit" class="button-ghost aff-return-btn" title="Enregistrer le retour de ce matériel">
+                                            Retourner
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}

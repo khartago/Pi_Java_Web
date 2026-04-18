@@ -1,0 +1,93 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Alertes | Farmtech{% endblock %}
+
+{% block body %}
+<div class="page-grid alerts-page"
+     data-controller="alerts"
+     data-alerts-summary-url-value="{{ path('api_alerts_summary') }}"
+     data-alerts-send-url-value="{{ path('api_alerts_send') }}">
+
+    {# ── Hero ── #}
+    <section class="hero alerts-hero">
+        <article class="hero__card">
+            <p class="hero__eyebrow">Surveillance</p>
+            <h1 class="hero__title">Alertes &amp; Notifications</h1>
+            <p class="hero__copy">
+                Visualisez en temps réel les produits en rupture de stock et les matériels en panne.
+                Déclenchez l'envoi d'email d'alerte en un clic.
+            </p>
+            <div class="hero__actions">
+                <button class="button"
+                        type="button"
+                        data-alerts-target="sendBtn"
+                        data-action="alerts#send">
+                    Envoyer les alertes email
+                </button>
+                <button class="button-ghost"
+                        type="button"
+                        data-action="alerts#loadSummary">
+                    Actualiser
+                </button>
+            </div>
+            <p class="alerts-feedback" data-alerts-target="feedback" hidden></p>
+        </article>
+
+        {# ── Compteurs ── #}
+        <aside class="stats-strip" aria-label="Résumé alertes">
+            <h2 class="stats-strip__title">Résumé actuel</h2>
+            <div class="stats-grid">
+                <div class="alert-stat alert-stat--low stat-chip">
+                    <span class="stat-chip__label">Produits stock bas</span>
+                    <span class="stat-chip__value" data-alerts-target="lowCount">—</span>
+                </div>
+                <div class="alert-stat alert-stat--broken stat-chip">
+                    <span class="stat-chip__label">Matériels en panne</span>
+                    <span class="stat-chip__value" data-alerts-target="brokenCount">—</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    {# ── Squelette chargement ── #}
+    <div class="alerts-skeleton" data-alerts-target="skeleton" hidden>
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar skeleton-bar--short"></div>
+        <div class="skeleton-bar"></div>
+    </div>
+
+    {# ── Listes ── #}
+    <div class="alerts-content" data-alerts-target="content" hidden>
+        <div class="alerts-grid">
+
+            <section class="panel">
+                <div class="panel__header">
+                    <div>
+                        <h2 class="panel__title">Produits en rupture</h2>
+                        <p class="panel__copy">Quantité inférieure ou égale au seuil configuré.</p>
+                    </div>
+                    <span class="alert-badge alert-badge--warning" data-alerts-target="lowCount">—</span>
+                </div>
+                <div class="alert-list" data-alerts-target="lowList">
+                    <p class="alert-empty">Chargement…</p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel__header">
+                    <div>
+                        <h2 class="panel__title">Matériels en panne</h2>
+                        <p class="panel__copy">Matériels dont l'état est marqué « panne ».</p>
+                    </div>
+                    <span class="alert-badge alert-badge--danger" data-alerts-target="brokenCount">—</span>
+                </div>
+                <div class="alert-list" data-alerts-target="brokenList">
+                    <p class="alert-empty">Chargement…</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

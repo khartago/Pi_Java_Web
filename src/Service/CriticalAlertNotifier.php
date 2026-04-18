@@ -6,6 +6,7 @@ use App\Repository\MaterielRepository;
 use App\Repository\ProduitRepository;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Twig\Environment;
 
 final class CriticalAlertNotifier
 {
@@ -13,6 +14,7 @@ final class CriticalAlertNotifier
         private readonly ProduitRepository $produitRepository,
         private readonly MaterielRepository $materielRepository,
         private readonly MailerInterface $mailer,
+        private readonly Environment $twig,
     ) {
     }
 
@@ -67,10 +69,19 @@ final class CriticalAlertNotifier
             );
         }
 
+        $html = $this->twig->render('emails/critical_alert.html.twig', [
+            'threshold' => $stockThreshold,
+            'low_stock_count' => $lowStockCount,
+            'panne_count' => $panneCount,
+            'low_stock_products' => $lowStockProducts,
+            'broken_materiels' => $brokenMateriels,
+        ]);
+
         $email = (new Email())
             ->from($fromEmail)
             ->to($toEmail)
             ->subject(sprintf('[Farmtech] Alertes critiques (%d stock bas, %d pannes)', $lowStockCount, $panneCount))
+            ->html($html)
             ->text(implode("\n", $lines));
 
         $this->mailer->send($email);

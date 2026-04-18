@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}FarmTech — Marketplace{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2282%22>🌱</text></svg>">
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body class="organic-app front-layout {% block body_class %}{% endblock %}">
+        {% set current_route = app.request.attributes.get('_route')|default('') %}
+        <a class="skip-link" href="#main-content">Aller au contenu</a>
+
+        <header class="front-header">
+            <div class="front-header__inner">
+                <a class="brand brand--logo front-brand" href="{{ path('app_marketplace_index') }}" aria-label="FarmTech accueil">
+                    <span class="brand__badge">FT</span>
+                    <span class="brand__copy">
+                        <span class="brand__eyebrow">FarmTech</span>
+                        <span class="brand__title">Web Plantation</span>
+                        <span class="brand__subtitle">Gestion intelligente agricole</span>
+                    </span>
+                </a>
+
+                <nav class="front-nav" aria-label="Navigation principale">
+                    <a class="front-nav__link {{ current_route == 'app_marketplace_index' ? 'front-nav__link--active' }}" href="{{ path('app_marketplace_index') }}">
+                        Catalogue
+                    </a>
+                    <a class="front-nav__link {{ current_route == 'app_favoris_index' ? 'front-nav__link--active' }}" href="{{ path('app_favoris_index') }}">
+                        Favoris
+                    </a>
+                </nav>
+
+                <a class="fav-counter" href="{{ path('app_favoris_index') }}" data-controller="favorites-counter" title="Mes favoris" aria-label="Mes favoris">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    <span class="fav-counter__badge" data-favorites-counter-target="count" hidden>0</span>
+                </a>
+
+                <a class="front-admin-link" href="{{ path('app_admin_dashboard') }}" title="Espace administration">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                    Admin
+                </a>
+            </div>
+        </header>
+
+        <main id="main-content" class="shell" tabindex="-1">
+            {% include 'components/_flash.html.twig' %}
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="front-footer">
+            <p>© {{ "now"|date("Y") }} FarmTech · Gestion intelligente agricole</p>
+        </footer>
+    </body>
+</html>

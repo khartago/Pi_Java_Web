@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>⚠️ Alerte Stock Faible</h2>
+    <p>Les produits suivants sont en dessous du seuil de <strong>{{ threshold }}</strong> :</p>
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Unité</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produit in produits %}
+            <tr>
+                <td>{{ produit.nom }}</td>
+                <td>{{ produit.quantite }}</td>
+                <td>{{ produit.unite }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

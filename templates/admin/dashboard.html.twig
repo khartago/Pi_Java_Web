@@ -1,0 +1,122 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Dashboard | FarmTech Admin{% endblock %}
+
+{% block body %}
+<div class="page-grid dashboard-page">
+
+    {# ── KPI Cards ── #}
+    <section class="dashboard-kpis">
+        <a class="kpi-card" href="{{ path('app_produit_index') }}">
+            <span class="kpi-card__icon">📦</span>
+            <span class="kpi-card__value">{{ total_produits }}</span>
+            <span class="kpi-card__label">Produits</span>
+        </a>
+        <a class="kpi-card" href="{{ path('app_produit_index') }}">
+            <span class="kpi-card__icon">🔧</span>
+            <span class="kpi-card__value">{{ total_materiels }}</span>
+            <span class="kpi-card__label">Matériels</span>
+        </a>
+        <a class="kpi-card kpi-card--warn" href="{{ path('app_alerts_index') }}">
+            <span class="kpi-card__icon">⚠️</span>
+            <span class="kpi-card__value">{{ low_stock_count }}</span>
+            <span class="kpi-card__label">Stock bas</span>
+        </a>
+        <a class="kpi-card kpi-card--danger" href="{{ path('app_alerts_index') }}">
+            <span class="kpi-card__icon">🔴</span>
+            <span class="kpi-card__value">{{ broken_count }}</span>
+            <span class="kpi-card__label">En panne</span>
+        </a>
+        <a class="kpi-card" href="{{ path('app_affectation_index') }}">
+            <span class="kpi-card__icon">👤</span>
+            <span class="kpi-card__value">{{ affectations_actives }}</span>
+            <span class="kpi-card__label">Affectations actives</span>
+        </a>
+        <a class="kpi-card kpi-card--warn" href="{{ path('app_alerts_index') }}">
+            <span class="kpi-card__icon">📅</span>
+            <span class="kpi-card__value">{{ expiring_count }}</span>
+            <span class="kpi-card__label">Expirent sous 30j</span>
+        </a>
+    </section>
+
+    {# ── Accès rapides ── #}
+    <section class="dashboard-shortcuts panel">
+        <div class="panel__header">
+            <h2 class="panel__title">Accès rapides</h2>
+        </div>
+        <div class="shortcut-grid">
+            <a class="shortcut-card" href="{{ path('app_produit_new') }}">
+                <span class="shortcut-card__icon">+ Produit</span>
+                <span class="shortcut-card__label">Ajouter un produit</span>
+            </a>
+            <a class="shortcut-card" href="{{ path('app_affectation_new') }}">
+                <span class="shortcut-card__icon">+ Affectation</span>
+                <span class="shortcut-card__label">Affecter un matériel</span>
+            </a>
+            <a class="shortcut-card" href="{{ path('app_employe_new') }}">
+                <span class="shortcut-card__icon">+ Employé</span>
+                <span class="shortcut-card__label">Ajouter un employé</span>
+            </a>
+            <a class="shortcut-card" href="{{ path('app_assistant_index') }}">
+                <span class="shortcut-card__icon">🤖 IA</span>
+                <span class="shortcut-card__label">Assistant IA</span>
+            </a>
+        </div>
+    </section>
+
+    {# ── Alertes en cours ── #}
+    <div class="dashboard-alerts">
+
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Stock bas</h2>
+                    <p class="panel__copy">Produits sous le seuil</p>
+                </div>
+                <a class="button-ghost" href="{{ path('app_alerts_index') }}" style="font-size:.85rem;min-height:36px;padding:0 12px;">
+                    Voir tout
+                </a>
+            </div>
+            {% if low_stock_products is empty %}
+                <p class="dashboard-empty">✅ Aucun produit en rupture.</p>
+            {% else %}
+                <div class="alert-list">
+                    {% for p in low_stock_products %}
+                        <div class="alert-item">
+                            <span class="alert-item__name">{{ p.nom }}</span>
+                            <span class="alert-item__badge alert-item__badge--warning">{{ p.quantite }} {{ p.unite }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <div class="panel__header">
+                <div>
+                    <h2 class="panel__title">Matériels en panne</h2>
+                    <p class="panel__copy">Nécessitent une intervention</p>
+                </div>
+                <a class="button-ghost" href="{{ path('app_alerts_index') }}" style="font-size:.85rem;min-height:36px;padding:0 12px;">
+                    Voir tout
+                </a>
+            </div>
+            {% if broken_materiels is empty %}
+                <p class="dashboard-empty">✅ Aucun matériel en panne.</p>
+            {% else %}
+                <div class="alert-list">
+                    {% for m in broken_materiels %}
+                        <div class="alert-item">
+                            <span class="alert-item__name">{{ m.nom }}</span>
+                            <span class="alert-item__badge alert-item__badge--danger">panne</span>
+                            <span class="alert-item__sub">{{ m.produit.nom }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+
+</div>
+{% endblock %}

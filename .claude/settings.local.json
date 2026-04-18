@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep *)",
+      "Bash(php bin/console cache:clear)",
+      "Bash(php bin/phpunit tests/Unit/AssistantIntentRouterTest.php --colors=never)",
+      "Bash(php bin/phpunit tests/Functional/ tests/Validation/ --colors=never)",
+      "Bash(php bin/console debug:router app_produit_qr_code)",
+      "Bash(php bin/console importmap:require marked)",
+      "Bash(php bin/console asset-map:compile)",
+      "Bash(php bin/console router:match /produits/1/qr-code)",
+      "Bash(php -r ' *)",
+      "Bash(php -r \"require 'vendor/autoload.php'; echo \\(new ReflectionClass\\('Endroid\\\\QrCode\\\\Builder\\\\Builder'\\)\\)->getFileName\\(\\);\")"
+    ]
+  }
+}

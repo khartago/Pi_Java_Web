@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Admin | FarmTech{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2282%22>F</text></svg>">
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body class="organic-app admin-layout {% block body_class %}{% endblock %}">
+        <a class="skip-link" href="#main-content">Aller au contenu</a>
+        {% set current_route = app.request.attributes.get('_route')|default('') %}
+
+        <header class="admin-header">
+            <div class="admin-header__inner">
+
+                <a class="admin-brand" href="{{ path('app_admin_dashboard') }}" aria-label="Dashboard admin">
+                    <span class="admin-brand__badge">FT</span>
+                    <span class="admin-brand__copy">
+                        <span class="admin-brand__label">FarmTech</span>
+                        <span class="admin-brand__sub">Administration</span>
+                    </span>
+                </a>
+
+                <nav class="admin-nav" aria-label="Navigation admin">
+                    <a class="admin-nav__link {{ current_route == 'app_admin_dashboard' ? 'is-active' }}"
+                       href="{{ path('app_admin_dashboard') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        Dashboard
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_produit_' or current_route starts with 'app_materiel_' ? 'is-active' }}"
+                       href="{{ path('app_produit_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        Stock
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_affectation_' or current_route starts with 'app_employe_' ? 'is-active' }}"
+                       href="{{ path('app_affectation_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Affectations
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_promotion_' ? 'is-active' }}"
+                       href="{{ path('app_promotion_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                        Promotions
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_recommandation_' ? 'is-active' }}"
+                       href="{{ path('app_recommandation_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Reco.
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_stats_' ? 'is-active' }}"
+                       href="{{ path('app_stats_produits') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        Stats
+                    </a>
+                    <a class="admin-nav__link {{ current_route == 'app_alerts_index' ? 'is-active' }}"
+                       href="{{ path('app_alerts_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        Alertes
+                    </a>
+                    <a class="admin-nav__link {{ current_route starts with 'app_assistant_' ? 'is-active' }}"
+                       href="{{ path('app_assistant_index') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Assistant IA
+                    </a>
+                </nav>
+
+                <div class="admin-header__actions">
+                    {# Cloche de notifications #}
+                    <div class="notif-bell"
+                         data-controller="notif"
+                         data-notif-url-value="{{ path('api_alerts_summary') }}">
+                        <button class="notif-bell__btn" type="button" aria-label="Notifications" data-action="notif#toggle">
+                            <svg class="notif-bell__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                            <span class="notif-badge" data-notif-target="badge" hidden>0</span>
+                        </button>
+                        <div class="notif-panel" data-notif-target="panel" hidden>
+                            <div class="notif-panel__header">
+                                <span class="notif-panel__title">Notifications</span>
+                                <button class="notif-panel__read-all" type="button" data-action="notif#markAllRead">Tout marquer lu</button>
+                            </div>
+                            <div class="notif-panel__list" data-notif-target="list">
+                                <p class="notif-empty">Chargement…</p>
+                            </div>
+                            <a class="notif-panel__footer" href="{{ path('app_alerts_index') }}">Voir toutes les alertes →</a>
+                        </div>
+                    </div>
+
+                    <a class="admin-site-link" href="{{ path('app_marketplace_index') }}" title="Voir le site public">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        Voir le site
+                    </a>
+                </div>
+
+            </div>
+        </header>
+
+        <main id="main-content" class="shell" tabindex="-1">
+            {% include 'components/_flash.html.twig' %}
+            {% block body %}{% endblock %}
+        </main>
+    </body>
+</html>

@@ -50,6 +50,9 @@ class Produit
     #[ORM\Column(name: 'imagePath', length: 255, nullable: true)]
     private ?string $imagePath = null;
 
+    #[ORM\Column(name: 'prix', type: 'float', nullable: true)]
+    private ?float $prix = null;
+
     /**
      * @var Collection<int, Materiel>
      */
@@ -57,9 +60,16 @@ class Produit
     #[ORM\OrderBy(['nom' => 'ASC'])]
     private Collection $materiels;
 
+    /**
+     * @var Collection<int, Promotion>
+     */
+    #[ORM\ManyToMany(targetEntity: Promotion::class, mappedBy: 'produits')]
+    private Collection $promotions;
+
     public function __construct()
     {
         $this->materiels = new ArrayCollection();
+        $this->promotions = new ArrayCollection();
     }
 
     public function getIdProduit(): ?int
@@ -123,6 +133,45 @@ class Produit
     public function setImagePath(?string $imagePath): self
     {
         $this->imagePath = $imagePath;
+
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(?float $prix): self
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Promotion>
+     */
+    public function getPromotions(): Collection
+    {
+        return $this->promotions;
+    }
+
+    public function addPromotion(Promotion $promotion): self
+    {
+        if (!$this->promotions->contains($promotion)) {
+            $this->promotions->add($promotion);
+            $promotion->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removePromotion(Promotion $promotion): self
+    {
+        if ($this->promotions->removeElement($promotion)) {
+            $promotion->removeProduit($this);
+        }
 
         return $this;
     }

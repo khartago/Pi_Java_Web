@@ -1,4 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
+import { marked } from 'marked';
+
+marked.use({ breaks: true, gfm: true });
 
 export default class extends Controller {
     static targets = ['messages', 'input', 'send', 'status', 'languageButton'];
@@ -63,7 +66,7 @@ export default class extends Controller {
                 throw new Error(message);
             }
 
-            this.addMessage('assistant', data.reply);
+            this.addMessage('assistant', data.reply, data.intent, data.summary);
             this.setStatus('');
         } catch (error) {
             const rawMessage = error instanceof Error && error.message ? error.message : 'Request failed.';
@@ -80,7 +83,7 @@ export default class extends Controller {
         }
     }
 
-    addMessage(role, content) {
+    addMessage(role, content, intent = null, summary = null) {
         this.messages.push({ role, content });
 
         const message = document.createElement('div');
@@ -91,9 +94,27 @@ export default class extends Controller {
         meta.classList.add('assistant-message__meta');
         meta.textContent = role === 'user' ? 'You' : 'Assistant';
 
-        const body = document.createElement('p');
+        // Show a "source: DB" badge when the reply used live backend data
+        if (role === 'assistant' && intent && intent !== 'unknown') {
+            const badge = document.createElement('span');
+            badge.classList.add('assistant-source-badge');
+            badge.title = summary || intent;
+            badge.textContent = '⚡ stock DB';
+            meta.append(' ', badge);
+        }
+
+        const body = document.createElement('div');
         body.classList.add('assistant-message__text');
-        body.textContent = content;
+        if (role === 'assistant') {
+            try {
+                const html = marked.parse(content);
+                body.innerHTML = typeof html === 'string' ? html : content;
+            } catch {
+                body.textContent = content;
+            }
+        } else {
+            body.textContent = content;
+        }
 
         message.append(meta, body);
         this.messagesTarget.append(message);

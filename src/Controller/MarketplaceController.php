@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Produit;
 use App\Repository\ProduitRepository;
+use App\Service\MaterielRecommendationService;
+use App\Service\PromotionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,12 +13,56 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class MarketplaceController extends AbstractController
 {
+    private const PER_PAGE = 9
+    ;
+
+    public function __construct(
+        private readonly PromotionService $promotionService,
+        private readonly MaterielRecommendationService $recommendationService,
+    ) {
+    }
+
+    #[Route('/marketplace/produit/{idProduit<\d+>}', name: 'app_marketplace_show', methods: ['GET'])]
+    public function show(int $idProduit, ProduitRepository $produitRepository): Response
+    {
+        $produit = $produitRepository->findOneForDetail($idProduit);
+
+        if (!$produit) {
+            throw $this->createNotFoundException('Produit introuvable.');
+        }
+
+        $promotion = $this->promotionService->getBestPromotionForProduct($produit);
+        $discountedPrice = null;
+        if ($promotion !== null && $produit->getPrix() !== null) {
+            $discountedPrice = $promotion->applyTo((float) $produit->getPrix(), 1);
+        }
+
+        $recommendations = $this->recommendationService->recommend($produit, 4);
+
+        $relatedProducts = array_filter(
+            $produitRepository->findForMarketplace(),
+            static fn (Produit $p): bool => $p->getIdProduit() !== $idProduit
+        );
+        shuffle($relatedProducts);
+        $relatedProducts = array_slice($relatedProducts, 0, 4);
+
+        return $this->render('marketplace/show.html.twig', [
+            'produit'         => $produit,
+            'category'        => $this->resolveCategory($produit),
+            'promotion'       => $promotion,
+            'discountedPrice' => $discountedPrice,
+            'recommendations' => $recommendations,
+            'related'         => $relatedProducts,
+        ]);
+    }
+
     #[Route('/marketplace', name: 'app_marketplace_index', methods: ['GET'])]
     public function index(Request $request, ProduitRepository $produitRepository): Response
     {
         $recherche = trim((string) $request->query->get('recherche', ''));
         $unite = trim((string) $request->query->get('unite', ''));
         $categorie = trim((string) $request->query->get('categorie', ''));
+        $page = max(1, (int) $request->query->get('page', 1));
 
         $products = $produitRepository->findForMarketplace($recherche, $unite);
         $cards = array_map(
@@ -39,8 +85,13 @@ final class MarketplaceController extends AbstractController
             0,
         );
 
+        $totalCards = count($cards);
+        $totalPages = max(1, (int) ceil($totalCards / self::PER_PAGE));
+        $page = min($page, $totalPages);
+        $pagedCards = array_slice($cards, ($page - 1) * self::PER_PAGE, self::PER_PAGE);
+
         return $this->render('marketplace/index.html.twig', [
-            'cards' => $cards,
+            'cards' => $pagedCards,
             'recherche' => $recherche,
             'unite' => $unite,
             'categorie' => $categorie,
@@ -48,6 +99,14 @@ final class MarketplaceController extends AbstractController
             'category_facets' => $categoryFacets,
             'total_products' => count($products),
             'materiel_total' => $materielTotal,
+            'pagination' => [
+                'page'        => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalCards,
+                'per_page'    => self::PER_PAGE,
+                'from'        => $totalCards === 0 ? 0 : ($page - 1) * self::PER_PAGE + 1,
+                'to'          => min($page * self::PER_PAGE, $totalCards),
+            ],
         ]);
     }
 
@@ -56,7 +115,9 @@ final class MarketplaceController extends AbstractController
      *     produit: Produit,
      *     category: string,
      *     materielCount: int,
-     *     materielPreview: list<string>
+     *     materielPreview: list<string>,
+     *     promotion: ?\App\Entity\Promotion,
+     *     discountedPrice: ?float
      * }
     */
     private function buildCard(Produit $produit): array
@@ -69,11 +130,20 @@ final class MarketplaceController extends AbstractController
 
         sort($materielNames, SORT_NATURAL | SORT_FLAG_CASE);
 
+        $promotion = $this->promotionService->getBestPromotionForProduct($produit);
+        $discountedPrice = null;
+
+        if ($promotion !== null && $produit->getPrix() !== null) {
+            $discountedPrice = $promotion->applyTo((float) $produit->getPrix(), 1);
+        }
+
         return [
             'produit' => $produit,
             'category' => $this->resolveCategory($produit),
             'materielCount' => count($materielNames),
             'materielPreview' => array_slice($materielNames, 0, 3),
+            'promotion' => $promotion,
+            'discountedPrice' => $discountedPrice,
         ];
     }
 

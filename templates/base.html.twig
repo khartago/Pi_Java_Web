@@ -3,41 +3,92 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block title %}Farmtech Stock{% endblock %}</title>
+        <title>{% block title %}FARMTECH{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2282%22>F</text></svg>">
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        <header class="site-header">
-            <div class="site-header__inner">
-                <a class="brand" href="{{ path('app_produit_index') }}">
+    <body class="organic-app {% block body_class %}{% endblock %}">
+        <a class="skip-link" href="#main-content">Aller au contenu</a>
+        {% set current_route = app.request.attributes.get('_route')|default('') %}
+        {% set ui_mode = app.request.hasPreviousSession ? app.request.session.get('ui_mode', 'admin') : 'admin' %}
+
+        <header class="topnav site-header">
+            <div class="topnav-inner site-header__inner">
+                <a class="brand brand--logo" href="{{ path('app_home') }}" aria-label="FarmTech accueil">
                     <span class="brand__badge">FT</span>
                     <span class="brand__copy">
-                        <span class="brand__eyebrow">Farmtech</span>
-                        <span class="brand__title">Produits & matériels</span>
-                        <span class="brand__subtitle">Port web Symfony du module Java</span>
+                        <span class="brand__eyebrow">FarmTech</span>
+                        <span class="brand__title">Web Plantation</span>
+                        <span class="brand__subtitle">Gestion intelligente agricole</span>
                     </span>
                 </a>
 
-                <nav class="site-nav" aria-label="Navigation principale">
-                    {% set current_route = app.request.attributes.get('_route')|default('') %}
+                <nav class="site-nav nav-links" aria-label="Navigation principale">
+                    <span class="mode-badge mode-badge--{{ ui_mode }}">Mode {{ ui_mode == 'admin' ? 'Admin' : 'User' }}</span>
+
+                    <div class="mode-switch" role="group" aria-label="Basculer le mode d'interface">
+                        <a class="nav-pill {{ ui_mode == 'user' ? 'is-active' }}" href="{{ path('app_interface_mode_switch', { mode: 'user' }) }}">Front</a>
+                        <a class="nav-pill {{ ui_mode == 'admin' ? 'is-active' }}" href="{{ path('app_interface_mode_switch', { mode: 'admin' }) }}">Admin</a>
+                    </div>
+
                     <a class="nav-pill {{ current_route starts with 'app_marketplace_' ? 'is-active' }}" href="{{ path('app_marketplace_index') }}">
                         Marketplace
                     </a>
-                    <a class="nav-pill {{ current_route starts with 'app_assistant_' ? 'is-active' }}" href="{{ path('app_assistant_index') }}">
-                        Assistant IA
-                    </a>
-                    <a class="nav-pill {{ current_route starts with 'app_produit_' or current_route starts with 'app_materiel_' ? 'is-active' }}" href="{{ path('app_produit_index') }}">
-                        Stock interne
-                    </a>
+                    {% if ui_mode == 'admin' %}
+                        <a class="nav-pill {{ current_route starts with 'app_assistant_' ? 'is-active' }}" href="{{ path('app_assistant_index') }}">
+                            Assistant IA
+                        </a>
+                        <a class="nav-pill {{ current_route starts with 'app_produit_' or current_route starts with 'app_materiel_' ? 'is-active' }}" href="{{ path('app_produit_index') }}">
+                            Stock interne
+                        </a>
+                        <a class="nav-pill {{ current_route == 'app_alerts_index' ? 'is-active' }}" href="{{ path('app_alerts_index') }}">
+                            Alertes
+                        </a>
+                        <a class="nav-pill {{ current_route starts with 'app_affectation_' or current_route starts with 'app_employe_' ? 'is-active' }}" href="{{ path('app_affectation_index') }}">
+                            Affectations
+                        </a>
+
+                        {# ── Cloche de notifications ── #}
+                        <div class="notif-bell"
+                             data-controller="notif"
+                             data-notif-url-value="{{ path('api_alerts_summary') }}">
+                            <button class="notif-bell__btn"
+                                    type="button"
+                                    aria-label="Notifications"
+                                    data-action="notif#toggle">
+                                <svg class="notif-bell__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                                <span class="notif-badge" data-notif-target="badge" hidden>0</span>
+                            </button>
+
+                            <div class="notif-panel" data-notif-target="panel" hidden>
+                                <div class="notif-panel__header">
+                                    <span class="notif-panel__title">Notifications</span>
+                                    <button class="notif-panel__read-all"
+                                            type="button"
+                                            data-action="notif#markAllRead">
+                                        Tout marquer lu
+                                    </button>
+                                </div>
+                                <div class="notif-panel__list" data-notif-target="list">
+                                    <p class="notif-empty">Chargement…</p>
+                                </div>
+                                <a class="notif-panel__footer" href="{{ path('app_alerts_index') }}">
+                                    Voir toutes les alertes →
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
                 </nav>
             </div>
         </header>
 
-        <main class="shell">
+        <main id="main-content" class="shell" tabindex="-1">
             {% include 'components/_flash.html.twig' %}
             {% block body %}{% endblock %}
         </main>

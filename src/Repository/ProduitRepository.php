@@ -107,4 +107,19 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<Produit>
+     */
+    public function findExpiringBefore(\DateTimeInterface $date): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.dateExpiration IS NOT NULL')
+            ->andWhere('p.dateExpiration <= :date')
+            ->setParameter('date', $date)
+            ->orderBy('p.dateExpiration', 'ASC')
+            ->addOrderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

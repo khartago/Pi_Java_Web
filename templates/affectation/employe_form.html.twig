@@ -1,0 +1,85 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{% if employe.idEmploye %}Modifier l'employé{% else %}Nouvel employé{% endif %} | Farmtech{% endblock %}
+
+{% block body %}
+<section class="sheet-layout">
+    <aside class="sheet-backdrop">
+        <p class="hero__eyebrow">Gestion des employés</p>
+        <h2>{{ employe.idEmploye ? 'Modifier un employé' : 'Ajouter un employé' }}</h2>
+        <p>
+            Les employés enregistrés ici pourront recevoir des affectations de matériels.
+            Renseignez au minimum le nom, le prénom et le poste.
+        </p>
+        <div style="margin-top: 20px;">
+            <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Retour aux employés</a>
+        </div>
+    </aside>
+
+    <article class="sheet">
+        <div class="sheet__header">
+            <div>
+                <h1 class="sheet__title">{{ employe.idEmploye ? employe.fullName : 'Nouvel employé' }}</h1>
+                <p class="sheet__copy">
+                    Renseignez les informations de l'employé pour l'ajouter au registre.
+                </p>
+            </div>
+            <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Annuler</a>
+        </div>
+
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+            {% if not form.vars.valid %}
+                <div class="form-errors">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
+            <div class="form-grid form-grid--two">
+
+                <div class="field-group">
+                    {{ form_label(form.prenom) }}
+                    {{ form_widget(form.prenom) }}
+                    {% for error in form.prenom.vars.errors %}
+                        <p class="field-error">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="field-group">
+                    {{ form_label(form.nom) }}
+                    {{ form_widget(form.nom) }}
+                    {% for error in form.nom.vars.errors %}
+                        <p class="field-error">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="field-group">
+                    {{ form_label(form.poste) }}
+                    {{ form_widget(form.poste) }}
+                    {% for error in form.poste.vars.errors %}
+                        <p class="field-error">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="field-group">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {% for error in form.email.vars.errors %}
+                        <p class="field-error">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <p class="help-text">L'email est facultatif mais permettra d'envoyer des notifications à l'employé.</p>
+                <div class="detail-panel__actions">
+                    <a class="button-ghost" href="{{ path('app_affectation_employes') }}">Annuler</a>
+                    <button class="button" type="submit">{{ employe.idEmploye ? 'Enregistrer les modifications' : 'Ajouter l\'employé' }}</button>
+                </div>
+            </div>
+
+        {{ form_end(form) }}
+    </article>
+</section>
+{% endblock %}

@@ -25,4 +25,7 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'marked' => [
+        'version' => '18.0.1',
+    ],
 ];
