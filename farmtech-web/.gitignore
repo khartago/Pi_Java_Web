@@ -1,8 +1,7 @@
 
 ###> symfony/framework-bundle ###
-/.env.local
+# Projet scolaire : .env.local peut être versionné (clés partagées avec config.properties à la racine)
 /.env.local.php
-/.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/

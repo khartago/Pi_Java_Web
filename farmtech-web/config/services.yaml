@@ -1,6 +1,14 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 parameters:
+    # Valeurs par défaut si absentes de .env (alignées config.properties JavaFX)
+    env(WEATHER_DEFAULT_LAT): '36.8065'
+    env(WEATHER_DEFAULT_LON): '10.1815'
+    env(PDF_REMOTE_URL): 'https://html2pdf.fly.dev/api/generate'
+    env(OPENROUTER_MODEL): 'google/gemma-4-26b-a4b-it'
+    env(OPENROUTER_API_KEY): ''
+    env(OPENROUTER_CHAT_URL): 'https://openrouter.ai/api/v1/chat/completions'
+    app.mailer_from_no_reply: 'tahajaballah07@gmail.com'
 
 services:
     _defaults:
@@ -22,3 +30,23 @@ services:
     App\Service\ProblemePhotoPublicUrlResolver:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Service\WeatherSnapshotService:
+        arguments:
+            $defaultLat: '%env(float:WEATHER_DEFAULT_LAT)%'
+            $defaultLon: '%env(float:WEATHER_DEFAULT_LON)%'
+
+    App\Service\DiagnosticAIService:
+        arguments:
+            $openRouterApiKey: '%env(string:OPENROUTER_API_KEY)%'
+            $openRouterModel: '%env(OPENROUTER_MODEL)%'
+            $openRouterChatUrl: '%env(string:OPENROUTER_CHAT_URL)%'
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\ProblemePdfExportService:
+        arguments:
+            $pdfRemoteUrl: '%env(PDF_REMOTE_URL)%'
+
+    App\Service\DiagnosticApprovalNotifier:
+        arguments:
+            $fromEmail: '%app.mailer_from_no_reply%'

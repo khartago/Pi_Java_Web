@@ -18,7 +18,7 @@ class ProblemeRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string} $params
+     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string, date_from?:string, date_to?:string} $params
      *
      * @return Probleme[]
      */
@@ -34,7 +34,7 @@ class ProblemeRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string} $params
+     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string, date_from?:string, date_to?:string} $params
      *
      * @return Probleme[]
      */
@@ -47,7 +47,7 @@ class ProblemeRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string} $params
+     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string, date_from?:string, date_to?:string} $params
      */
     private function applyFilters(\Doctrine\ORM\QueryBuilder $qb, array $params): void
     {
@@ -65,6 +65,21 @@ class ProblemeRepository extends ServiceEntityRepository
             $qb->andWhere('p.description LIKE :q OR p.type LIKE :q2')
                 ->setParameter('q', $q)
                 ->setParameter('q2', $q);
+        }
+        if (!empty($params['date_from'])) {
+            try {
+                $from = new \DateTimeImmutable($params['date_from'].' 00:00:00');
+                $qb->andWhere('p.dateDetection >= :df')->setParameter('df', $from);
+            } catch (\Exception) {
+            }
+        }
+        if (!empty($params['date_to'])) {
+            try {
+                $to = new \DateTimeImmutable($params['date_to'].' 00:00:00');
+                $toEnd = $to->modify('+1 day');
+                $qb->andWhere('p.dateDetection < :dt')->setParameter('dt', $toEnd);
+            } catch (\Exception) {
+            }
         }
 
         $sort = $params['sort'] ?? 'dateDetection';

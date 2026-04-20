@@ -1,0 +1,18 @@
+Bonjour {{ farmerName }},
+
+Votre diagnostic FARMTECH est disponible.
+
+--- Votre problème ---
+Type: {{ probleme.type }}
+Gravité: {{ probleme.gravite }}
+Date: {{ probleme.dateDetection|date('d/m/Y H:i') }}
+Description:
+{{ probleme.description }}
+
+--- Diagnostic ---
+Cause: {{ diagnostic.cause }}
+Solution: {{ diagnostic.solutionProposee }}
+Médicament: {{ diagnostic.medicament|default('Non spécifié') }}
+Résultat: {{ diagnostic.resultat }}
+
+© FARMTECH

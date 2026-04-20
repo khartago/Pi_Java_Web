@@ -70,13 +70,13 @@ class UtilisateurRepository extends ServiceEntityRepository implements UserProvi
             $qb->andWhere('u.role = :role')->setParameter('role', $params['role']);
         }
 
-        $sort = $params['sort'] ?? 'id';
+        $sort = $params['sort'] ?? 'email';
         $dir = strtoupper($params['dir'] ?? 'ASC');
         if (!\in_array($dir, ['ASC', 'DESC'], true)) {
             $dir = 'ASC';
         }
-        $allowed = ['id' => 'u.id', 'nom' => 'u.nom', 'email' => 'u.email', 'role' => 'u.role'];
-        $col = $allowed[$sort] ?? 'u.id';
+        $allowed = ['nom' => 'u.nom', 'email' => 'u.email', 'role' => 'u.role'];
+        $col = $allowed[$sort] ?? 'u.email';
         $qb->orderBy($col, $dir);
 
         return $qb->getQuery()->getResult();

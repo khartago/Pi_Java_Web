@@ -3,7 +3,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/admin-live-filters.js') }}?v=2" defer></script>
+    <script src="{{ asset('js/admin-live-filters.js') }}" defer></script>
 {% endblock %}
 
 {% block body_class %}theme-admin{% endblock %}
@@ -13,6 +13,7 @@
 
 {% set _admin_route = app.request.attributes.get('_route') %}
 {% set _nav_signalements_active = _admin_route starts with 'admin_problemes' or _admin_route starts with 'admin_diagnostics' %}
+{% set _nav_analytics_active = _admin_route starts with 'admin_analytics' %}
 {% set admin_page_title = 'Administration' %}
 {% set admin_page_desc = 'Gestion de la plateforme FarmTech.' %}
 {% if _admin_route == 'admin_dashboard' %}
@@ -24,6 +25,9 @@
 {% elseif _nav_signalements_active %}
     {% set admin_page_title = 'Signalements' %}
     {% set admin_page_desc = 'Signalements des agriculteurs et suivi des diagnostics.' %}
+{% elseif _admin_route starts with 'admin_analytics' %}
+    {% set admin_page_title = 'Analytics diagnostics' %}
+    {% set admin_page_desc = 'Indicateurs de résolution, délais et répartition des signalements.' %}
 {% endif %}
 
 {% block body %}
@@ -42,6 +46,9 @@
             </a>
             <a href="{{ path('admin_problemes_index') }}" class="{{ _nav_signalements_active ? 'active' : '' }}">
                 {{ icons.flag(20) }} Signalements
+            </a>
+            <a href="{{ path('admin_analytics_diagnostics') }}" class="{{ _nav_analytics_active ? 'active' : '' }}">
+                {{ icons.dashboard(20) }} Analytics diagnostics
             </a>
         </nav>
         <footer class="admin-sidebar-footer">
@@ -68,6 +75,8 @@
                         {{ icons.dashboard(22) }}
                     {% elseif _admin_route starts with 'admin_users' %}
                         {{ icons.users(22) }}
+                    {% elseif _nav_analytics_active %}
+                        {{ icons.dashboard(22) }}
                     {% elseif _nav_signalements_active %}
                         {{ icons.flag(22) }}
                     {% else %}

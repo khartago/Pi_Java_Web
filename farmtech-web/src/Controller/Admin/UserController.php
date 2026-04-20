@@ -23,10 +23,16 @@ class UserController extends AbstractController
             $q = substr($q, 0, 200);
         }
 
+        $sort = $request->query->get('sort') ?: 'email';
+        $sort = \is_string($sort) ? $sort : 'email';
+        if ('id' === $sort || !\in_array($sort, ['nom', 'email', 'role'], true)) {
+            $sort = 'email';
+        }
+
         return [
             'q' => '' !== $q ? $q : null,
             'role' => $request->query->get('role') ?: null,
-            'sort' => $request->query->get('sort') ?: 'id',
+            'sort' => $sort,
             'dir' => $request->query->get('dir') ?: 'ASC',
         ];
     }

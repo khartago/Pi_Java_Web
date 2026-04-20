@@ -6,6 +6,7 @@ use App\Entity\Probleme;
 use App\Form\ProblemeType;
 use App\Repository\DiagnostiqueRepository;
 use App\Repository\ProblemeRepository;
+use App\Service\ProblemeCatalogService;
 use App\Service\ProblemePhotoStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,11 @@ class ProblemeAdminController extends AbstractController
             $q = substr($q, 0, 200);
         }
 
+        $dateFrom = $request->query->get('date_from');
+        $dateFrom = \is_string($dateFrom) ? trim($dateFrom) : '';
+        $dateTo = $request->query->get('date_to');
+        $dateTo = \is_string($dateTo) ? trim($dateTo) : '';
+
         return [
             'q' => '' !== $q ? $q : null,
             'etat' => $request->query->get('etat') ?: null,
@@ -31,6 +37,8 @@ class ProblemeAdminController extends AbstractController
             'type' => $request->query->get('type') ?: null,
             'sort' => $request->query->get('sort') ?: 'dateDetection',
             'dir' => $request->query->get('dir') ?: 'DESC',
+            'date_from' => '' !== $dateFrom ? $dateFrom : null,
+            'date_to' => '' !== $dateTo ? $dateTo : null,
         ];
     }
 
@@ -61,11 +69,21 @@ class ProblemeAdminController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_problemes_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, ProblemePhotoStorage $problemePhotoStorage): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $em,
+        ProblemePhotoStorage $problemePhotoStorage,
+        ProblemeCatalogService $catalogService,
+    ): Response {
         $p = new Probleme();
         $p->setEtat('EN_ATTENTE');
-        $form = $this->createForm(ProblemeType::class, $p, ['include_etat' => true]);
+        $form = $this->createForm(ProblemeType::class, $p, [
+            'include_etat' => true,
+            'include_plantation_produit' => true,
+            'plantation_choices' => $catalogService->getPlantationChoices(),
+            'produit_choices' => $catalogService->getProduitChoices(),
+            'include_admin_assignee' => true,
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $problemePhotoStorage->appendUploadsToProbleme($p, $form->get('photoFiles')->getData());
@@ -80,9 +98,20 @@ class ProblemeAdminController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_problemes_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(Request $request, Probleme $probleme, EntityManagerInterface $em, ProblemePhotoStorage $problemePhotoStorage): Response
-    {
-        $form = $this->createForm(ProblemeType::class, $probleme, ['include_etat' => true]);
+    public function edit(
+        Request $request,
+        Probleme $probleme,
+        EntityManagerInterface $em,
+        ProblemePhotoStorage $problemePhotoStorage,
+        ProblemeCatalogService $catalogService,
+    ): Response {
+        $form = $this->createForm(ProblemeType::class, $probleme, [
+            'include_etat' => true,
+            'include_plantation_produit' => true,
+            'plantation_choices' => $catalogService->getPlantationChoices(),
+            'produit_choices' => $catalogService->getProduitChoices(),
+            'include_admin_assignee' => true,
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $problemePhotoStorage->appendUploadsToProbleme($probleme, $form->get('photoFiles')->getData());

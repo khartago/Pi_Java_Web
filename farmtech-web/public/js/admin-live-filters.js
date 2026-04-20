@@ -40,11 +40,18 @@
                     submitForm(form);
                 });
             }
-        }
 
-        var btns = document.querySelectorAll('.btn-filter-fallback');
-        for (var k = 0; k < btns.length; k++) {
-            btns[k].setAttribute('hidden', 'hidden');
+            var dateInputs = form.querySelectorAll('input[type="date"]');
+            for (var d = 0; d < dateInputs.length; d++) {
+                dateInputs[d].addEventListener('change', function () {
+                    submitForm(form);
+                });
+            }
+
+            var btns = form.querySelectorAll('.btn-filter-fallback');
+            for (var k = 0; k < btns.length; k++) {
+                btns[k].setAttribute('hidden', 'hidden');
+            }
         }
     }
 

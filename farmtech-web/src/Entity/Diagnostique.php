@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\DiagnostiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiagnostiqueRepository::class)]
 #[ORM\Table(name: 'diagnostique')]
@@ -21,19 +20,15 @@ class Diagnostique
     private ?Probleme $probleme = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'La cause est obligatoire.')]
     private ?string $cause = null;
 
     #[ORM\Column(name: 'solution_proposee', type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'La solution proposée est obligatoire.')]
     private ?string $solutionProposee = null;
 
-    #[ORM\Column(name: 'date_diagnostique', type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'date_diagnostique', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $dateDiagnostique = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
     private ?string $resultat = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -43,7 +38,6 @@ class Diagnostique
     private bool $approuve = false;
 
     #[ORM\Column(name: 'num_revision', options: ['default' => 1])]
-    #[Assert\Positive]
     private int $numRevision = 1;
 
     #[ORM\Column(name: 'feedback_fermier', length: 20, nullable: true)]
@@ -52,7 +46,7 @@ class Diagnostique
     #[ORM\Column(name: 'feedback_commentaire', type: Types::TEXT, nullable: true)]
     private ?string $feedbackCommentaire = null;
 
-    #[ORM\Column(name: 'date_feedback', type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(name: 'date_feedback', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateFeedback = null;
 
     #[ORM\ManyToOne]

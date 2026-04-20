@@ -1,0 +1,116 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Analytics diagnostics — Admin{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero">
+    <span class="page-eyebrow">Indicateurs</span>
+    <h1>Analytics diagnostics</h1>
+    <p class="page-lead">Synthèse alignée sur le tableau de bord Java : résolution, délais, types et causes.</p>
+</section>
+
+<div class="admin-crud-panel" style="margin-bottom:1.25rem;">
+    <div class="admin-stat-strip" role="list">
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Taux résolution (feedback)</span>
+            <span class="admin-stat-strip__val">{{ (tauxResolution * 100)|number_format(1) }}%</span>
+        </div>
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Délai moyen détection → diagnostic</span>
+            <span class="admin-stat-strip__val">
+                {% if dureeMoyenneHeures is null %}
+                    —
+                {% elseif dureeMoyenneHeures < 24 %}
+                    {{ dureeMoyenneHeures|number_format(1) }} h
+                {% else %}
+                    {{ (dureeMoyenneHeures / 24)|number_format(1) }} j
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;">
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Problèmes par type</h3>
+        <canvas id="chart-types" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Causes fréquentes (top 10)</h3>
+        <canvas id="chart-causes" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Taux résolution (feedback)</h3>
+        <canvas id="chart-pie" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Par plantation</h3>
+        <canvas id="chart-plant" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Par produit</h3>
+        <canvas id="chart-prod" height="220"></canvas>
+    </div>
+</div>
+
+<script>
+(function () {
+    var taux = {{ tauxResolution|json_encode|raw }};
+    var types = {{ problemesParType|json_encode|raw }};
+    var causes = {{ causesFrequentes|json_encode|raw }};
+    var plant = {{ problemesParPlantation|json_encode|raw }};
+    var prod = {{ problemesParProduit|json_encode|raw }};
+
+    function labelsVals(obj) {
+        var labels = [], vals = [];
+        for (var k in obj) {
+            if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
+            labels.push(k);
+            vals.push(obj[k]);
+        }
+        return { labels: labels, values: vals };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Chart === 'undefined') return;
+        var tv = labelsVals(types);
+        new Chart(document.getElementById('chart-types'), {
+            type: 'bar',
+            data: { labels: tv.labels, datasets: [{ label: 'Nombre', data: tv.values, backgroundColor: 'rgba(26,77,46,0.55)' }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        var cv = labelsVals(causes);
+        new Chart(document.getElementById('chart-causes'), {
+            type: 'bar',
+            data: { labels: cv.labels, datasets: [{ label: 'Occurrences', data: cv.values, backgroundColor: 'rgba(59,130,246,0.55)' }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        new Chart(document.getElementById('chart-pie'), {
+            type: 'pie',
+            data: {
+                labels: ['Résolus (share feedback)', 'Autres feedbacks'],
+                datasets: [{ data: [taux, Math.max(0, 1 - taux)], backgroundColor: ['rgba(26,77,46,0.75)', 'rgba(148,163,184,0.6)'] }]
+            },
+            options: { responsive: true }
+        });
+        var pv = labelsVals(plant);
+        new Chart(document.getElementById('chart-plant'), {
+            type: 'bar',
+            data: { labels: pv.labels, datasets: [{ label: 'Signalements', data: pv.values, backgroundColor: 'rgba(234,179,8,0.55)' }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        var pr = labelsVals(prod);
+        new Chart(document.getElementById('chart-prod'), {
+            type: 'bar',
+            data: { labels: pr.labels, datasets: [{ label: 'Signalements', data: pr.values, backgroundColor: 'rgba(168,85,247,0.45)' }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    });
+})();
+</script>
+{% endblock %}

@@ -51,9 +51,9 @@
                 <div class="filter-field form-row" style="margin:0;">
                     <label for="usort">Tri</label>
                     <select class="form-control" id="usort" name="sort">
-                        <option value="id" {{ filters.sort == 'id' ? 'selected' }}>Id</option>
                         <option value="nom" {{ filters.sort == 'nom' ? 'selected' }}>Nom</option>
                         <option value="email" {{ filters.sort == 'email' ? 'selected' }}>E-mail</option>
+                        <option value="role" {{ filters.sort == 'role' ? 'selected' }}>Rôle</option>
                     </select>
                 </div>
                 <div class="filter-field form-row" style="margin:0;">
@@ -79,12 +79,11 @@
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
-                        <tr><th>Id</th><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actions</th></tr>
+                        <tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         {% for u in users %}
                         <tr>
-                            <td>{{ u.id }}</td>
                             <td><strong>{{ u.nom }}</strong></td>
                             <td>{{ u.email }}</td>
                             <td><span class="badge badge-muted">{{ u.role }}</span></td>
