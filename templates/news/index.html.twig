@@ -1,0 +1,70 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}News — FARMTECH{% endblock %}
+
+{% block front_content %}
+<style>
+.farmer-news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.farmer-news-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.farmer-news-card:hover {
+    transform: translateY(-5px);
+}
+
+.farmer-news-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.farmer-news-content {
+    padding: 15px;
+}
+</style>
+
+
+
+<div class="farmer-dashboard">
+
+    <section class="farmer-home-zero">
+        <h1 class="farmer-home-zero__title">📰 Agriculture News</h1>
+        <p class="farmer-home-zero__lead">
+            Découvrez les dernières actualités agricoles 🌱
+        </p>
+    </section>
+
+    <div class="farmer-news-grid">
+
+        {% for article in articles|slice(0, 6) %}
+            <article class="farmer-news-card">
+
+                <img src="{{ article.urlToImage }}" class="farmer-news-img">
+
+                <div class="farmer-news-content">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.description }}</p>
+
+                    <a href="{{ article.url }}" target="_blank" class="btn btn-primary">
+                        Lire plus →
+                    </a>
+                </div>
+
+            </article>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

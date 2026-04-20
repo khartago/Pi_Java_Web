@@ -22,3 +22,11 @@ services:
     App\Service\ProblemePhotoPublicUrlResolver:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Service\WeatherService:
+        arguments:
+            $apiKey: '%env(WEATHER_API_KEY)%'
+
+    App\Service\NewsService:
+       arguments:
+             $apiKey: '%env(NEWS_API_KEY)%'

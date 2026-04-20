@@ -1,0 +1,8 @@
+home:
+  welcome: "Bienvenue"
+  description: "Quand vous voyez un souci sur la parcelle, décrivez-le et ajoutez une photo : nous vous répondons à travers le dossier."
+  first_report: "Faire un premier signalement"
+  farmer: "Agriculteur"
+  card_description: "Photo et quelques lignes suffisent pour ouvrir un dossier — suivez la réponse ici."
+  new_report: "Nouveau signalement"
+  my_files: "Mes dossiers"

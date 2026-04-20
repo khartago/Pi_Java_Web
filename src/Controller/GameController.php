@@ -7,19 +7,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\MailerService;
+use App\Service\WeatherService;
+
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Weather;
 use Symfony\Component\HttpFoundation\Request;
 class GameController extends AbstractController
 {
-    #[Route('/game', name: 'app_game')]
-    public function index(GameService $gameService): Response
-    {
-        $cards = $gameService->getGameCards();
 
-        return $this->render('game/index.html.twig', [
-            'cards' => $cards
-        ]);
-    }
+
+#[Route('/game', name: 'app_game')]
+public function index(GameService $gameService, WeatherService $weatherService): Response
+{
+    $cards = $gameService->getGameCards();
+
+    $weather = $weatherService->getWeather('Tunis');
+
+    return $this->render('game/index.html.twig', [
+        'cards' => $cards,
+        'weather' => $weather   // ✅ ADD THIS
+    ]);
+}
 #[Route('/plant/dead', name: 'plant_dead', methods: ['POST'])]
 public function plantDead(MailerService $mailerService)
 {
@@ -43,5 +51,12 @@ public function testMail(MailerInterface $mailer): Response
     } catch (\Exception $e) {
         return new Response('❌ Error: ' . $e->getMessage());
     }
+}
+#[Route('/test-weather', name: 'test_weather')]
+public function testWeather(WeatherService $weatherService)
+{
+    $data = $weatherService->getWeather('Tunis');
+
+    dd($data); // debug dump
 }
 }

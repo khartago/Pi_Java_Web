@@ -80,6 +80,52 @@
     font-size: 14px;
     font-weight: bold;
 }
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 120px;
+    background: rgba(50, 50, 50, 0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 2000;
+}
+
+/* Avatar */
+.avatar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+}
+
+.avatar img {
+    width: 90px;
+    border-radius: 80%;
+    border: 2px solid white;
+}
+
+#avatar-text {
+    background: white;
+    color: black;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+/* Right side */
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.weather {
+    color: white;
+    font-weight: bold;
+}
 /* ROW 1 */
 .pot-0 { top: 280px; left: 500px; }
 .pot-1 { top: 280px; left: 730px; }
@@ -101,12 +147,37 @@
 
 <div class="game-fullscreen">
 
-    <!-- TOOLS -->
-    <div class="tools">
-<img src="/images/water.png" onclick="selectTool('water', this)">
-<img src="/images/manure.png" onclick="selectTool('manure', this)">
-<img src="/images/shovel.png" onclick="selectTool('shovel', this)">
+<script>
+window.addEventListener('load', () => {
+    startAvatarMessages();
+    playAvatarVoice();
+});
+</script>
+
+<div class="top-bar">
+
+    <!-- LEFT: Avatar -->
+    <div class="avatar">
+        <img src="/images/avatar.png" alt="avatar">
+        <div id="avatar-text">Welcome farmer 👨‍🌾</div>
     </div>
+
+    <!-- RIGHT: Weather + Tools -->
+    <div class="top-right">
+
+        <div class="weather">
+            🌤 {{ weather.name }}: {{ weather.main.temp }}°C
+        </div>
+
+        <div class="tools">
+            <img src="/images/water.png" onclick="selectTool('water', this)">
+            <img src="/images/manure.png" onclick="selectTool('manure', this)">
+            <img src="/images/shovel.png" onclick="selectTool('shovel', this)">
+        </div>
+
+    </div>
+
+</div>
 
 
 
@@ -145,7 +216,7 @@ function selectTool(tool, element) {
 }
 
 /* INIT PLANTS */
-let plants = {};
+let plants = [];
 
 {% for card in cards %}
 plants[{{ card.index }}] = {
@@ -193,16 +264,16 @@ setInterval(() => {
 
         p.timer--; // ✅ timer decreases
 
-        if (p.timer <= 0 && p.status !== "DEAD") {
+if (p.timer <= 0 && p.alive) {
 
-            p.status = "DEAD";
+    p.alive = false;
 
-            fetch('/plant/dead', {
-                method: 'POST'
-            });
+    fetch('/plant/dead', {
+        method: 'POST'
+    });
 
-            console.log("Plant died → email sent");
-        }
+    console.log("Plant died → email sent");
+}
 
     });
 
@@ -243,6 +314,55 @@ function handleClick(i) {
 }
 
 render();
+</script>
+<script>
+let audioStarted = false;
+
+function playAvatarVoice() {
+    if (audioStarted) return;
+
+    const audio = new Audio('/sounds/avatar.mp3');
+    audio.volume = 0.8;
+
+    audio.play()
+        .then(() => {
+            audioStarted = true;
+            console.log("Audio playing ✅");
+        })
+        .catch(err => {
+            console.log("Audio blocked ❌", err);
+        });
+}
+
+// trigger on FIRST click anywhere
+document.addEventListener('click', playAvatarVoice, { once: true });
+</script>
+<script>
+function startAvatarMessages() {
+
+    const messages = [
+        "Welcome to FarmTech 🌱",
+        "Use 💧 water to grow plants.",
+        "Use 🌿 manure to increase survival time.",
+        "If you don’t water in time, plants will die.",
+        "Use 🪓 shovel to remove plants.",
+        "Good luck farmer 👨‍🌾!"
+    ];
+
+    let i = 0;
+    const avatarText = document.getElementById("avatar-text");
+
+    function showNext() {
+        if (i >= messages.length) return;
+
+        avatarText.innerText = messages[i];
+        i++;
+
+        setTimeout(showNext, 3500);
+    }
+
+    showNext();
+}
 </script>
 
 {% endblock %}

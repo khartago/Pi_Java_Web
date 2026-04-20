@@ -10,6 +10,58 @@
 {% block flashes %}{% endblock %}
 
 {% block body %}
+<style>
+.lang-switcher {
+    display: flex;
+    gap: 12px;
+    margin-left: 30px;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 6px 10px;
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-decoration: none;
+    color: #2c3e2f;
+
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(0,0,0,0.08);
+
+    transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+    background: #e8f5e9;
+    transform: translateY(-1px);
+}
+
+.lang-btn.active {
+    background: #2e7d32;
+    color: white;
+    border: none;
+}
+.lang-switcher {
+    display: flex;
+    gap: 8px;
+
+    margin-left: 50px;  /* ❌ remove this if you added it before */
+      /* 👉 push slightly to the left */
+}
+</style>
+
+
+
+
+
+
+
 <header class="farmer-header">
     <div class="farmer-header__row">
         <a href="{{ path('app_home') }}" class="farmer-header__brand" aria-label="FarmTech — accueil">
@@ -20,17 +72,44 @@
             <a href="{{ path('app_home') }}" class="farmer-nav__link {{ front_route == 'app_home' ? 'is-active' }}" {% if front_route == 'app_home' %}aria-current="page"{% endif %}>Accueil</a>
             <a href="{{ path('app_problemes_index') }}" class="farmer-nav__link {{ front_route starts with 'app_problemes' ? 'is-active' }}" {% if front_route starts with 'app_problemes' %}aria-current="page"{% endif %}>Mes dossiers</a>
             <a href="{{ path('app_game') }}">Game</a>
+            <a href="{{ path('app_news') }}">News</a>
             <a href="{{ path('app_dashboard') }}">Dashboard</a>
+
+
             
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('admin_dashboard') }}" class="farmer-nav__link farmer-nav__link--admin">Admin</a>
             {% endif %}
+
+
+
+
         </nav>
         <div class="farmer-header__user">
             <span class="farmer-header__avatar" aria-hidden="true">{{ farmer_initial }}</span>
             <a href="{{ path('app_logout') }}" class="farmer-header__out">Déconnexion</a>
             
         </div>
+
+            <div class="lang-switcher">
+    <a class="lang-btn {{ app.request.locale == 'fr' ? 'active' }}"
+       href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'_locale': 'fr'})) }}">
+        🇫🇷 <span>FR</span>
+    </a>
+
+    <a class="lang-btn {{ app.request.locale == 'en' ? 'active' }}"
+       href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'_locale': 'en'})) }}">
+        🇬🇧 <span>EN</span>
+    </a>
+
+    <a class="lang-btn {{ app.request.locale == 'ar' ? 'active' }}"
+       href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'_locale': 'ar'})) }}">
+        🇸🇦 <span>AR</span>
+    </a>
+</div>
+
+
+
     </div>
 </header>
 <main id="main-content" class="shell shell--farmer" tabindex="-1">

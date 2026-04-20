@@ -13,9 +13,11 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         main:
             lazy: true
             provider: app_user_provider
+
             form_login:
                 login_path: app_login
                 check_path: app_login
@@ -23,16 +25,30 @@ security:
                 csrf_parameter: _csrf_token
                 csrf_token_id: authenticate
                 success_handler: App\Security\LoginSuccessHandler
+
             logout:
                 path: app_logout
                 target: app_login
 
     access_control:
-        - { path: ^/$, roles: PUBLIC_ACCESS }
-        - { path: ^/login$, roles: PUBLIC_ACCESS }
-        - { path: ^/register$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/, roles: ROLE_USER }
+        # ✅ allow homepage with locale
+        - path: ^/(en|fr|ar)/$
+          roles: PUBLIC_ACCESS
+
+        # ✅ allow login/register
+        - path: ^/(en|fr|ar)/login$
+          roles: PUBLIC_ACCESS
+
+        - path: ^/(en|fr|ar)/register$
+          roles: PUBLIC_ACCESS
+
+        # ✅ admin
+        - path: ^/(en|fr|ar)/admin
+          roles: ROLE_ADMIN
+
+        # ✅ everything else requires login
+        - path: ^/(en|fr|ar)
+          roles: ROLE_USER
 
 when@test:
     security:
