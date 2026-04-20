@@ -3,19 +3,21 @@
 {% block title %}Game | FarmTech{% endblock %}
 
 {% block front_content %}
-    <section class="farm-card">
-        <h1>Farm Game</h1>
-        <p>Mini jeu de plantation avec meteo en direct.</p>
-        <p class="text-muted">Meteo Tunis: {{ weather.main.temp is defined and weather.main.temp is not null ? weather.main.temp ~ '°C' : 'N/A' }}</p>
+    <section class="farm-card game-page-head">
+        <div>
+            <h1>Farm Game</h1>
+            <p class="page-lead">Mini jeu de plantation avec meteo en direct.</p>
+        </div>
+        <p class="game-weather">🌤 Meteo Tunis: <strong>{{ weather.main.temp is defined and weather.main.temp is not null ? weather.main.temp ~ '°C' : 'N/A' }}</strong></p>
     </section>
 
-    <section class="farm-card" id="farm-game-root">
+    <section class="farm-card game-panel" id="farm-game-root">
         <div class="game-toolbar">
-            <button class="btn btn-ghost btn-sm" data-tool="water">💧 Eau</button>
-            <button class="btn btn-ghost btn-sm" data-tool="manure">🌿 Engrais</button>
-            <button class="btn btn-ghost btn-sm" data-tool="shovel">🪓 Pelle</button>
+            <button class="btn btn-ghost btn-sm game-tool" data-tool="water">💧 Eau</button>
+            <button class="btn btn-ghost btn-sm game-tool" data-tool="manure">🌿 Engrais</button>
+            <button class="btn btn-ghost btn-sm game-tool" data-tool="shovel">🪓 Pelle</button>
         </div>
-        <p id="game-status" class="text-muted">Selectionnez un outil puis cliquez sur une parcelle.</p>
+        <p id="game-status" class="game-status-line">Selectionnez un outil puis cliquez sur une parcelle.</p>
         <div class="game-grid">
             {% for i in 0..11 %}
                 <button type="button" class="game-cell" data-index="{{ i }}">

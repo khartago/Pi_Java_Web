@@ -451,11 +451,42 @@ main.landing-wrap > .flash-stack .flash-item--danger {
     font-size: 0.72rem;
     color: var(--color-muted);
 }
+.table td .btn-link {
+    color: var(--color-danger, #c0392b);
+    font-weight: 600;
+}
 .table-responsive {
     overflow-x: auto;
     border: 1px solid rgba(26, 77, 46, 0.08);
     border-radius: var(--radius);
     background: #fff;
+}
+.actions-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+.actions-inline a {
+    font-weight: 600;
+}
+.actions-inline form {
+    margin: 0;
+}
+.stats-grid--compact {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    margin-top: var(--space-3);
+}
+.stats-grid--compact .stat-card {
+    padding: var(--space-3) var(--space-4);
+}
+.stats-grid--compact .stat-card .lbl {
+    margin-bottom: 0.15rem;
+    font-size: 0.75rem;
+}
+.stats-grid--compact .stat-card .val {
+    font-size: 1.6rem;
+    color: var(--color-primary-dark);
 }
 .btn-link {
     background: none;
@@ -1485,6 +1516,25 @@ table.data-table {
     font-size: 0.88rem;
     margin-bottom: 0.35rem;
     color: var(--color-text);
+}
+/* Fallback styling for Symfony fields rendered without .form-control */
+.form-row input:not([type="checkbox"]):not([type="radio"]),
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    border: 1px solid rgba(26, 77, 46, 0.14);
+    border-radius: 12px;
+    padding: 0.68rem 1rem;
+    font: inherit;
+    background: #fff;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-row input:not([type="checkbox"]):not([type="radio"]):focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px rgba(30, 107, 74, 0.15);
 }
 .form-actions {
     display: flex;
@@ -2648,6 +2698,29 @@ body.theme-front .bar-fill {
     gap: var(--space-2);
     margin-bottom: var(--space-3);
 }
+.game-page-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+}
+.game-weather {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    white-space: nowrap;
+}
+.game-panel {
+    border: 1px solid rgba(26, 77, 46, 0.08);
+}
+.game-tool {
+    min-width: 108px;
+}
+.game-status-line {
+    margin: 0 0 var(--space-3);
+    font-size: 0.92rem;
+    color: var(--color-muted);
+}
 .game-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -2663,6 +2736,12 @@ body.theme-front .bar-fill {
     align-items: center;
     gap: 0.35rem;
     cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.game-cell:hover {
+    transform: translateY(-1px);
+    border-color: rgba(26, 77, 46, 0.24);
+    box-shadow: 0 4px 14px rgba(26, 77, 46, 0.08);
 }
 .game-cell img {
     width: 74px;
@@ -2676,5 +2755,13 @@ body.theme-front .bar-fill {
 }
 .game-cell.is-dead {
     opacity: 0.7;
+}
+@media (max-width: 720px) {
+    .game-page-head {
+        grid-template-columns: 1fr;
+    }
+    .game-weather {
+        white-space: normal;
+    }
 }
 

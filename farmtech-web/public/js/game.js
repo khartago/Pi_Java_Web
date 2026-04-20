@@ -58,13 +58,32 @@
         cell.addEventListener('click', () => {
             const i = Number(cell.getAttribute('data-index'));
             const plant = plants[i];
-            if (!selectedTool || !plant || !plant.alive) return;
+            if (!selectedTool || !plant) return;
+
+            if (!plant.alive && selectedTool === 'manure') {
+                // Allow engrais to replant/revive dead parcels
+                plant.alive = true;
+                plant.level = 1;
+                plant.waterCount = 0;
+                plant.timer = 25;
+                setStatus('Engrais applique: parcelle replantee (25s)');
+                render();
+                return;
+            }
+
+            if (!plant.alive) return;
 
             if (selectedTool === 'shovel') {
                 plant.alive = false;
                 markDead();
+                setStatus('Parcelle retiree.');
             } else if (selectedTool === 'manure') {
-                plant.timer += 15;
+                // Engrais gives a clearly visible bonus
+                plant.timer += 20;
+                if (plant.timer > 99) {
+                    plant.timer = 99;
+                }
+                setStatus('Engrais applique: +' + 20 + 's (timer=' + plant.timer + 's)');
             } else if (selectedTool === 'water') {
                 plant.timer = 30;
                 plant.waterCount += 1;
@@ -72,6 +91,7 @@
                     plant.level += 1;
                     plant.waterCount = 0;
                 }
+                setStatus('Arrosage applique: timer remis a 30s');
             }
 
             render();

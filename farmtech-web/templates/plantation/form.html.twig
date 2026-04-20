@@ -1,0 +1,22 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ mode == 'creation' ? 'Nouvelle plantation' : 'Modifier plantation' }}{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Plantation</p>
+        <h1>{{ mode == 'creation' ? 'Nouvelle plantation' : 'Modifier plantation' }}</h1>
+        <p class="page-lead">{{ mode == 'creation' ? 'Ajoutez une nouvelle culture avec ses informations de saison.' : 'Mettez a jour les informations de cette plantation.' }}</p>
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.nomPlant) }}</div>
+            <div class="form-row">{{ form_row(form.variete) }}</div>
+            <div class="form-row">{{ form_row(form.quantite) }}</div>
+            <div class="form-row">{{ form_row(form.datePlante) }}</div>
+            <div class="form-row">{{ form_row(form.saison) }}</div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{{ mode == 'creation' ? 'Creer' : 'Enregistrer' }}</button>
+                <a href="{{ path('app_plantation_index') }}" class="btn btn-ghost">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

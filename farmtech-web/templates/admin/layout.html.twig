@@ -28,6 +28,12 @@
 {% elseif _admin_route starts with 'admin_analytics' %}
     {% set admin_page_title = 'Analytics diagnostics' %}
     {% set admin_page_desc = 'Indicateurs de résolution, délais et répartition des signalements.' %}
+{% elseif _admin_route starts with 'app_plantation_' %}
+    {% set admin_page_title = 'Plantations' %}
+    {% set admin_page_desc = 'Suivi des cultures, états de plantation et validation vers production.' %}
+{% elseif _admin_route starts with 'app_production_' %}
+    {% set admin_page_title = 'Productions' %}
+    {% set admin_page_desc = 'Récoltes validées, quantités produites et qualité des lots.' %}
 {% endif %}
 
 {% block body %}
@@ -71,6 +77,12 @@
             <a href="{{ path('app_alerts_index') }}" class="{{ app.request.attributes.get('_route') == 'app_alerts_index' ? 'active' : '' }}">
                 {{ icons.bell(20) }} Alertes
             </a>
+            <a href="{{ path('app_plantation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_plantation_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Plantations
+            </a>
+            <a href="{{ path('app_production_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_production_' ? 'active' : '' }}">
+                {{ icons.chart(20) }} Productions
+            </a>
         </nav>
         <footer class="admin-sidebar-footer">
             {% set admin_nom = app.user.nom ?? app.user.userIdentifier %}
@@ -98,6 +110,10 @@
                         {{ icons.users(22) }}
                     {% elseif _nav_analytics_active %}
                         {{ icons.dashboard(22) }}
+                    {% elseif _admin_route starts with 'app_plantation_' %}
+                        {{ icons.clipboard(22) }}
+                    {% elseif _admin_route starts with 'app_production_' %}
+                        {{ icons.chart(22) }}
                     {% elseif _nav_signalements_active %}
                         {{ icons.flag(22) }}
                     {% else %}
