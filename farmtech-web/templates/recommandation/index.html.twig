@@ -1,0 +1,36 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Recommandations{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Recommandations</h1>
+            <a href="{{ path('app_recommandation_new') }}" class="btn btn-primary">Nouvelle recommandation</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Materiel</th>
+                    <th>Priorite</th>
+                    <th>Actif</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in grouped %}
+                    <tr>
+                        <td>{{ r.produit.nom }}</td>
+                        <td>{{ r.materiel.nom }}</td>
+                        <td>{{ r.prioriteLabel }}</td>
+                        <td>{{ r.actif ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4">Aucune recommandation.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

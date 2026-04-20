@@ -1,0 +1,21 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouvelle recommandation{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Recommandations</p>
+        <h1>Recommandation</h1>
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.produit) }}</div>
+            <div class="form-row">{{ form_row(form.materiel) }}</div>
+            <div class="form-row">{{ form_row(form.priorite) }}</div>
+            <div class="form-row">{{ form_row(form.raison) }}</div>
+            <div class="form-row">{{ form_row(form.actif) }}</div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
+                <a class="btn btn-ghost" href="{{ path('app_recommandation_index') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

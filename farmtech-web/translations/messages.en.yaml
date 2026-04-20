@@ -1,0 +1,8 @@
+home:
+  welcome: "Welcome"
+  description: "When you see an issue on your land, describe it and add a photo: we will respond through your file."
+  first_report: "Make your first report"
+  farmer: "Farmer"
+  card_description: "A photo and a few lines are enough to open a file — follow the response here."
+  new_report: "New report"
+  my_files: "My files"

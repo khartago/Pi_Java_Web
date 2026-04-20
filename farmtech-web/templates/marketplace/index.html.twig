@@ -1,0 +1,51 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Marketplace | FarmTech{% endblock %}
+
+{% block front_content %}
+    <section class="farm-card marketplace-layout">
+        <header class="page-hero">
+            <p class="page-eyebrow">Marketplace</p>
+            <h1>Catalogue produits</h1>
+            <p class="page-lead">Catalogue produits avec categories et materiels associes.</p>
+        </header>
+
+        <form method="get" class="market-filters">
+            <input type="search" name="recherche" class="form-control" value="{{ recherche }}" placeholder="Recherche">
+            <select name="unite" class="form-control">
+                <option value="">Toutes unites</option>
+                {% for item in unites %}
+                    <option value="{{ item }}" {{ unite == item ? 'selected' }}>{{ item }}</option>
+                {% endfor %}
+            </select>
+            <select name="categorie" class="form-control">
+                <option value="">Toutes categories</option>
+                {% for facet in category_facets %}
+                    <option value="{{ facet.name }}" {{ categorie == facet.name ? 'selected' }}>{{ facet.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Filtrer</button>
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-ghost">Reset</a>
+        </form>
+
+        <div class="market-grid-simple">
+            {% for card in cards %}
+                <article class="market-card-simple">
+                    <img
+                        src="{{ asset(card.produit.imageAssetPath) }}"
+                        alt="{{ card.produit.nom }}"
+                        class="market-card-simple__img"
+                        onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
+                    >
+                    <p class="market-card-simple__category">{{ card.category }}</p>
+                    <h3 class="market-card-simple__title">{{ card.produit.nom }}</h3>
+                    <p>{{ card.produit.quantite }} {{ card.produit.unite }}</p>
+                    <p>{{ card.materielCount }} materiel(s)</p>
+                    <a href="{{ path('app_marketplace_show', { idProduit: card.produit.idProduit }) }}" class="btn btn-primary">Voir fiche</a>
+                </article>
+            {% else %}
+                <p>Aucun produit a afficher.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

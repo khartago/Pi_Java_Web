@@ -1,0 +1,35 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Affectations{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Affectations actives</h1>
+            <a href="{{ path('app_affectation_new') }}" class="btn btn-primary">Nouvelle affectation</a>
+        </div>
+        <p>Total employes: {{ total_employes }}</p>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Materiel</th>
+                    <th>Employe</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for a in affectations %}
+                    <tr>
+                        <td>{{ a.materiel.nom }}</td>
+                        <td>{{ a.employe.fullName }}</td>
+                        <td>{{ a.dateAffectation|date('d/m/Y') }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Aucune affectation active.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

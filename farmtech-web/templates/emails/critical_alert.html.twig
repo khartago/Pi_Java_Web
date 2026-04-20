@@ -1,0 +1,22 @@
+<h2>Alertes critiques Farmtech</h2>
+<p>Seuil stock: <strong>{{ threshold }}</strong></p>
+<p>Produits en stock bas: <strong>{{ low_stock_count }}</strong></p>
+<p>Materiels en panne: <strong>{{ panne_count }}</strong></p>
+
+{% if low_stock_products is not empty %}
+    <h3>Produits en stock bas</h3>
+    <ul>
+        {% for p in low_stock_products %}
+            <li>{{ p.nom }} - {{ p.quantite }} {{ p.unite }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if broken_materiels is not empty %}
+    <h3>Materiels en panne</h3>
+    <ul>
+        {% for m in broken_materiels %}
+            <li>{{ m.nom }} ({{ m.produit ? m.produit.nom : 'Sans produit' }})</li>
+        {% endfor %}
+    </ul>
+{% endif %}

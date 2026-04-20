@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Product placeholder">
+  <rect width="640" height="360" fill="#e9f3e2"/>
+  <rect x="90" y="70" width="460" height="220" rx="14" fill="#d4e8c9"/>
+  <circle cx="220" cy="170" r="34" fill="#7ea168"/>
+  <path d="M180 250c18-42 52-68 100-68s82 26 100 68" fill="none" stroke="#5f8150" stroke-width="14" stroke-linecap="round"/>
+  <text x="320" y="328" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#47643b">FarmTech Product</text>
+</svg>

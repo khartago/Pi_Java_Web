@@ -1,0 +1,7 @@
+<h2>Alerte stock faible</h2>
+<p>Seuil: {{ threshold }}</p>
+<ul>
+    {% for p in produits %}
+        <li>{{ p.nom }} - {{ p.quantite }} {{ p.unite }}</li>
+    {% endfor %}
+</ul>

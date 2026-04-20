@@ -1,0 +1,36 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Promotions{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Promotions</h1>
+            <a href="{{ path('app_promotion_new') }}" class="btn btn-primary">Nouvelle promotion</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Reduction</th>
+                    <th>Periode</th>
+                    <th>Etat</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in promotions %}
+                    <tr>
+                        <td>{{ p.nom }}</td>
+                        <td>{{ p.label }}</td>
+                        <td>{{ p.dateDebut|date('d/m/Y') }} → {{ p.dateFin|date('d/m/Y') }}</td>
+                        <td>{{ p.isCurrentlyActive ? 'Active' : (p.isUpcoming ? 'A venir' : 'Expiree') }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4">Aucune promotion.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

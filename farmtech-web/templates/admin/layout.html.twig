@@ -50,6 +50,27 @@
             <a href="{{ path('admin_analytics_diagnostics') }}" class="{{ _nav_analytics_active ? 'active' : '' }}">
                 {{ icons.dashboard(20) }} Analytics diagnostics
             </a>
+            <a href="{{ path('app_produit_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_produit_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Stock interne
+            </a>
+            <a href="{{ path('app_assistant_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_assistant_' ? 'active' : '' }}">
+                {{ icons.users(20) }} Assistant IA
+            </a>
+            <a href="{{ path('app_promotion_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_promotion_' ? 'active' : '' }}">
+                {{ icons.gift(20) }} Promotions
+            </a>
+            <a href="{{ path('app_recommandation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_recommandation_' ? 'active' : '' }}">
+                {{ icons.star(20) }} Recommandations
+            </a>
+            <a href="{{ path('app_affectation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_affectation_' or app.request.attributes.get('_route') starts with 'app_employe_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Affectations
+            </a>
+            <a href="{{ path('app_stats_produits') }}" class="{{ app.request.attributes.get('_route') starts with 'app_stats_' ? 'active' : '' }}">
+                {{ icons.chart(20) }} Statistiques
+            </a>
+            <a href="{{ path('app_alerts_index') }}" class="{{ app.request.attributes.get('_route') == 'app_alerts_index' ? 'active' : '' }}">
+                {{ icons.bell(20) }} Alertes
+            </a>
         </nav>
         <footer class="admin-sidebar-footer">
             {% set admin_nom = app.user.nom ?? app.user.userIdentifier %}

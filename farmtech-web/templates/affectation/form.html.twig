@@ -1,0 +1,20 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouvelle affectation{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Affectations</p>
+        <h1>Nouvelle affectation</h1>
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.materiel) }}</div>
+            <div class="form-row">{{ form_row(form.employe) }}</div>
+            <div class="form-row">{{ form_row(form.dateAffectation) }}</div>
+            <div class="form-row">{{ form_row(form.note) }}</div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Affecter</button>
+                <a class="btn btn-ghost" href="{{ path('app_affectation_index') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

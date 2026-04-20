@@ -1,0 +1,34 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Employes{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Employes</h1>
+            <a href="{{ path('app_employe_new') }}" class="btn btn-primary">Nouveau employe</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Poste</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for e in employes %}
+                    <tr>
+                        <td>{{ e.fullName }}</td>
+                        <td>{{ e.poste }}</td>
+                        <td>{{ e.email ?: 'Sans email' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Aucun employe.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

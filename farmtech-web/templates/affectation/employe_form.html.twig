@@ -1,0 +1,20 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouvel employe{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Employes</p>
+        <h1>Nouvel employe</h1>
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.nom) }}</div>
+            <div class="form-row">{{ form_row(form.prenom) }}</div>
+            <div class="form-row">{{ form_row(form.poste) }}</div>
+            <div class="form-row">{{ form_row(form.email) }}</div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Ajouter</button>
+                <a class="btn btn-ghost" href="{{ path('app_affectation_employes') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Stats produits{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Analytics stock</p>
+        <h1>Statistiques produits</h1>
+        <ul class="admin-simple-list">
+            <li>Total produits: {{ stats.overview.total_products }}</li>
+            <li>Quantite totale: {{ stats.overview.total_quantity }}</li>
+            <li>Produits avec promo active: {{ stats.overview.with_promo }}</li>
+            <li>Seuil stock: {{ stats.threshold }}</li>
+        </ul>
+    </section>
+{% endblock %}

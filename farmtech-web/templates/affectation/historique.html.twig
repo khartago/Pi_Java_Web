@@ -1,0 +1,33 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Historique affectations{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <h1>Historique affectations</h1>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Materiel</th>
+                    <th>Employe</th>
+                    <th>Debut</th>
+                    <th>Retour</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for a in affectations %}
+                    <tr>
+                        <td>{{ a.materiel.nom }}</td>
+                        <td>{{ a.employe.fullName }}</td>
+                        <td>{{ a.dateAffectation|date('d/m/Y') }}</td>
+                        <td>{{ a.dateRetour ? a.dateRetour|date('d/m/Y') : 'Actif' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4">Aucun historique.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

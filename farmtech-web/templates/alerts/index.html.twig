@@ -1,0 +1,15 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Alertes{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Alertes</p>
+        <h1>Alertes critiques</h1>
+        <p class="page-lead">Utilisez les endpoints API pour verifier et declencher les alertes critiques.</p>
+        <ul class="admin-simple-list">
+            <li><code>/api/alerts/summary</code> — resume des alertes</li>
+            <li><code>/api/alerts/send</code> — envoi des emails d'alerte</li>
+        </ul>
+    </section>
+{% endblock %}

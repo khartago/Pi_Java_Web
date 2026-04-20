@@ -1,0 +1,25 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ mode == 'creation' ? 'Nouvelle promotion' : 'Promotion' }}{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Promotions</p>
+        <h1>{{ mode == 'creation' ? 'Nouvelle promotion' : 'Promotion' }}</h1>
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.nom) }}</div>
+            <div class="form-row">{{ form_row(form.typeReduction) }}</div>
+            <div class="form-row">{{ form_row(form.valeurReduction) }}</div>
+            <div class="form-row">{{ form_row(form.dateDebut) }}</div>
+            <div class="form-row">{{ form_row(form.dateFin) }}</div>
+            <div class="form-row">{{ form_row(form.quantiteMin) }}</div>
+            <div class="form-row">{{ form_row(form.cumulable) }}</div>
+            <div class="form-row">{{ form_row(form.actif) }}</div>
+            <div class="form-row">{{ form_row(form.produits) }}</div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
+                <a class="btn btn-ghost" href="{{ path('app_promotion_index') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}
