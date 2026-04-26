@@ -2704,6 +2704,35 @@ body.theme-front .bar-fill {
     align-items: center;
     gap: var(--space-3);
 }
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: var(--space-2);
+}
+.lang-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(26, 77, 46, 0.18);
+    background: #fff;
+    color: var(--color-primary-dark);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.lang-btn:hover {
+    background: #f3faf6;
+}
+.lang-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
 .game-weather {
     margin: 0;
     font-size: 0.95rem;

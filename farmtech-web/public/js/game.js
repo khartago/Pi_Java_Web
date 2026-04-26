@@ -39,9 +39,19 @@
         });
     };
 
-    const markDead = async () => {
+    const markDead = async (index, reason) => {
         try {
-            await fetch('/plant/dead', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            await fetch('/plant/dead', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    plantName: 'Parcelle ' + (index + 1),
+                    reason,
+                }),
+            });
         } catch (_e) {}
     };
 
@@ -75,7 +85,6 @@
 
             if (selectedTool === 'shovel') {
                 plant.alive = false;
-                markDead();
                 setStatus('Parcelle retiree.');
             } else if (selectedTool === 'manure') {
                 // Engrais gives a clearly visible bonus
@@ -99,12 +108,12 @@
     });
 
     setInterval(() => {
-        plants.forEach((plant) => {
+        plants.forEach((plant, index) => {
             if (!plant.alive) return;
             plant.timer -= 1;
             if (plant.timer <= 0) {
                 plant.alive = false;
-                markDead();
+                markDead(index, 'timeout');
             }
         });
         render();

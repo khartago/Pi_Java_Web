@@ -3,9 +3,44 @@
 {% block title %}Favoris Marketplace{% endblock %}
 
 {% block front_content %}
-    <section class="farm-card">
+    <section class="farm-card marketplace-layout">
         <p class="page-eyebrow">Marketplace</p>
         <h1>Mes favoris</h1>
-        <p class="page-lead">La gestion des favoris est active via le front marketplace.</p>
+        <p class="page-lead">Retrouvez vos produits favoris et leurs promotions actives.</p>
+        <p><a class="btn btn-ghost" href="{{ path('app_marketplace_index') }}">Retour au catalogue</a></p>
+
+        <div class="market-grid-simple">
+            {% for card in cards %}
+                <article class="market-card-simple">
+                    <img
+                        src="{{ asset(card.produit.imageAssetPath) }}"
+                        alt="{{ card.produit.nom }}"
+                        class="market-card-simple__img"
+                        onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
+                    >
+                    <h3 class="market-card-simple__title">{{ card.produit.nom }}</h3>
+                    <p>{{ card.produit.quantite }} {{ card.produit.unite }}</p>
+                    {% if card.produit.prix is not null %}
+                        {% if card.bestPromotion %}
+                            <p>
+                                <span class="badge badge-warn">{{ card.bestPromotion.label }}</span>
+                                <strong>{{ card.promoPrice|number_format(2, ',', ' ') }} TND</strong>
+                                <small style="text-decoration:line-through;color:var(--color-muted);">{{ card.produit.prix|number_format(2, ',', ' ') }} TND</small>
+                            </p>
+                        {% else %}
+                            <p><strong>{{ card.produit.prix|number_format(2, ',', ' ') }} TND</strong></p>
+                        {% endif %}
+                    {% endif %}
+                    <form method="post" action="{{ path('app_favoris_toggle', { idProduit: card.produit.idProduit }) }}" style="margin-bottom:.75rem;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_favorite_' ~ card.produit.idProduit) }}">
+                        <input type="hidden" name="_redirect" value="{{ app.request.uri }}">
+                        <button type="submit" class="btn btn-secondary">Retirer favori</button>
+                    </form>
+                    <a href="{{ path('app_marketplace_show', { idProduit: card.produit.idProduit }) }}" class="btn btn-primary">Voir fiche</a>
+                </article>
+            {% else %}
+                <p>Aucun favori pour le moment.</p>
+            {% endfor %}
+        </div>
     </section>
 {% endblock %}

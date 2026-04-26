@@ -1,15 +1,222 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Alertes{% endblock %}
+{% block title %}Alertes | Farmtech{% endblock %}
 
 {% block admin_content %}
-    <section class="admin-card">
-        <p class="page-eyebrow">Alertes</p>
-        <h1>Alertes critiques</h1>
-        <p class="page-lead">Utilisez les endpoints API pour verifier et declencher les alertes critiques.</p>
-        <ul class="admin-simple-list">
-            <li><code>/api/alerts/summary</code> — resume des alertes</li>
-            <li><code>/api/alerts/send</code> — envoi des emails d'alerte</li>
-        </ul>
+<div class="alerts-page">
+    <section class="alerts-hero">
+        <article class="alerts-hero-card">
+            <p class="hero-eyebrow">Surveillance</p>
+            <h1 class="hero-title">Alertes &amp; Notifications</h1>
+            <p class="hero-copy">
+                Visualisez en temps reel les produits en rupture de stock et les materiels en panne.
+                Declenchez l'envoi d'email d'alerte en un clic.
+            </p>
+            <div class="hero-actions">
+                <button class="btn btn-primary" type="button" id="alerts-send-btn">Envoyer les alertes email</button>
+                <button class="btn btn-ghost" type="button" id="alerts-refresh-btn">Actualiser</button>
+            </div>
+            <p class="alerts-feedback" id="alerts-feedback" hidden></p>
+        </article>
+
+        <aside class="alerts-stats-strip" aria-label="Resume alertes">
+            <h2 class="stats-strip-title">Resume actuel</h2>
+            <div class="stats-grid">
+                <div class="alert-stat alert-stat--low">
+                    <span class="stat-label">Produits stock bas</span>
+                    <span class="stat-value" id="alerts-low-count">-</span>
+                </div>
+                <div class="alert-stat alert-stat--broken">
+                    <span class="stat-label">Materiels en panne</span>
+                    <span class="stat-value" id="alerts-broken-count">-</span>
+                </div>
+            </div>
+        </aside>
     </section>
+
+    <div class="alerts-skeleton" id="alerts-skeleton" hidden>
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar short"></div>
+        <div class="skeleton-bar"></div>
+    </div>
+
+    <div class="alerts-content" id="alerts-content" hidden>
+        <div class="alerts-grid">
+            <section class="alerts-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Produits en rupture</h2>
+                        <p class="panel-copy">Quantite inferieure ou egale au seuil configure.</p>
+                    </div>
+                    <span class="alert-badge warning" id="alerts-low-badge">-</span>
+                </div>
+                <div class="alert-list" id="alerts-low-list">
+                    <p class="alert-empty">Chargement...</p>
+                </div>
+            </section>
+
+            <section class="alerts-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Materiels en panne</h2>
+                        <p class="panel-copy">Materiels dont l'etat est marque "panne".</p>
+                    </div>
+                    <span class="alert-badge danger" id="alerts-broken-badge">-</span>
+                </div>
+                <div class="alert-list" id="alerts-broken-list">
+                    <p class="alert-empty">Chargement...</p>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+.alerts-page { display: grid; gap: 1.25rem; }
+.alerts-hero { display: grid; gap: 1rem; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); }
+.alerts-hero-card, .alerts-stats-strip, .alerts-panel { background: #fff; border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 16px; padding: 1rem 1.1rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+.hero-eyebrow { margin: 0 0 .35rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: #64748b; font-weight: 700; }
+.hero-title { margin: 0; font-size: 1.5rem; }
+.hero-copy { margin: .5rem 0 0; color: #475569; max-width: 70ch; }
+.hero-actions { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: 1rem; }
+.stats-strip-title { margin: 0 0 .75rem; font-size: .95rem; color: #334155; }
+.stats-grid { display: grid; gap: .7rem; }
+.alert-stat { border-radius: 12px; padding: .75rem .8rem; border: 1px solid rgba(15, 23, 42, 0.08); background: #f8fafc; display: grid; gap: .2rem; }
+.alert-stat.is-alert { border-color: rgba(239, 68, 68, .35); background: #fff7f7; }
+.stat-label { color: #475569; font-size: .88rem; }
+.stat-value { font-size: 1.3rem; font-weight: 800; color: #0f172a; }
+.alerts-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.panel-header { display: flex; justify-content: space-between; gap: .8rem; align-items: start; margin-bottom: .7rem; }
+.panel-title { margin: 0; font-size: 1.06rem; }
+.panel-copy { margin: .35rem 0 0; color: #64748b; font-size: .9rem; }
+.alert-badge { border-radius: 999px; padding: .2rem .65rem; font-weight: 700; font-size: .84rem; }
+.alert-badge.warning { background: #fef3c7; color: #92400e; }
+.alert-badge.danger { background: #fee2e2; color: #991b1b; }
+.alert-list { display: grid; gap: .55rem; }
+.alert-item { border: 1px solid rgba(15, 23, 42, .08); border-radius: 12px; padding: .6rem .7rem; display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: center; background: #fff; }
+.alert-item-name { font-weight: 600; color: #0f172a; }
+.alert-item-sub { grid-column: 1 / -1; color: #64748b; font-size: .86rem; }
+.alert-item-tag { border-radius: 999px; padding: .16rem .55rem; font-weight: 700; font-size: .8rem; }
+.alert-item-tag.warning { background: #fef3c7; color: #92400e; }
+.alert-item-tag.danger { background: #fee2e2; color: #991b1b; }
+.alert-empty { margin: 0; color: #64748b; }
+.alerts-skeleton { background: #fff; border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 16px; padding: 1rem; }
+.skeleton-bar { height: 11px; border-radius: 999px; background: linear-gradient(90deg, #e2e8f0, #f8fafc, #e2e8f0); background-size: 180% 100%; animation: shimmer 1.2s linear infinite; margin-bottom: .55rem; }
+.skeleton-bar.short { width: 52%; }
+.alerts-feedback { margin-top: .8rem; border-radius: 10px; padding: .55rem .7rem; font-size: .9rem; }
+.alerts-feedback.success { background: #dcfce7; color: #166534; }
+.alerts-feedback.error { background: #fee2e2; color: #991b1b; }
+.alerts-feedback.info { background: #e0f2fe; color: #0c4a6e; }
+.alerts-feedback.loading { background: #f1f5f9; color: #334155; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (max-width: 980px) { .alerts-hero { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+(function () {
+    var lowCountEls = [document.getElementById('alerts-low-count'), document.getElementById('alerts-low-badge')];
+    var brokenCountEls = [document.getElementById('alerts-broken-count'), document.getElementById('alerts-broken-badge')];
+    var lowList = document.getElementById('alerts-low-list');
+    var brokenList = document.getElementById('alerts-broken-list');
+    var sendBtn = document.getElementById('alerts-send-btn');
+    var refreshBtn = document.getElementById('alerts-refresh-btn');
+    var feedback = document.getElementById('alerts-feedback');
+    var skeleton = document.getElementById('alerts-skeleton');
+    var content = document.getElementById('alerts-content');
+    var lowStat = document.querySelector('.alert-stat--low');
+    var brokenStat = document.querySelector('.alert-stat--broken');
+
+    function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+        });
+    }
+
+    function setFeedback(message, kind) {
+        if (!feedback) return;
+        feedback.textContent = message;
+        feedback.className = 'alerts-feedback ' + kind;
+        feedback.hidden = false;
+        if (kind === 'success' || kind === 'info') {
+            setTimeout(function () { feedback.hidden = true; }, 5000);
+        }
+    }
+
+    function renderProducts(items) {
+        if (!lowList) return;
+        if (!items || items.length === 0) {
+            lowList.innerHTML = '<p class="alert-empty">Aucun produit en rupture de stock.</p>';
+            return;
+        }
+        lowList.innerHTML = items.map(function (p) {
+            return '<div class="alert-item">'
+                + '<span class="alert-item-name">' + esc(p.nom) + '</span>'
+                + '<span class="alert-item-tag warning">' + esc(p.quantite) + ' ' + esc(p.unite) + '</span>'
+                + '</div>';
+        }).join('');
+    }
+
+    function renderBroken(items) {
+        if (!brokenList) return;
+        if (!items || items.length === 0) {
+            brokenList.innerHTML = '<p class="alert-empty">Aucun materiel en panne.</p>';
+            return;
+        }
+        brokenList.innerHTML = items.map(function (m) {
+            var sub = m.produit ? '<span class="alert-item-sub">' + esc(m.produit) + '</span>' : '';
+            return '<div class="alert-item">'
+                + '<span class="alert-item-name">' + esc(m.nom) + '</span>'
+                + '<span class="alert-item-tag danger">panne</span>'
+                + sub
+                + '</div>';
+        }).join('');
+    }
+
+    async function loadSummary() {
+        try {
+            if (skeleton) skeleton.hidden = false;
+            if (content) content.hidden = true;
+            var response = await fetch('{{ path('api_alerts_summary') }}');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            var data = await response.json();
+            var low = data.low_stock_count || 0;
+            var broken = data.broken_count || 0;
+            lowCountEls.forEach(function (el) { if (el) el.textContent = String(low); });
+            brokenCountEls.forEach(function (el) { if (el) el.textContent = String(broken); });
+            if (lowStat) lowStat.classList.toggle('is-alert', low > 0);
+            if (brokenStat) brokenStat.classList.toggle('is-alert', broken > 0);
+            renderProducts(data.low_stock_products || []);
+            renderBroken(data.broken_materiels || []);
+        } catch (error) {
+            setFeedback('Impossible de charger le resume : ' + (error && error.message ? error.message : 'erreur'), 'error');
+        } finally {
+            if (skeleton) skeleton.hidden = true;
+            if (content) content.hidden = false;
+        }
+    }
+
+    async function sendAlerts() {
+        if (sendBtn) sendBtn.disabled = true;
+        setFeedback('Envoi en cours...', 'loading');
+        try {
+            var response = await fetch('{{ path('api_alerts_send') }}', { method: 'POST' });
+            var data = await response.json();
+            if (!response.ok) throw new Error(data && data.message ? data.message : ('HTTP ' + response.status));
+            var message = data.sent
+                ? 'Alertes envoyees - ' + data.low_stock_count + ' stock bas, ' + data.broken_count + ' pannes.'
+                : 'Aucune alerte critique a envoyer.';
+            setFeedback(message, data.sent ? 'success' : 'info');
+            loadSummary();
+        } catch (error) {
+            setFeedback(error && error.message ? error.message : "Echec de l'envoi.", 'error');
+        } finally {
+            if (sendBtn) sendBtn.disabled = false;
+        }
+    }
+
+    if (refreshBtn) refreshBtn.addEventListener('click', loadSummary);
+    if (sendBtn) sendBtn.addEventListener('click', sendAlerts);
+    loadSummary();
+})();
+</script>
 {% endblock %}

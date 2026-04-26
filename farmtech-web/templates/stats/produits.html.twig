@@ -2,15 +2,138 @@
 
 {% block title %}Stats produits{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+{% endblock %}
+
 {% block admin_content %}
-    <section class="admin-card">
-        <p class="page-eyebrow">Analytics stock</p>
-        <h1>Statistiques produits</h1>
-        <ul class="admin-simple-list">
-            <li>Total produits: {{ stats.overview.total_products }}</li>
-            <li>Quantite totale: {{ stats.overview.total_quantity }}</li>
-            <li>Produits avec promo active: {{ stats.overview.with_promo }}</li>
-            <li>Seuil stock: {{ stats.threshold }}</li>
-        </ul>
-    </section>
+<section class="page-hero">
+    <span class="page-eyebrow">Analytics stock</span>
+    <h1>Statistiques produits</h1>
+    <p class="page-lead">Vue synthétique du stock, de l'état des produits et de la couverture promo.</p>
+</section>
+
+<div class="admin-crud-panel" style="margin-bottom:1.25rem;">
+    <div class="admin-stat-strip" role="list">
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Total produits</span>
+            <span class="admin-stat-strip__val">{{ stats.overview.total_products }}</span>
+        </div>
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Quantité totale</span>
+            <span class="admin-stat-strip__val">{{ stats.overview.total_quantity }}</span>
+        </div>
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Produits avec promo active</span>
+            <span class="admin-stat-strip__val">{{ stats.overview.with_promo }}</span>
+        </div>
+        <div class="admin-stat-strip__item" role="listitem">
+            <span class="admin-stat-strip__lbl">Seuil stock bas</span>
+            <span class="admin-stat-strip__val">{{ stats.threshold }}</span>
+        </div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;">
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Top 10 produits par quantité</h3>
+        <canvas id="chart-top-qty" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Répartition par unité</h3>
+        <canvas id="chart-by-unit" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Santé du stock</h3>
+        <canvas id="chart-stock-health" height="220"></canvas>
+    </div>
+    <div class="card">
+        <h3 class="font-display" style="margin-top:0;">Échéance de péremption</h3>
+        <canvas id="chart-expirations" height="220"></canvas>
+    </div>
+</div>
+
+<script>
+(function () {
+    var topQtyChart = {{ stats.top_qty_chart|json_encode|raw }};
+    var byUnit = {{ stats.by_unit|json_encode|raw }};
+    var stockHealth = {{ stats.stock_health|json_encode|raw }};
+    var expirations = {{ stats.expirations|json_encode|raw }};
+
+    function mapObject(obj) {
+        var labels = [];
+        var values = [];
+        for (var key in obj) {
+            if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+            labels.push(key);
+            values.push(obj[key]);
+        }
+        return { labels: labels, values: values };
+    }
+
+    function createChart(canvasId, type, labels, values, color, hideLegend) {
+        var canvas = document.getElementById(canvasId);
+        if (!canvas || labels.length === 0) return;
+
+        new Chart(canvas, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valeur',
+                    data: values,
+                    backgroundColor: color
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: !hideLegend }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Chart === 'undefined') return;
+
+        createChart(
+            'chart-top-qty',
+            'bar',
+            topQtyChart.labels || [],
+            topQtyChart.values || [],
+            'rgba(26,77,46,0.55)',
+            true
+        );
+
+        var unitData = mapObject(byUnit);
+        createChart('chart-by-unit', 'doughnut', unitData.labels, unitData.values, [
+            'rgba(59,130,246,0.55)',
+            'rgba(20,184,166,0.55)',
+            'rgba(234,179,8,0.55)',
+            'rgba(168,85,247,0.55)',
+            'rgba(248,113,113,0.55)'
+        ], false);
+
+        var healthLabels = ['Rupture', 'Stock bas', 'Sain', 'Surstock'];
+        var healthValues = [stockHealth.out, stockHealth.low, stockHealth.healthy, stockHealth.over];
+        createChart('chart-stock-health', 'bar', healthLabels, healthValues, [
+            'rgba(239,68,68,0.6)',
+            'rgba(245,158,11,0.6)',
+            'rgba(34,197,94,0.6)',
+            'rgba(59,130,246,0.6)'
+        ], true);
+
+        var expLabels = ['Expiré', 'Bientôt expiré', 'OK', 'Sans date'];
+        var expValues = [expirations.expired, expirations.soon, expirations.ok, expirations.none];
+        createChart('chart-expirations', 'pie', expLabels, expValues, [
+            'rgba(239,68,68,0.65)',
+            'rgba(245,158,11,0.65)',
+            'rgba(34,197,94,0.65)',
+            'rgba(148,163,184,0.65)'
+        ], false);
+    });
+})();
+</script>
 {% endblock %}

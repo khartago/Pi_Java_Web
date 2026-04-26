@@ -86,6 +86,26 @@ class Promotion
     public function isActif(): bool { return $this->actif; }
     public function setActif(bool $actif): self { $this->actif = $actif; return $this; }
     public function getProduits(): Collection { return $this->produits; }
+    public function addProduit(Produit $produit): self
+    {
+        if (!$this->produits->contains($produit)) {
+            $this->produits->add($produit);
+            if (!$produit->getPromotions()->contains($this)) {
+                $produit->getPromotions()->add($this);
+            }
+        }
+
+        return $this;
+    }
+
+    public function removeProduit(Produit $produit): self
+    {
+        if ($this->produits->removeElement($produit)) {
+            $produit->getPromotions()->removeElement($this);
+        }
+
+        return $this;
+    }
 
     public function isCurrentlyActive(): bool
     {

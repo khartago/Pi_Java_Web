@@ -4,36 +4,48 @@
 {% set front_route = app.request.attributes.get('_route') %}
 {% set farmer_name = app.user.nom ?? app.user.userIdentifier %}
 {% set farmer_initial = farmer_name|slice(0, 1)|upper %}
+{% set route_params = app.request.attributes.get('_route_params')|default({}) %}
 
 {% block body_class %}theme-front{% endblock %}
 
 {% block flashes %}{% endblock %}
 
 {% block body %}
-<header class="farmer-header">
-    <div class="farmer-header__row">
-        <a href="{{ path('app_home') }}" class="farmer-header__brand" aria-label="FarmTech — accueil">
-            <span class="farmer-header__logo">{{ icons.brand_logo('site-logo--nav') }}</span>
-            <span class="farmer-header__wordmark">FarmTech</span>
-        </a>
-        <nav class="farmer-nav" aria-label="Navigation">
-            <a href="{{ path('app_home') }}" class="farmer-nav__link {{ front_route == 'app_home' ? 'is-active' }}" {% if front_route == 'app_home' %}aria-current="page"{% endif %}>Accueil</a>
-            <a href="{{ path('app_problemes_index') }}" class="farmer-nav__link {{ front_route starts with 'app_problemes' ? 'is-active' }}" {% if front_route starts with 'app_problemes' %}aria-current="page"{% endif %}>Mes dossiers</a>
-            <a href="{{ path('app_marketplace_index') }}" class="farmer-nav__link {{ front_route starts with 'app_marketplace_' ? 'is-active' }}" {% if front_route starts with 'app_marketplace_' %}aria-current="page"{% endif %}>Marketplace</a>
-            <a href="{{ path('app_game') }}" class="farmer-nav__link {{ front_route starts with 'app_game' ? 'is-active' }}" {% if front_route starts with 'app_game' %}aria-current="page"{% endif %}>Game</a>
-            <a href="{{ path('app_news') }}" class="farmer-nav__link {{ front_route starts with 'app_news' ? 'is-active' }}" {% if front_route starts with 'app_news' %}aria-current="page"{% endif %}>News</a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('admin_dashboard') }}" class="farmer-nav__link farmer-nav__link--admin">Admin</a>
-            {% endif %}
-        </nav>
-        <div class="farmer-header__user">
-            <span class="farmer-header__avatar" aria-hidden="true">{{ farmer_initial }}</span>
-            <a href="{{ path('app_logout') }}" class="farmer-header__out">Déconnexion</a>
+{% set is_game_route = front_route starts with 'app_game' %}
+{% if not is_game_route %}
+    <header class="farmer-header">
+        <div class="farmer-header__row">
+            <a href="{{ path('app_home') }}" class="farmer-header__brand" aria-label="FarmTech — accueil">
+                <span class="farmer-header__logo">{{ icons.brand_logo('site-logo--nav') }}</span>
+                <span class="farmer-header__wordmark">FarmTech</span>
+            </a>
+            <nav class="farmer-nav" aria-label="Navigation">
+                <a href="{{ path('app_home') }}" class="farmer-nav__link {{ front_route == 'app_home' ? 'is-active' }}" {% if front_route == 'app_home' %}aria-current="page"{% endif %}>{{ 'nav.home'|trans }}</a>
+                <a href="{{ path('app_problemes_index') }}" class="farmer-nav__link {{ front_route starts with 'app_problemes' ? 'is-active' }}" {% if front_route starts with 'app_problemes' %}aria-current="page"{% endif %}>{{ 'nav.my_files'|trans }}</a>
+                <a href="{{ path('app_marketplace_index') }}" class="farmer-nav__link {{ front_route starts with 'app_marketplace_' ? 'is-active' }}" {% if front_route starts with 'app_marketplace_' %}aria-current="page"{% endif %}>{{ 'nav.marketplace'|trans }}</a>
+            <a href="{{ path('app_favoris_index') }}" class="farmer-nav__link {{ front_route starts with 'app_favoris_' ? 'is-active' }}" {% if front_route starts with 'app_favoris_' %}aria-current="page"{% endif %}>Favoris</a>
+                <a href="{{ path('app_game') }}" class="farmer-nav__link {{ front_route starts with 'app_game' ? 'is-active' }}" {% if front_route starts with 'app_game' %}aria-current="page"{% endif %}>Game</a>
+                <a href="{{ path('app_news') }}" class="farmer-nav__link {{ front_route starts with 'app_news' ? 'is-active' }}" {% if front_route starts with 'app_news' %}aria-current="page"{% endif %}>News</a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin_dashboard') }}" class="farmer-nav__link farmer-nav__link--admin">Admin</a>
+                {% endif %}
+            </nav>
+            <div class="farmer-header__user">
+                <span class="farmer-header__avatar" aria-hidden="true">{{ farmer_initial }}</span>
+                <a href="{{ path('app_logout') }}" class="farmer-header__out">{{ 'nav.logout'|trans }}</a>
+            </div>
+            <div class="lang-switcher" aria-label="{{ 'nav.language'|trans }}">
+                <a class="lang-btn {{ app.request.locale == 'fr' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'fr'})) }}">FR</a>
+                <a class="lang-btn {{ app.request.locale == 'en' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'en'})) }}">EN</a>
+                <a class="lang-btn {{ app.request.locale == 'ar' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'ar'})) }}">AR</a>
+            </div>
         </div>
-    </div>
-</header>
-<main id="main-content" class="shell shell--farmer" tabindex="-1">
-    {% include '_flash.html.twig' %}
-    {% block front_content %}{% endblock %}
-</main>
+    </header>
+{% endif %}
+    <main id="main-content" class="{{ is_game_route ? '' : 'shell shell--farmer' }}" tabindex="-1">
+        {% if not is_game_route %}
+        {% include '_flash.html.twig' %}
+        {% endif %}
+        {% block front_content %}{% endblock %}
+    </main>
 {% endblock %}

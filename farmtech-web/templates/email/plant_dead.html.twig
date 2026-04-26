@@ -1,8 +1,91 @@
-<h2>Plant Died Alert</h2>
-<p>Une plante du mini-jeu est morte.</p>
-<ul>
-    <li>Plante: <strong>{{ plantName }}</strong></li>
-    {% if temp is not null %}
-        <li>Temperature: <strong>{{ temp }} °C</strong></li>
-    {% endif %}
-</ul>
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerte plantation</title>
+</head>
+<body style="margin:0; padding:0; background:#f2f6f3; font-family:Arial, Helvetica, sans-serif; color:#153b27;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f2f6f3; padding:20px 0;">
+    <tr>
+        <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px; background:#ffffff; border-radius:14px; overflow:hidden; border:1px solid #dce9e1;">
+                <tr>
+                    <td style="background:linear-gradient(135deg,#1e6b4a,#2f8f62); padding:22px 24px;">
+                        <h1 style="margin:0; font-size:22px; line-height:1.2; color:#ffffff; font-weight:700;">
+                            FarmTech - Alerte jeu plantation
+                        </h1>
+                        <p style="margin:8px 0 0; font-size:14px; line-height:1.4; color:#dff4e9;">
+                            Une plante est morte naturellement dans le mini-jeu (et non via suppression manuelle).
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:22px 24px 8px;">
+                        <p style="margin:0 0 14px; font-size:15px; line-height:1.55; color:#294434;">
+                            Bonjour,<br>
+                            une alerte a ete declenchee car une plante n'a pas ete traitee a temps.
+                            Voici le detail de l'evenement:
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:0 24px 24px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate; border-spacing:0; border:1px solid #e2eee7; border-radius:10px; overflow:hidden;">
+                            <tr>
+                                <td style="width:44%; background:#f7fbf8; padding:12px 14px; border-bottom:1px solid #e2eee7; font-size:14px; font-weight:700; color:#325741;">
+                                    Plante
+                                </td>
+                                <td style="padding:12px 14px; border-bottom:1px solid #e2eee7; font-size:14px; color:#153b27;">
+                                    {{ plantName }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:44%; background:#f7fbf8; padding:12px 14px; border-bottom:1px solid #e2eee7; font-size:14px; font-weight:700; color:#325741;">
+                                    Cause
+                                </td>
+                                <td style="padding:12px 14px; border-bottom:1px solid #e2eee7; font-size:14px; color:#153b27;">
+                                    {{ reasonLabel|default('Timer epuise') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:44%; background:#f7fbf8; padding:12px 14px; {% if temp is not null %}border-bottom:1px solid #e2eee7;{% endif %} font-size:14px; font-weight:700; color:#325741;">
+                                    Date / heure
+                                </td>
+                                <td style="padding:12px 14px; {% if temp is not null %}border-bottom:1px solid #e2eee7;{% endif %} font-size:14px; color:#153b27;">
+                                    {{ occurredAt|date('d/m/Y H:i') }}
+                                </td>
+                            </tr>
+                            {% if temp is not null %}
+                                <tr>
+                                    <td style="background:#f7fbf8; padding:12px 14px; font-size:14px; font-weight:700; color:#325741;">
+                                        Temperature
+                                    </td>
+                                    <td style="padding:12px 14px; font-size:14px; color:#153b27;">
+                                        {{ temp }} degC
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:0 24px 24px;">
+                        <p style="margin:0; font-size:13px; line-height:1.5; color:#5f7c6a;">
+                            Action recommandee: utilisez Engrais pour replanter la parcelle puis Eau regulierement pour eviter une nouvelle perte.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:16px 24px; background:#f7fbf8; border-top:1px solid #e2eee7;">
+                        <p style="margin:0; font-size:12px; line-height:1.5; color:#7a9586;">
+                            Message automatique FarmTech.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

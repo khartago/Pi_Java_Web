@@ -131,6 +131,31 @@
                 </div>
             </div>
             <div class="admin-topbar-end">
+                <div class="alerts-dropdown" data-alerts-dropdown>
+                    <button
+                        type="button"
+                        class="btn btn-ghost alerts-dropdown__toggle"
+                        aria-label="Notifications alertes"
+                        aria-expanded="false"
+                        aria-controls="alerts-dropdown-menu"
+                        data-alerts-dropdown-toggle
+                    >
+                        {{ icons.bell(18) }} Alertes
+                        <span class="alerts-dropdown__count" data-alerts-dropdown-count hidden>0</span>
+                    </button>
+                    <div class="alerts-dropdown__menu" id="alerts-dropdown-menu" data-alerts-dropdown-menu hidden>
+                        <p class="alerts-dropdown__title">Alertes critiques</p>
+                        <p class="alerts-dropdown__loading" data-alerts-dropdown-loading>Chargement...</p>
+                        <div class="alerts-dropdown__content" data-alerts-dropdown-content hidden>
+                            <p class="alerts-dropdown__summary">
+                                Stock bas: <strong data-alerts-dropdown-low>0</strong> ·
+                                Pannes: <strong data-alerts-dropdown-broken>0</strong>
+                            </p>
+                            <ul class="alerts-dropdown__list" data-alerts-dropdown-list></ul>
+                        </div>
+                        <a href="{{ path('app_alerts_index') }}" class="alerts-dropdown__footer">Voir toutes les alertes →</a>
+                    </div>
+                </div>
                 <time class="admin-topbar-time" datetime="{{ 'now'|date('c') }}">{{ 'now'|date('d/m/Y') }}<span class="admin-topbar-time-sep">·</span>{{ 'now'|date('H:i') }}</time>
             </div>
         </header>
@@ -140,4 +165,92 @@
         </main>
     </div>
 </div>
+<style>
+.alerts-dropdown { position: relative; }
+.alerts-dropdown__toggle { display: inline-flex; align-items: center; gap: .4rem; }
+.alerts-dropdown__count { min-width: 1.15rem; height: 1.15rem; border-radius: 999px; background: #b91c1c; color: #fff; font-size: .7rem; line-height: 1.15rem; text-align: center; padding: 0 .2rem; }
+.alerts-dropdown__menu { position: absolute; right: 0; top: calc(100% + .45rem); width: 320px; max-height: 380px; overflow: auto; background: #fff; border: 1px solid rgba(15,23,42,.12); border-radius: 12px; box-shadow: 0 14px 35px rgba(15,23,42,.16); padding: .75rem; z-index: 80; }
+.alerts-dropdown__title { margin: 0 0 .35rem; font-weight: 700; color: #0f172a; }
+.alerts-dropdown__loading, .alerts-dropdown__summary { margin: 0 0 .5rem; color: #475569; font-size: .9rem; }
+.alerts-dropdown__list { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.alerts-dropdown__list li { font-size: .85rem; color: #1e293b; padding: .45rem .5rem; border-radius: 8px; background: #f8fafc; }
+.alerts-dropdown__footer { display: inline-block; margin-top: .6rem; font-size: .85rem; color: #0f766e; text-decoration: none; font-weight: 600; }
+.alerts-dropdown__footer:hover { text-decoration: underline; }
+</style>
+<script>
+(function () {
+    var root = document.querySelector('[data-alerts-dropdown]');
+    if (!root) return;
+    var toggle = root.querySelector('[data-alerts-dropdown-toggle]');
+    var menu = root.querySelector('[data-alerts-dropdown-menu]');
+    var loading = root.querySelector('[data-alerts-dropdown-loading]');
+    var content = root.querySelector('[data-alerts-dropdown-content]');
+    var lowEl = root.querySelector('[data-alerts-dropdown-low]');
+    var brokenEl = root.querySelector('[data-alerts-dropdown-broken]');
+    var listEl = root.querySelector('[data-alerts-dropdown-list]');
+    var countEl = root.querySelector('[data-alerts-dropdown-count]');
+    var loaded = false;
+
+    function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+        });
+    }
+
+    async function loadAlerts() {
+        if (loaded) return;
+        try {
+            var response = await fetch('{{ path('api_alerts_summary') }}');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            var data = await response.json();
+            var low = data.low_stock_count || 0;
+            var broken = data.broken_count || 0;
+            var total = low + broken;
+            lowEl.textContent = String(low);
+            brokenEl.textContent = String(broken);
+            if (total > 0) {
+                countEl.hidden = false;
+                countEl.textContent = String(total);
+            } else {
+                countEl.hidden = true;
+            }
+
+            var lines = [];
+            (data.low_stock_products || []).slice(0, 3).forEach(function (p) {
+                lines.push('<li>Stock bas: ' + esc(p.nom) + ' (' + esc(p.quantite) + ' ' + esc(p.unite) + ')</li>');
+            });
+            (data.broken_materiels || []).slice(0, 3).forEach(function (m) {
+                var product = m.produit ? ' - ' + esc(m.produit) : '';
+                lines.push('<li>Panne: ' + esc(m.nom) + product + '</li>');
+            });
+            listEl.innerHTML = lines.length ? lines.join('') : '<li>Aucune alerte critique.</li>';
+            loading.hidden = true;
+            content.hidden = false;
+            loaded = true;
+        } catch (error) {
+            loading.textContent = 'Impossible de charger les alertes.';
+        }
+    }
+
+    function closeMenu() {
+        menu.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function () {
+        var opening = menu.hidden;
+        menu.hidden = !menu.hidden;
+        toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        if (opening) {
+            loadAlerts();
+        }
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!root.contains(event.target)) {
+            closeMenu();
+        }
+    });
+})();
+</script>
 {% endblock %}

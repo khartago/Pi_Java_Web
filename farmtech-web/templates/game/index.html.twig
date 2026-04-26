@@ -1,31 +1,376 @@
 {% extends 'front/layout.html.twig' %}
+{% set front_route = app.request.attributes.get('_route') %}
+{% set route_params = app.request.attributes.get('_route_params')|default({}) %}
 
-{% block title %}Game | FarmTech{% endblock %}
+{% block title %}{{ 'game.page_title'|trans }} | FarmTech{% endblock %}
 
 {% block front_content %}
-    <section class="farm-card game-page-head">
-        <div>
-            <h1>Farm Game</h1>
-            <p class="page-lead">Mini jeu de plantation avec meteo en direct.</p>
-        </div>
-        <p class="game-weather">🌤 Meteo Tunis: <strong>{{ weather.main.temp is defined and weather.main.temp is not null ? weather.main.temp ~ '°C' : 'N/A' }}</strong></p>
-    </section>
+    <style>
+        .shell--farmer { max-width: none; padding: 0; }
+        .game-fullscreen {
+            position: relative;
+            width: 100vw;
+            min-height: calc(100vh - 88px);
+            margin-left: calc(50% - 50vw);
+            background: url('{{ asset('images/game-bg.png') }}') center/cover no-repeat;
+        }
+        .tools {
+            position: static;
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            max-width: 320px;
+        }
+        .tools img {
+            width: 64px;
+            cursor: pointer;
+            transition: 0.2s;
+            pointer-events: auto;
+        }
+        .tools img:hover { transform: scale(1.2); }
+        .tools img.active {
+            border: 3px solid #facc15;
+            border-radius: 10px;
+            transform: scale(1.2);
+        }
+        .game-area {
+            position: relative;
+            width: 100%;
+            min-height: calc(100vh - 88px);
+            z-index: 1;
+        }
+        .pot {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+        }
+        .pot img {
+            width: 80px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+        }
+        .timer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .top-bar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 120px;
+            background: rgba(50, 50, 50, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 2000;
+        }
+        .avatar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: white;
+        }
+        .avatar img {
+            width: 90px;
+            border-radius: 80%;
+            border: 2px solid white;
+        }
+        #avatar-text {
+            background: white;
+            color: black;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            max-width: 60%;
+        }
+        .game-lang-switcher {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .game-lang-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.45);
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .game-lang-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .game-lang-btn.active {
+            background: #2e7d32;
+            border-color: #2e7d32;
+        }
+        .weather {
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        @media (max-width: 1200px) {
+            .top-bar {
+                height: auto;
+                min-height: 120px;
+                padding: 10px 16px;
+            }
+            .tools img {
+                width: 52px;
+            }
+        }
+        @media (max-width: 900px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .top-right {
+                max-width: 100%;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .tools {
+                max-width: none;
+                justify-content: flex-start;
+            }
+            .weather {
+                white-space: normal;
+            }
+        }
+        .pot-0 { top: 280px; left: 500px; }
+        .pot-1 { top: 280px; left: 730px; }
+        .pot-2 { top: 280px; left: 960px; }
+        .pot-3 { top: 300px; left: 1185px; }
+        .pot-4 { top: 530px; left: 500px; }
+        .pot-5 { top: 510px; left: 730px; }
+        .pot-6 { top: 510px; left: 960px; }
+        .pot-7 { top: 510px; left: 1185px; }
+        .pot-8 { top: 700px; left: 500px; }
+        .pot-9 { top: 725px; left: 730px; }
+        .pot-10 { top: 725px; left: 960px; }
+        .pot-11 { top: 730px; left: 1185px; }
+    </style>
 
-    <section class="farm-card game-panel" id="farm-game-root">
-        <div class="game-toolbar">
-            <button class="btn btn-ghost btn-sm game-tool" data-tool="water">💧 Eau</button>
-            <button class="btn btn-ghost btn-sm game-tool" data-tool="manure">🌿 Engrais</button>
-            <button class="btn btn-ghost btn-sm game-tool" data-tool="shovel">🪓 Pelle</button>
+    <div class="game-fullscreen">
+        <div class="top-bar">
+            <div class="avatar">
+                <img src="{{ asset('images/avatar.png') }}" alt="{{ 'game.avatar_alt'|trans }}">
+                <div id="avatar-text">{{ 'game.avatar.welcome'|trans }}</div>
+            </div>
+
+            <div class="top-right">
+                <div class="weather">
+                    🌤 {{ 'game.weather_label'|trans }} {{ weather.name|default('Tunis') }}: {{ weather.main.temp is defined and weather.main.temp is not null ? weather.main.temp : ('game.weather_na'|trans) }}°C
+                </div>
+
+                <div class="tools">
+                    <img src="{{ asset('images/water.png') }}" onclick="selectTool('water', this)" alt="{{ 'game.tool_water'|trans }}">
+                    <img src="{{ asset('images/manure.png') }}" onclick="selectTool('manure', this)" alt="{{ 'game.tool_manure'|trans }}">
+                    <img src="{{ asset('images/shovel.png') }}" onclick="selectTool('shovel', this)" alt="{{ 'game.tool_shovel'|trans }}">
+                </div>
+                <div class="game-lang-switcher" aria-label="{{ 'nav.language'|trans }}">
+                    <a class="game-lang-btn {{ app.request.locale == 'fr' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'fr'})) }}">FR</a>
+                    <a class="game-lang-btn {{ app.request.locale == 'en' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'en'})) }}">EN</a>
+                    <a class="game-lang-btn {{ app.request.locale == 'ar' ? 'active' }}" href="{{ path(front_route, route_params|merge({'_locale': 'ar'})) }}">AR</a>
+                </div>
+            </div>
         </div>
-        <p id="game-status" class="game-status-line">Selectionnez un outil puis cliquez sur une parcelle.</p>
-        <div class="game-grid">
+
+        <div class="game-area">
             {% for i in 0..11 %}
-                <button type="button" class="game-cell" data-index="{{ i }}">
-                    <img src="{{ asset('images/potato.1.png') }}" alt="Plant {{ i + 1 }}" data-plant>
-                    <span class="game-timer" data-timer>30s</span>
-                </button>
+                {% set plant = cards[i] ?? null %}
+                <div class="pot pot-{{ i }}" onclick="handleClick({{ i }})">
+                    {% if plant %}
+                        <img id="plant-{{ i }}" src="{{ asset('images/' ~ plant.name ~ '.png') }}" alt="{{ 'game.plant_alt'|trans }} {{ i + 1 }}">
+                        <div class="timer" id="timer-{{ i }}">30s</div>
+                    {% else %}
+                        <img id="plant-{{ i }}" src="{{ asset('images/tommato.1.png') }}" alt="{{ 'game.plant_alt'|trans }} {{ i + 1 }}">
+                        <div class="timer" id="timer-{{ i }}">30s</div>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
-    </section>
-    <script src="{{ asset('js/game.js') }}" defer></script>
+
+        <script>
+            let selectedTool = null;
+            let audioStarted = false;
+            const DEAD_LABEL = "{{ 'game.dead'|trans }}";
+            const PARCEL_PREFIX = "{{ 'game.parcel'|trans }}";
+
+            function selectTool(tool, element) {
+                selectedTool = tool;
+                document.querySelectorAll('.tools img').forEach((img) => img.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            function playAvatarVoice() {
+                if (audioStarted) return;
+                const audio = new Audio('{{ asset('sounds/avatar.mp3') }}');
+                audio.volume = 0.8;
+                audio.play().then(() => {
+                    audioStarted = true;
+                }).catch(() => {});
+            }
+
+            document.addEventListener('click', playAvatarVoice, { once: true });
+
+            function startAvatarMessages() {
+                const messages = [
+                    "{{ 'game.avatar.msg1'|trans }}",
+                    "{{ 'game.avatar.msg2'|trans }}",
+                    "{{ 'game.avatar.msg3'|trans }}",
+                    "{{ 'game.avatar.msg4'|trans }}",
+                    "{{ 'game.avatar.msg5'|trans }}",
+                    "{{ 'game.avatar.msg6'|trans }}"
+                ];
+
+                let i = 0;
+                const avatarText = document.getElementById('avatar-text');
+                function showNext() {
+                    if (!avatarText || i >= messages.length) return;
+                    avatarText.innerText = messages[i];
+                    i++;
+                    setTimeout(showNext, 3500);
+                }
+                showNext();
+            }
+
+            window.addEventListener('load', () => {
+                startAvatarMessages();
+                playAvatarVoice();
+            });
+
+            let plants = [];
+            {% for card in cards %}
+            plants[{{ card.index }}] = {
+                name: "{{ card.name }}",
+                timer: 30,
+                level: 1,
+                waterCount: 0,
+                alive: true
+            };
+            {% endfor %}
+
+            for (let i = 0; i < 12; i++) {
+                if (!plants[i]) {
+                    plants[i] = {
+                        name: 'tommato',
+                        timer: 30,
+                        level: 1,
+                        waterCount: 0,
+                        alive: true
+                    };
+                }
+            }
+
+            function render() {
+                for (let i = 0; i < 12; i++) {
+                    const plant = plants[i];
+                    const img = document.getElementById('plant-' + i);
+                    const timer = document.getElementById('timer-' + i);
+                    if (!img || !timer || !plant) continue;
+
+                    if (!plant.alive) {
+                        img.src = "{{ asset('images/dead.png') }}";
+                        timer.innerText = DEAD_LABEL;
+                        continue;
+                    }
+
+                    img.src = "{{ asset('images') }}/" + plant.name + "." + plant.level + ".png";
+                    timer.innerText = plant.timer + "s";
+                }
+            }
+
+            async function markDead(index, reason) {
+                try {
+                    await fetch('{{ path('plant_dead') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            plantName: PARCEL_PREFIX + ' ' + (index + 1),
+                            reason: reason
+                        })
+                    });
+                } catch (_e) {}
+            }
+
+            setInterval(() => {
+                plants.forEach((p, index) => {
+                    if (!p || !p.alive) return;
+                    p.timer--;
+                    if (p.timer <= 0 && p.alive) {
+                        p.alive = false;
+                        markDead(index, 'timeout');
+                    }
+                });
+                render();
+            }, 1000);
+
+            function handleClick(i) {
+                const p = plants[i];
+                if (!selectedTool || !p) return;
+
+                if (!p.alive && selectedTool === 'manure') {
+                    p.alive = true;
+                    p.level = 1;
+                    p.waterCount = 0;
+                    p.timer = 25;
+                    render();
+                    return;
+                }
+                if (!p.alive) return;
+
+                if (selectedTool === 'shovel') {
+                    p.alive = false;
+                }
+
+                if (selectedTool === 'manure') {
+                    p.timer += 15;
+                }
+
+                if (selectedTool === 'water') {
+                    p.timer = 30;
+                    p.waterCount++;
+                    if (p.waterCount === 3 && p.level < 3) {
+                        p.level++;
+                        p.waterCount = 0;
+                    }
+                }
+
+                render();
+            }
+
+            render();
+        </script>
+    </div>
 {% endblock %}

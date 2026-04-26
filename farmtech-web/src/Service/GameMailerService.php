@@ -14,16 +14,25 @@ class GameMailerService
     ) {
     }
 
-    public function sendPlantDeathEmail(string $plantName, ?float $temp = null): void
+    public function sendPlantDeathEmail(
+        string $plantName,
+        ?float $temp = null,
+        string $reasonLabel = 'Timer epuise (non arrose a temps)',
+        ?\DateTimeInterface $occurredAt = null
+    ): void
     {
+        $occurredAt ??= new \DateTime();
+
         $email = (new TemplatedEmail())
             ->from($this->fromEmail)
             ->to($this->toEmail)
-            ->subject('Plant Died Alert')
+            ->subject('Alerte FarmTech: plante perdue dans le jeu')
             ->htmlTemplate('email/plant_dead.html.twig')
             ->context([
                 'plantName' => $plantName,
                 'temp' => $temp,
+                'reasonLabel' => $reasonLabel,
+                'occurredAt' => $occurredAt,
             ]);
 
         $this->mailer->send($email);
