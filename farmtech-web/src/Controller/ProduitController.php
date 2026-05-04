@@ -29,13 +29,49 @@ class ProduitController extends AbstractController
 
         $recherche = trim((string) $request->query->get('recherche', ''));
         $unite = trim((string) $request->query->get('unite', ''));
-        $produits = $produitRepository->findForList($recherche, $unite);
+        $rechercheParam = '' !== $recherche ? $recherche : null;
+        $uniteParam = '' !== $unite ? $unite : null;
+
+        $limit = 10;
+        $page = $request->query->get('page');
+        $page = is_numeric($page) ? (int) $page : 1;
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $totalFiltered = $produitRepository->countForList($rechercheParam, $uniteParam);
+        $pageCount = max(1, (int) ceil($totalFiltered / $limit));
+        $page = min($page, $pageCount);
+        $offset = ($page - 1) * $limit;
+
+        $produits = $produitRepository->findForListPage($rechercheParam, $uniteParam, $limit, $offset);
+
+        $baseQuery = [];
+        if ('' !== $recherche) {
+            $baseQuery['recherche'] = $recherche;
+        }
+        if ('' !== $unite) {
+            $baseQuery['unite'] = $unite;
+        }
+
+        $rangeStart = 0 === $totalFiltered ? 0 : $offset + 1;
+        $rangeEnd = 0 === $totalFiltered ? 0 : $offset + \count($produits);
 
         return $this->render('produit/index.html.twig', [
             'produits' => $produits,
             'recherche' => $recherche,
             'unite' => $unite,
             'unites' => $produitRepository->findDistinctUnites(),
+            'pagination' => [
+                'page' => $page,
+                'page_count' => $pageCount,
+                'limit' => $limit,
+                'total_filtered' => $totalFiltered,
+                'range_start' => $rangeStart,
+                'range_end' => $rangeEnd,
+                'prev_url' => $page > 1 ? $this->generateUrl('app_produit_index', array_merge($baseQuery, ['page' => $page - 1])) : null,
+                'next_url' => $page < $pageCount ? $this->generateUrl('app_produit_index', array_merge($baseQuery, ['page' => $page + 1])) : null,
+            ],
         ]);
     }
 

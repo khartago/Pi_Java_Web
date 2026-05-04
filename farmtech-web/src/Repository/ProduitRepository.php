@@ -16,13 +16,43 @@ class ProduitRepository extends ServiceEntityRepository
         parent::__construct($registry, Produit::class);
     }
 
+    public function countForList(?string $recherche = null, ?string $unite = null): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.idProduit)');
+        $this->applyListFilters($qb, $recherche, $unite);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return list<Produit>
+     */
+    public function findForListPage(?string $recherche, ?string $unite, int $limit, int $offset): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.nom', 'ASC');
+        $this->applyListFilters($qb, $recherche, $unite);
+        $qb->setMaxResults($limit)
+            ->setFirstResult($offset);
+
+        /** @var list<Produit> */
+        return $qb->getQuery()->getResult();
+    }
+
     /**
      * @return list<Produit>
      */
     public function findForList(?string $recherche = null, ?string $unite = null): array
     {
         $qb = $this->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
+        $this->applyListFilters($qb, $recherche, $unite);
 
+        return $qb->getQuery()->getResult();
+    }
+
+    private function applyListFilters(\Doctrine\ORM\QueryBuilder $qb, ?string $recherche, ?string $unite): void
+    {
         if ($recherche !== null && $recherche !== '') {
             $qb->andWhere('LOWER(p.nom) LIKE :recherche')
                 ->setParameter('recherche', '%'.mb_strtolower($recherche).'%');
@@ -31,8 +61,6 @@ class ProduitRepository extends ServiceEntityRepository
         if ($unite !== null && $unite !== '') {
             $qb->andWhere('p.unite = :unite')->setParameter('unite', $unite);
         }
-
-        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -53,11 +81,14 @@ class ProduitRepository extends ServiceEntityRepository
             ->where('p.unite IS NOT NULL')
             ->andWhere('p.unite <> :empty')
             ->setParameter('empty', '')
-            ->orderBy('p.unite', 'ASC')
             ->getQuery()
             ->getArrayResult();
 
-        return array_map(static fn (array $row): string => $row['unite'], $rows);
+        /** @var list<string> $unites */
+        $unites = array_map(static fn (array $row): string => $row['unite'], $rows);
+        sort($unites, SORT_STRING);
+
+        return $unites;
     }
 
     public function findOneForDetail(int $idProduit): ?Produit

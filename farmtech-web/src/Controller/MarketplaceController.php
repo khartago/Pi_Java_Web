@@ -112,6 +112,11 @@ final class MarketplaceController extends AbstractController
         ]);
     }
 
+    /**
+     * @param list<int> $favoriteIds
+     *
+     * @return array<string, mixed>
+     */
     private function buildCard(Produit $produit, PromotionService $promotionService, array $favoriteIds): array
     {
         $materielNames = [];

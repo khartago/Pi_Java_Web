@@ -23,6 +23,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/app/problemes')]
 class ProblemeController extends AbstractController
 {
+    /**
+     * @return array<string, mixed>
+     */
     private function listParams(Request $request): array
     {
         $q = $request->query->get('q');
@@ -131,7 +134,7 @@ class ProblemeController extends AbstractController
         }
         $diag = $diagnostiqueRepository->findLatestApprovedForProbleme($id);
         $bytes = $pdfExportService->generateReportPdf($probleme, $diag);
-        if (null === $bytes || '' === $bytes) {
+        if (null === $bytes) {
             $this->addFlash('danger', 'Impossible de générer le PDF (réseau ou API indisponible).');
 
             return $this->redirectToRoute('app_problemes_show', ['id' => $id]);

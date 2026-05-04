@@ -4,13 +4,11 @@ namespace App\Service;
 
 use App\Entity\Produit;
 use App\Repository\MaterielRepository;
-use App\Repository\RecommandationRepository;
 
 final class MaterielRecommendationService
 {
     public function __construct(
         private readonly MaterielRepository $materielRepository,
-        private readonly RecommandationRepository $recommandationRepository,
     ) {
     }
 

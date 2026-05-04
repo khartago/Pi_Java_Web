@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Probleme;
 use App\Entity\Utilisateur;
+use App\Form\ProblemeType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -35,15 +36,109 @@ class ProblemeRepository extends ServiceEntityRepository
 
     /**
      * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string, date_from?:string, date_to?:string} $params
+     */
+    public function countAdminFiltered(array $params): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)');
+        $this->applyFilters($qb, $params);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Admin list: filters + pagination + eager utilisateur / adminAssignee (avoids N+1 on the index table).
+     *
+     * Uses two queries so LIMIT applies only to probleme ids — never combined with fetch-joined associations
+     * (avoids incorrect LIMIT on SQL row count when tooling assumes collection joins).
+     *
+     * @param array{etat?:string, gravite?:string, type?:string, q?:string, sort?:string, dir?:string, date_from?:string, date_to?:string} $params
      *
      * @return Probleme[]
      */
-    public function findAdminFiltered(array $params): array
+    public function findAdminFilteredPage(array $params, int $limit, int $offset): array
     {
-        $qb = $this->createQueryBuilder('p');
-        $this->applyFilters($qb, $params);
+        $idQb = $this->createQueryBuilder('p')
+            ->select('p.id');
+        $this->applyFilters($idQb, $params);
+        $idQb->setMaxResults($limit)
+            ->setFirstResult($offset);
 
-        return $qb->getQuery()->getResult();
+        $ids = [];
+        foreach ($idQb->getQuery()->getScalarResult() as $row) {
+            $ids[] = (int) reset($row);
+        }
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $hydrateQb = $this->createQueryBuilder('p')
+            ->leftJoin('p.utilisateur', 'u')->addSelect('u')
+            ->leftJoin('p.adminAssignee', 'a')->addSelect('a')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $ids);
+
+        /** @var Probleme[] $rows */
+        $rows = $hydrateQb->getQuery()->getResult();
+        $byId = [];
+        foreach ($rows as $probleme) {
+            $pid = $probleme->getId();
+            if (null !== $pid) {
+                $byId[$pid] = $probleme;
+            }
+        }
+
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($byId[$id])) {
+                $ordered[] = $byId[$id];
+            }
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * Stat strip for the admin signalements index (total + counts by état).
+     * One aggregate row (COUNT + SUM/CASE per known état) so analyzers do not treat the query as an unbounded row set.
+     *
+     * @return array{total: int, byEtat: array<string, int>}
+     */
+    public function getAdminIndexStats(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        /** @var list<string> $etats */
+        $etats = array_values(ProblemeType::ETATS);
+
+        $selects = ['COUNT(*) AS total'];
+        $params = [];
+        foreach ($etats as $idx => $etat) {
+            $selects[] = \sprintf(
+                'COALESCE(SUM(CASE WHEN etat = :e%d THEN 1 ELSE 0 END), 0) AS cnt_%d',
+                $idx,
+                $idx
+            );
+            $params['e'.$idx] = $etat;
+        }
+
+        $sql = 'SELECT '.\implode(', ', $selects).' FROM probleme';
+        /** @var array<string, mixed>|false $row */
+        $row = $conn->fetchAssociative($sql, $params);
+        if (false === $row) {
+            return ['total' => 0, 'byEtat' => []];
+        }
+
+        $total = (int) $row['total'];
+        $byEtat = [];
+        foreach ($etats as $idx => $etat) {
+            $c = (int) ($row['cnt_'.$idx] ?? 0);
+            if ($c > 0) {
+                $byEtat[$etat] = $c;
+            }
+        }
+
+        return ['total' => $total, 'byEtat' => $byEtat];
     }
 
     /**

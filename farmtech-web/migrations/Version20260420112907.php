@@ -19,17 +19,37 @@ final class Version20260420112907 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP INDEX idx_diag_probleme_revision ON diagnostique');
+        // MariaDB < 10.5.2 has no RENAME INDEX; use DROP/ADD index + FK rebuild instead.
+        // Composite idx_diag_probleme_revision backs fk_diagnostique_probleme — drop that FK before dropping the index.
+        $this->addSql('ALTER TABLE diagnostique DROP FOREIGN KEY IF EXISTS fk_diagnostique_probleme');
+        $this->addSql('DROP INDEX IF EXISTS idx_diag_probleme_revision ON diagnostique');
         $this->addSql('ALTER TABLE diagnostique CHANGE cause cause LONGTEXT NOT NULL, CHANGE solution_proposee solution_proposee LONGTEXT NOT NULL, CHANGE medicament medicament LONGTEXT DEFAULT NULL, CHANGE feedback_fermier feedback_fermier VARCHAR(20) DEFAULT NULL, CHANGE feedback_commentaire feedback_commentaire LONGTEXT DEFAULT NULL, CHANGE date_feedback date_feedback DATETIME DEFAULT NULL');
-        $this->addSql('ALTER TABLE diagnostique RENAME INDEX fk_diagnostique_admin TO IDX_38C9AFE9BBB786C9');
+        $this->addSql('ALTER TABLE diagnostique DROP FOREIGN KEY IF EXISTS fk_diagnostique_admin');
+        $this->addSql('DROP INDEX IF EXISTS fk_diagnostique_admin ON diagnostique');
+        $this->addSql('CREATE INDEX IDX_38C9AFE9BBB786C9 ON diagnostique (id_admin_diagnostiqueur)');
+        $this->addSql('ALTER TABLE diagnostique ADD CONSTRAINT fk_diagnostique_admin FOREIGN KEY (id_admin_diagnostiqueur) REFERENCES utilisateur (id) ON DELETE SET NULL');
+        $this->addSql('ALTER TABLE diagnostique ADD CONSTRAINT fk_diagnostique_probleme FOREIGN KEY (id_probleme) REFERENCES probleme (id) ON DELETE CASCADE');
+
+        $this->addSql('ALTER TABLE materiel DROP FOREIGN KEY IF EXISTS fk_materiel_produit');
+        $this->addSql('DROP INDEX IF EXISTS fk_materiel_produit ON materiel');
         $this->addSql('ALTER TABLE materiel CHANGE nom nom VARCHAR(100) NOT NULL, CHANGE etat etat VARCHAR(50) NOT NULL, CHANGE dateAchat dateAchat DATE NOT NULL, CHANGE cout cout DOUBLE PRECISION NOT NULL');
-        $this->addSql('ALTER TABLE materiel RENAME INDEX fk_materiel_produit TO IDX_18D2B091391C87D5');
+        $this->addSql('CREATE INDEX IDX_18D2B091391C87D5 ON materiel (idProduit)');
+        $this->addSql('ALTER TABLE materiel ADD CONSTRAINT fk_materiel_produit FOREIGN KEY (idProduit) REFERENCES produit (idProduit) ON DELETE CASCADE');
+
+        $this->addSql('ALTER TABLE probleme DROP FOREIGN KEY IF EXISTS fk_probleme_utilisateur');
+        $this->addSql('ALTER TABLE probleme DROP FOREIGN KEY IF EXISTS fk_probleme_admin_assignee');
+        $this->addSql('DROP INDEX IF EXISTS fk_probleme_utilisateur ON probleme');
+        $this->addSql('DROP INDEX IF EXISTS fk_probleme_admin_assignee ON probleme');
         $this->addSql('ALTER TABLE probleme CHANGE description description LONGTEXT NOT NULL, CHANGE photos photos LONGTEXT DEFAULT NULL, CHANGE meteo_snapshot meteo_snapshot LONGTEXT DEFAULT NULL');
-        $this->addSql('ALTER TABLE probleme RENAME INDEX fk_probleme_utilisateur TO IDX_7AB2D71450EAE44');
-        $this->addSql('ALTER TABLE probleme RENAME INDEX fk_probleme_admin_assignee TO IDX_7AB2D714D55B460C');
-        $this->addSql('ALTER TABLE produit ADD prix DOUBLE PRECISION DEFAULT NULL, CHANGE nom nom VARCHAR(100) NOT NULL, CHANGE quantite quantite INT NOT NULL, CHANGE unite unite VARCHAR(50) NOT NULL, CHANGE dateExpiration dateExpiration DATE DEFAULT NULL, CHANGE imagePath imagePath VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE utilisateur RENAME INDEX email TO UNIQ_1D1C63B3E7927C74');
+        $this->addSql('CREATE INDEX IDX_7AB2D71450EAE44 ON probleme (id_utilisateur)');
+        $this->addSql('CREATE INDEX IDX_7AB2D714D55B460C ON probleme (id_admin_assignee)');
+        $this->addSql('ALTER TABLE probleme ADD CONSTRAINT fk_probleme_utilisateur FOREIGN KEY (id_utilisateur) REFERENCES utilisateur (id) ON DELETE SET NULL');
+        $this->addSql('ALTER TABLE probleme ADD CONSTRAINT fk_probleme_admin_assignee FOREIGN KEY (id_admin_assignee) REFERENCES utilisateur (id) ON DELETE SET NULL');
+
+        $this->addSql('ALTER TABLE produit ADD COLUMN IF NOT EXISTS prix DOUBLE PRECISION DEFAULT NULL, CHANGE nom nom VARCHAR(100) NOT NULL, CHANGE quantite quantite INT NOT NULL, CHANGE unite unite VARCHAR(50) NOT NULL, CHANGE dateExpiration dateExpiration DATE DEFAULT NULL, CHANGE imagePath imagePath VARCHAR(255) DEFAULT NULL');
+
+        $this->addSql('ALTER TABLE utilisateur DROP INDEX IF EXISTS email');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_1D1C63B3E7927C74 ON utilisateur (email)');
     }
 
     public function down(Schema $schema): void
@@ -54,7 +74,9 @@ final class Version20260420112907 extends AbstractMigration
         $this->addSql('DROP TABLE recommandation');
         $this->addSql('DROP TABLE messenger_messages');
         $this->addSql('ALTER TABLE diagnostique CHANGE cause cause TEXT NOT NULL, CHANGE solution_proposee solution_proposee TEXT NOT NULL, CHANGE medicament medicament TEXT DEFAULT NULL, CHANGE feedback_fermier feedback_fermier VARCHAR(20) DEFAULT \'NULL\', CHANGE feedback_commentaire feedback_commentaire TEXT DEFAULT NULL, CHANGE date_feedback date_feedback DATETIME DEFAULT \'NULL\'');
+        $this->addSql('ALTER TABLE diagnostique DROP FOREIGN KEY fk_diagnostique_probleme');
         $this->addSql('CREATE INDEX idx_diag_probleme_revision ON diagnostique (id_probleme, num_revision)');
+        $this->addSql('ALTER TABLE diagnostique ADD CONSTRAINT fk_diagnostique_probleme FOREIGN KEY (id_probleme) REFERENCES probleme (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE diagnostique RENAME INDEX idx_38c9afe9bbb786c9 TO fk_diagnostique_admin');
         $this->addSql('ALTER TABLE materiel CHANGE nom nom VARCHAR(255) NOT NULL, CHANGE etat etat VARCHAR(100) NOT NULL, CHANGE dateAchat dateAchat DATE DEFAULT \'NULL\', CHANGE cout cout DOUBLE PRECISION DEFAULT \'0\' NOT NULL');
         $this->addSql('ALTER TABLE materiel RENAME INDEX idx_18d2b091391c87d5 TO fk_materiel_produit');

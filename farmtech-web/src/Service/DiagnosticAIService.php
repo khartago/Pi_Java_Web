@@ -74,6 +74,8 @@ final class DiagnosticAIService
 
     /**
      * Révisions existantes + feedbacks fermier pour contextualiser la suggestion (tronqué pour limiter les tokens).
+     *
+     * @param list<Diagnostique> $revs
      */
     private function buildHistoriqueContext(array $revs): string
     {
@@ -216,8 +218,8 @@ final class DiagnosticAIService
     {
         $latestCause = $this->normalizeText((string) ($latest->getCause() ?? ''));
         $latestSolution = $this->normalizeText((string) ($latest->getSolutionProposee() ?? ''));
-        $newCause = $this->normalizeText($candidate['cause'] ?? '');
-        $newSolution = $this->normalizeText($candidate['solutionProposee'] ?? '');
+        $newCause = $this->normalizeText($candidate['cause']);
+        $newSolution = $this->normalizeText($candidate['solutionProposee']);
         if ('' === $latestCause || '' === $latestSolution || '' === $newCause || '' === $newSolution) {
             return false;
         }
@@ -425,6 +427,10 @@ final class DiagnosticAIService
         return null;
     }
 
+    /**
+     * @param array<string, mixed> $obj
+     * @param list<string>         $keys
+     */
     private function firstStringByKeys(array $obj, array $keys): ?string
     {
         foreach ($keys as $key) {

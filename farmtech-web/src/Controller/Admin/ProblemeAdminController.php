@@ -17,6 +17,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/problemes')]
 class ProblemeAdminController extends AbstractController
 {
+    /**
+     * @return array<string, mixed>
+     */
     private function listParams(Request $request): array
     {
         $q = $request->query->get('q');
@@ -49,22 +52,71 @@ class ProblemeAdminController extends AbstractController
         DiagnostiqueRepository $diagnostiqueRepository,
     ): Response {
         $params = $this->listParams($request);
-        $problemes = $repo->findAdminFiltered($params);
-        $stats = $repo->getStats(null);
+        $limit = 10;
+        $page = $request->query->get('page');
+        $page = is_numeric($page) ? (int) $page : 1;
+        if ($page < 1) {
+            $page = 1;
+        }
 
-        $latestDiagnosticByProbleme = [];
+        $totalFiltered = $repo->countAdminFiltered($params);
+        $pageCount = max(1, (int) ceil($totalFiltered / $limit));
+        $page = min($page, $pageCount);
+        $offset = ($page - 1) * $limit;
+
+        $problemes = $repo->findAdminFilteredPage($params, $limit, $offset);
+        $stats = $repo->getAdminIndexStats();
+
+        $problemeIds = [];
         foreach ($problemes as $p) {
             $pid = $p->getId();
             if (null !== $pid) {
-                $latestDiagnosticByProbleme[$pid] = $diagnostiqueRepository->findLatestForProbleme((int) $pid);
+                $problemeIds[] = (int) $pid;
             }
         }
+        $latestDiagnosticByProbleme = $diagnostiqueRepository->findLatestIndexedByProblemeIds($problemeIds);
+
+        $baseQuery = [
+            'sort' => $params['sort'],
+            'dir' => $params['dir'],
+        ];
+        if (!empty($params['q'])) {
+            $baseQuery['q'] = $params['q'];
+        }
+        if (!empty($params['etat'])) {
+            $baseQuery['etat'] = $params['etat'];
+        }
+        if (!empty($params['gravite'])) {
+            $baseQuery['gravite'] = $params['gravite'];
+        }
+        if (!empty($params['type'])) {
+            $baseQuery['type'] = $params['type'];
+        }
+        if (!empty($params['date_from'])) {
+            $baseQuery['date_from'] = $params['date_from'];
+        }
+        if (!empty($params['date_to'])) {
+            $baseQuery['date_to'] = $params['date_to'];
+        }
+
+        $rangeStart = 0 === $totalFiltered ? 0 : $offset + 1;
+        $rangeEnd = 0 === $totalFiltered ? 0 : $offset + \count($problemes);
 
         return $this->render('admin/probleme/index.html.twig', [
             'problemes' => $problemes,
             'stats' => $stats,
-            'filters' => $params,
+            'filters' => $params + ['page' => $page],
             'latestDiagnosticByProbleme' => $latestDiagnosticByProbleme,
+            'pagination' => [
+                'page' => $page,
+                'page_count' => $pageCount,
+                'limit' => $limit,
+                'total_filtered' => $totalFiltered,
+                'range_start' => $rangeStart,
+                'range_end' => $rangeEnd,
+                'prev_url' => $page > 1 ? $this->generateUrl('admin_problemes_index', array_merge($baseQuery, ['page' => $page - 1])) : null,
+                'next_url' => $page < $pageCount ? $this->generateUrl('admin_problemes_index', array_merge($baseQuery, ['page' => $page + 1])) : null,
+            ],
         ]);
     }
 

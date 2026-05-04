@@ -85,6 +85,7 @@ class Promotion
     public function setCumulable(bool $cumulable): self { $this->cumulable = $cumulable; return $this; }
     public function isActif(): bool { return $this->actif; }
     public function setActif(bool $actif): self { $this->actif = $actif; return $this; }
+    /** @return Collection<int, Produit> */
     public function getProduits(): Collection { return $this->produits; }
     public function addProduit(Produit $produit): self
     {

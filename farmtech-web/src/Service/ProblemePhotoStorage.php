@@ -53,7 +53,7 @@ final class ProblemePhotoStorage
 
         $paths = [];
         foreach ($files as $file) {
-            if (!$file instanceof UploadedFile || !$file->isValid()) {
+            if (!$file->isValid()) {
                 continue;
             }
 

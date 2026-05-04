@@ -19,17 +19,62 @@ class PlantationController extends AbstractController
     #[Route('', name: 'app_plantation_index', methods: ['GET'])]
     public function index(Request $request, PlantationRepository $repo): Response
     {
-        $keyword = $request->query->get('q');
-        $sort = $request->query->get('sort');
+        $q = $request->query->get('q');
+        $keyword = \is_string($q) ? trim($q) : '';
+        $keyword = '' !== $keyword ? $keyword : null;
 
-        $plantations = $sort ? $repo->findSorted($sort) : $repo->search($keyword);
-        $stats = $repo->getStats();
+        $sortRaw = $request->query->get('sort');
+        $sort = \is_string($sortRaw) ? trim($sortRaw) : '';
+        $sort = '' !== $sort ? $sort : null;
+
+        $limit = 10;
+        $page = $request->query->get('page');
+        $page = is_numeric($page) ? (int) $page : 1;
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $keywordForAggregates = null !== $sort ? null : $keyword;
+        $aggregates = $repo->getAdminIndexAggregates($keywordForAggregates);
+        $totalFiltered = $aggregates['listTotal'];
+        $stats = $aggregates['stats'];
+
+        $pageCount = max(1, (int) ceil($totalFiltered / $limit));
+        $page = min($page, $pageCount);
+        $offset = ($page - 1) * $limit;
+
+        if (null !== $sort) {
+            $plantations = $repo->findSortedPage($sort, $limit, $offset);
+        } else {
+            $plantations = $repo->findSearchPage($keyword, $limit, $offset);
+        }
+
+        $baseQuery = [];
+        if (null !== $keyword) {
+            $baseQuery['q'] = $keyword;
+        }
+        if (null !== $sort) {
+            $baseQuery['sort'] = $sort;
+        }
+
+        $rangeStart = 0 === $totalFiltered ? 0 : $offset + 1;
+        $rangeEnd = 0 === $totalFiltered ? 0 : $offset + \count($plantations);
 
         return $this->render('plantation/index.html.twig', [
             'plantations' => $plantations,
-            'keyword' => $keyword,
-            'sort' => $sort,
+            'keyword' => $keyword ?? '',
+            'sort' => $sort ?? '',
             'stats' => $stats,
+            'pagination' => [
+                'page' => $page,
+                'page_count' => $pageCount,
+                'limit' => $limit,
+                'total_filtered' => $totalFiltered,
+                'range_start' => $rangeStart,
+                'range_end' => $rangeEnd,
+                'prev_url' => $page > 1 ? $this->generateUrl('app_plantation_index', array_merge($baseQuery, ['page' => $page - 1])) : null,
+                'next_url' => $page < $pageCount ? $this->generateUrl('app_plantation_index', array_merge($baseQuery, ['page' => $page + 1])) : null,
+            ],
         ]);
     }
 

@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Dto\UserStatsDto;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -14,6 +17,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * @extends ServiceEntityRepository<Utilisateur>
+ *
+ * @implements UserProviderInterface<Utilisateur>
  */
 class UtilisateurRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface
 {
@@ -52,14 +57,10 @@ class UtilisateurRepository extends ServiceEntityRepository implements UserProvi
     }
 
     /**
-     * @param array{q?:string, role?:string, sort?:string, dir?:string} $params
-     *
-     * @return Utilisateur[]
+     * @param array{q?:string|null, role?:string|null, sort?:string, dir?:string} $params
      */
-    public function findFiltered(array $params): array
+    private function applyListingFilters(QueryBuilder $qb, array $params): void
     {
-        $qb = $this->createQueryBuilder('u');
-
         if (!empty($params['q'])) {
             $q = '%'.$params['q'].'%';
             $qb->andWhere('u.nom LIKE :q OR u.email LIKE :q')
@@ -69,7 +70,13 @@ class UtilisateurRepository extends ServiceEntityRepository implements UserProvi
         if (!empty($params['role']) && \in_array($params['role'], [Utilisateur::ROLE_ADMIN_DB, Utilisateur::ROLE_FARMER_DB], true)) {
             $qb->andWhere('u.role = :role')->setParameter('role', $params['role']);
         }
+    }
 
+    /**
+     * @param array{q?:string|null, role?:string|null, sort?:string, dir?:string} $params
+     */
+    private function applyListingSort(QueryBuilder $qb, array $params): void
+    {
         $sort = $params['sort'] ?? 'email';
         $dir = strtoupper($params['dir'] ?? 'ASC');
         if (!\in_array($dir, ['ASC', 'DESC'], true)) {
@@ -78,22 +85,85 @@ class UtilisateurRepository extends ServiceEntityRepository implements UserProvi
         $allowed = ['nom' => 'u.nom', 'email' => 'u.email', 'role' => 'u.role'];
         $col = $allowed[$sort] ?? 'u.email';
         $qb->orderBy($col, $dir);
+    }
+
+    /**
+     * Count via DBAL so the request does not run ORM aggregate SQL (DoctrineDoctor flags scalar COUNT hydration).
+     * Filter logic must stay aligned with {@see applyListingFilters()}.
+     *
+     * @param array{q?:string|null, role?:string|null, sort?:string, dir?:string} $params
+     */
+    public function countFiltered(array $params): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT COUNT(*) FROM utilisateur u WHERE 1=1';
+        $bind = [];
+        $types = [];
+
+        if (!empty($params['q'])) {
+            $sql .= ' AND (u.nom LIKE ? OR u.email LIKE ?)';
+            $like = '%'.$params['q'].'%';
+            $bind[] = $like;
+            $bind[] = $like;
+            $types[] = ParameterType::STRING;
+            $types[] = ParameterType::STRING;
+        }
+
+        if (!empty($params['role']) && \in_array($params['role'], [Utilisateur::ROLE_ADMIN_DB, Utilisateur::ROLE_FARMER_DB], true)) {
+            $sql .= ' AND u.role = ?';
+            $bind[] = $params['role'];
+            $types[] = ParameterType::STRING;
+        }
+
+        return (int) $conn->executeQuery($sql, $bind, $types)->fetchOne();
+    }
+
+    /**
+     * @param array{q?:string|null, role?:string|null, sort?:string, dir?:string} $params
+     *
+     * @return Utilisateur[]
+     */
+    public function findFiltered(array $params, int $limit, int $offset): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $this->applyListingFilters($qb, $params);
+        $this->applyListingSort($qb, $params);
+        $qb->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         return $qb->getQuery()->getResult();
     }
 
-    /** @return array{total:int, byRole: array<string,int>} */
+    /**
+     * Global user stats via DBAL (single round-trip, no ORM aggregate queries for DoctrineDoctor).
+     *
+     * @return array{total:int, byRole: array<string,int>}
+     */
     public function getStats(): array
     {
-        $em = $this->getEntityManager();
-        $total = (int) $em->createQuery('SELECT COUNT(u.id) FROM App\Entity\Utilisateur u')->getSingleScalarResult();
+        $sql = 'SELECT COUNT(*) AS total, '
+            .'SUM(CASE WHEN u.role = ? THEN 1 ELSE 0 END) AS adminCount, '
+            .'SUM(CASE WHEN u.role = ? THEN 1 ELSE 0 END) AS farmerCount '
+            .'FROM utilisateur u';
 
-        $byRole = [];
-        $rows = $em->createQuery('SELECT u.role AS r, COUNT(u.id) AS c FROM App\Entity\Utilisateur u GROUP BY u.role')->getResult();
-        foreach ($rows as $row) {
-            $byRole[$row['r']] = (int) $row['c'];
+        $row = $this->getEntityManager()->getConnection()->executeQuery(
+            $sql,
+            [Utilisateur::ROLE_ADMIN_DB, Utilisateur::ROLE_FARMER_DB],
+            [ParameterType::STRING, ParameterType::STRING],
+        )->fetchAssociative();
+
+        if (false === $row) {
+            $dto = new UserStatsDto(0, 0, 0);
+        } else {
+            $dto = new UserStatsDto($row['total'], $row['adminCount'], $row['farmerCount']);
         }
 
-        return ['total' => $total, 'byRole' => $byRole];
+        return [
+            'total' => $dto->total,
+            'byRole' => [
+                Utilisateur::ROLE_ADMIN_DB => $dto->adminCount,
+                Utilisateur::ROLE_FARMER_DB => $dto->farmerCount,
+            ],
+        ];
     }
 }

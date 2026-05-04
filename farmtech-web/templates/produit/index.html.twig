@@ -21,6 +21,14 @@
             <a href="{{ path('app_produit_index') }}" class="btn btn-ghost">Reset</a>
         </form>
 
+        <p class="text-muted" style="margin:0.5rem 0 1rem;font-size:0.9rem;">
+            {% if pagination.total_filtered == 0 %}
+                Aucun résultat.
+            {% else %}
+                Affichés {{ pagination.range_start }}–{{ pagination.range_end }} sur {{ pagination.total_filtered }}{% if pagination.page_count > 1 %} · page {{ pagination.page }}/{{ pagination.page_count }}{% endif %}
+            {% endif %}
+        </p>
+
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -57,5 +65,21 @@
                 </tbody>
             </table>
         </div>
+
+        {% if pagination.page_count > 1 %}
+            <nav class="admin-pagination" aria-label="Pagination des produits" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:0.75rem 0;">
+                {% if pagination.prev_url %}
+                    <a href="{{ pagination.prev_url }}" class="btn btn-secondary btn-sm">Précédent</a>
+                {% else %}
+                    <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Précédent</span>
+                {% endif %}
+                <span class="text-muted" style="font-size:0.9rem;">Page {{ pagination.page }} / {{ pagination.page_count }} ({{ pagination.limit }} par page)</span>
+                {% if pagination.next_url %}
+                    <a href="{{ pagination.next_url }}" class="btn btn-secondary btn-sm">Suivant</a>
+                {% else %}
+                    <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Suivant</span>
+                {% endif %}
+            </nav>
+        {% endif %}
     </section>
 {% endblock %}

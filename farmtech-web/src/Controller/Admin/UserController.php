@@ -15,6 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/users')]
 class UserController extends AbstractController
 {
+    /**
+     * @return array<string, mixed>
+     */
     private function filterParams(Request $request): array
     {
         $q = $request->query->get('q');
@@ -41,13 +44,49 @@ class UserController extends AbstractController
     public function index(Request $request, UtilisateurRepository $repo): Response
     {
         $params = $this->filterParams($request);
-        $users = $repo->findFiltered($params);
+        $limit = 10;
+        $page = $request->query->get('page');
+        $page = is_numeric($page) ? (int) $page : 1;
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $totalFiltered = $repo->countFiltered($params);
+        $pageCount = max(1, (int) ceil($totalFiltered / $limit));
+        $page = min($page, $pageCount);
+        $offset = ($page - 1) * $limit;
+
+        $users = $repo->findFiltered($params, $limit, $offset);
         $stats = $repo->getStats();
+
+        $baseQuery = [
+            'sort' => $params['sort'],
+            'dir' => $params['dir'],
+        ];
+        if (!empty($params['q'])) {
+            $baseQuery['q'] = $params['q'];
+        }
+        if (!empty($params['role'])) {
+            $baseQuery['role'] = $params['role'];
+        }
+
+        $rangeStart = 0 === $totalFiltered ? 0 : $offset + 1;
+        $rangeEnd = 0 === $totalFiltered ? 0 : $offset + \count($users);
 
         return $this->render('admin/user/index.html.twig', [
             'users' => $users,
             'stats' => $stats,
-            'filters' => $params,
+            'filters' => $params + ['page' => $page],
+            'pagination' => [
+                'page' => $page,
+                'page_count' => $pageCount,
+                'limit' => $limit,
+                'total_filtered' => $totalFiltered,
+                'range_start' => $rangeStart,
+                'range_end' => $rangeEnd,
+                'prev_url' => $page > 1 ? $this->generateUrl('admin_users_index', array_merge($baseQuery, ['page' => $page - 1])) : null,
+                'next_url' => $page < $pageCount ? $this->generateUrl('admin_users_index', array_merge($baseQuery, ['page' => $page + 1])) : null,
+            ],
         ]);
     }
 

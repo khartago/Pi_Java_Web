@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Produit;
-use App\Repository\MaterielRepository;
 use App\Repository\ProduitRepository;
 use App\Repository\PromotionRepository;
 
@@ -11,7 +10,6 @@ final class ProduitStatsService
 {
     public function __construct(
         private readonly ProduitRepository $produitRepository,
-        private readonly MaterielRepository $materielRepository,
         private readonly PromotionRepository $promotionRepository,
         private readonly int $stockThreshold,
     ) {

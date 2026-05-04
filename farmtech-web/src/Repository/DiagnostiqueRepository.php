@@ -28,6 +28,38 @@ class DiagnostiqueRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * Latest diagnostic per problem in one query (replaces N× findLatestForProbleme on admin lists).
+     *
+     * @param list<int> $problemeIds
+     *
+     * @return array<int, Diagnostique>
+     */
+    public function findLatestIndexedByProblemeIds(array $problemeIds): array
+    {
+        if ($problemeIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('d')
+            ->innerJoin('d.probleme', 'dp')->addSelect('dp')
+            ->andWhere('dp.id IN (:ids)')
+            ->andWhere('d.numRevision = (SELECT MAX(d2.numRevision) FROM '.Diagnostique::class.' d2 WHERE d2.probleme = d.probleme)')
+            ->setParameter('ids', $problemeIds)
+            ->getQuery()
+            ->getResult();
+
+        $map = [];
+        foreach ($rows as $diag) {
+            $pid = $diag->getProbleme()->getId();
+            if (null !== $pid) {
+                $map[$pid] = $diag;
+            }
+        }
+
+        return $map;
+    }
+
     public function findLatestApprovedForProbleme(int $problemeId): ?Diagnostique
     {
         return $this->createQueryBuilder('d')
