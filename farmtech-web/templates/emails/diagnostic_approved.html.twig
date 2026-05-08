@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f4f6f9;">
+<div style="max-width:600px;margin:0 auto;padding:20px;">
+<div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+<div style="background:#1A4D2E;padding:24px;text-align:center;">
+<h1 style="color:white;margin:0;font-size:24px;font-weight:700;">FARMTECH</h1>
+<p style="color:#b8e0c0;margin:8px 0 0;font-size:14px;">Votre diagnostic est disponible</p>
+</div>
+<div style="padding:28px;">
+<p style="color:#374151;font-size:15px;margin:0 0 16px;">Bonjour {{ farmerName|e }},</p>
+<p style="color:#6B7280;font-size:14px;line-height:1.6;margin:0 0 24px;">Un diagnostic a été approuvé pour votre problème. Voici les détails :</p>
+<div style="background:#E8F5E9;border-radius:8px;padding:16px;margin-bottom:20px;border-left:4px solid #1A4D2E;">
+<h3 style="color:#1A4D2E;margin:0 0 12px;font-size:16px;">Votre problème</h3>
+<p style="margin:4px 0;font-size:14px;color:#374151;"><strong>Type :</strong> {{ probleme.type|e }}</p>
+<p style="margin:4px 0;font-size:14px;color:#374151;"><strong>Gravité :</strong> {{ probleme.gravite|e }}</p>
+<p style="margin:4px 0;font-size:14px;color:#374151;"><strong>Date :</strong> {{ probleme.dateDetection|date('d/m/Y H:i') }}</p>
+<p style="margin:8px 0 0;font-size:14px;color:#4B5563;line-height:1.5;">{{ probleme.description|e|nl2br }}</p>
+</div>
+<div style="background:#f8faf9;border-radius:8px;padding:16px;margin-bottom:20px;">
+<h3 style="color:#1A4D2E;margin:0 0 12px;font-size:16px;">Diagnostic</h3>
+<p style="margin:4px 0;font-size:14px;color:#374151;"><strong>Cause identifiée :</strong></p>
+<p style="margin:4px 0 0 12px;font-size:14px;color:#4B5563;line-height:1.5;">{{ diagnostic.cause|e|nl2br }}</p>
+<p style="margin:12px 0 4px;font-size:14px;color:#374151;"><strong>Solution proposée :</strong></p>
+<p style="margin:4px 0 0 12px;font-size:14px;color:#4B5563;line-height:1.5;">{{ diagnostic.solutionProposee|e|nl2br }}</p>
+<p style="margin:12px 0 4px;font-size:14px;color:#374151;"><strong>Médicament :</strong> {{ diagnostic.medicament ? diagnostic.medicament|e|nl2br : 'Non spécifié' }}</p>
+<p style="margin:12px 0 0;font-size:14px;color:#374151;"><strong>Résultat attendu :</strong> {{ diagnostic.resultat|e }}</p>
+</div>
+<p style="text-align:center;margin:24px 0 0;">
+<span style="display:inline-block;background:#1A4D2E;color:white;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;">Consultez l’application pour plus de détails</span></p>
+</div>
+<div style="background:#f1f5f9;padding:16px;text-align:center;font-size:12px;color:#64748b;">© FARMTECH – Application de gestion agricole</div>
+</div>
+</div>
+</body>
+</html>

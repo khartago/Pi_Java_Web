@@ -1,60 +1,56 @@
-{% extends 'base.html.twig' %}
+{% extends 'front/layout.html.twig' %}
 
-{% block title %}{{ article.title }}{% endblock %}
+{% block title %}{{ blog.titleBlog }} — FARMTECH{% endblock %}
 
-{% block body %}
-    <article class="blog-post col-lg-8 mx-auto">
-        <header class="mb-4">
-            <h1>{{ article.title }}</h1>
-            <p class="text-muted">
-                By {{ article.authorName|default('Anonymous') }} on {{ article.createdAt|date('F j, Y') }}
-            </p>
-        </header>
+{% block front_content %}
+<div class="farmer-dashboard">
 
-        <!-- Render Article Content -->
-        <div class="article-content mb-5">
-            {{ article.content|raw }} {# Use |raw if storing HTML, or format as Markdown if using a Markdown parser #}
+    <article class="farmer-home-card">
+        <div class="farmer-home-card__intro">
+            <header class="farmer-home-card__head">
+                <a href="{{ path('app_news') }}" class="btn btn-ghost mb-3" style="padding-left: 0;">&larr; Retour aux actualités</a>
+                <h1 class="farmer-home-card__title">{{ blog.titleBlog }}</h1>
+                <p class="farmer-home-card__lead">
+                    <span class="badge bg-secondary">{{ blog.blogTag }}</span>
+                    <small class="text-muted ms-2">Créé le {{ blog.dateBlog|date('d/m/Y') }}</small>
+                </p>
+            </header>
+            <div class="farmer-home-card__actions">
+                <!-- NEW BUTTON HERE -->
+                <a href="{{ path('app_article_new', {'blogId': blog.idBlog}) }}" class="btn btn-primary">Ajouter un article</a>
+                <a href="{{ path('app_blog_edit', {'idBlog': blog.idBlog}) }}" class="btn btn-ghost">Modifier le blog</a>
+                <form method="POST" action="{{ path('app_blog_delete', {'idBlog': blog.idBlog}) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce blog ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-blog-' ~ blog.idBlog) }}">
+                    <button type="submit" class="btn btn-ghost" style="color: #dc3545;">Supprimer</button>
+                </form>
+            </div>
         </div>
-
-        <hr>
-
-        <!-- Comments Section -->
-        <section class="comments-section">
-            <h3>Comments ({{ comments|length }})</h3>
-
-            {% for comment in comments %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            {{ comment.authorName }} - {{ comment.createdAt|date('M d, Y H:i') }}
-                        </h6>
-                        <p class="card-text">{{ comment.content }}</p>
-                    </div>
-                </div>
-            {% else %}
-                <p class="text-muted">No comments yet. Be the first to comment!</p>
-            {% endfor %}
-        </section>
-
-        <hr>
-
-        <!-- Comment Form -->
-        <section class="comment-form mt-4">
-            <h3>Leave a Comment</h3>
-            {{ form_start(commentForm) }}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        {{ form_row(commentForm.authorName) }}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        {{ form_row(commentForm.authorEmail) }}
-                    </div>
-                </div>
-                <div class="mb-3">
-                    {{ form_row(commentForm.content) }}
-                </div>
-                <button type="submit" class="btn btn-primary">Post Comment</button>
-            {{ form_end(commentForm) }}
-        </section>
     </article>
+
+    {% if articles is not empty %}
+        <section class="farmer-home-follow mt-4" aria-label="Articles du blog">
+            <h2 class="farmer-home-follow__h">Articles ({{ articles|length }})</h2>
+            <ul class="farmer-home-follow__list">
+                {% for article in articles %}
+                <li class="farmer-home-follow__item">
+                    <a href="{{ path('app_article_show', {'idArticle': article.id}) }}" class="farmer-home-follow__lbl">
+                        {{ article.title }}
+                        {% if article.edited %}<small class="text-warning">(Modifié)</small>{% endif %}
+                    </a>
+                    <span class="farmer-home-follow__n">
+                        <small class="d-block mb-1">{{ article.createdAt|date('d/m/Y H:i') }}</small>
+                        <span class="text-success">👍 {{ article.likes|default(0) }}</span>
+                        <span class="text-danger ms-1">👎 {{ article.dislikes|default(0) }}</span>
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% else %}
+        <div class="farmer-home-summary mt-4">
+            <p class="farmer-home-summary__p">Aucun article n'a été publié dans ce blog pour le moment.</p>
+        </div>
+    {% endif %}
+
+</div>
 {% endblock %}

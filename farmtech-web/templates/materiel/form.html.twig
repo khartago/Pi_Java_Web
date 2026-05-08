@@ -1,0 +1,23 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ mode == 'creation' ? 'Nouveau materiel' : 'Modifier materiel' }}{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Materiel</p>
+        <h1>{{ mode == 'creation' ? 'Nouveau materiel' : 'Modifier materiel' }}</h1>
+        {% if produit is defined and produit %}
+            <p>Produit: {{ produit.nom }}</p>
+        {% endif %}
+        {{ form_start(form) }}
+            <div class="form-row">{{ form_row(form.nom) }}</div>
+            <div class="form-row">{{ form_row(form.etat) }}</div>
+            <div class="form-row">{{ form_row(form.dateAchat) }}</div>
+            <div class="form-row">{{ form_row(form.cout) }}</div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">{{ mode == 'creation' ? 'Ajouter' : 'Enregistrer' }}</button>
+                <a class="btn btn-ghost" href="{{ path('app_produit_index') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

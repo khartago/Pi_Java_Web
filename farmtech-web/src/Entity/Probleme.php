@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProblemeRepository::class)]
 #[ORM\Table(name: 'probleme')]
@@ -23,25 +22,18 @@ class Probleme
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Le type est obligatoire.')]
-    #[Assert\Length(max: 100)]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'La description est obligatoire.')]
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
     private ?string $gravite = null;
 
-    #[ORM\Column(name: 'date_detection', type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'date_detection', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $dateDetection = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
     private ?string $etat = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

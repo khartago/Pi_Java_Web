@@ -1,0 +1,69 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}{{ produit.nom }} | Marketplace{% endblock %}
+
+{% block front_content %}
+    <section class="farm-card">
+        <a href="{{ path('app_marketplace_index') }}">← Retour marketplace</a>
+        <div class="market-detail">
+            <img
+                src="{{ asset(produit.imageAssetPath) }}"
+                alt="{{ produit.nom }}"
+                class="admin-media"
+                onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
+            >
+            <div>
+                <h1>{{ produit.nom }}</h1>
+                <p class="page-lead">Categorie: {{ category }}</p>
+                <div class="admin-meta-grid">
+                    <div class="admin-meta-chip"><strong>Quantite:</strong> {{ produit.quantite }} {{ produit.unite }}</div>
+                    <div class="admin-meta-chip"><strong>Expiration:</strong> {{ produit.dateExpirationLabel }}</div>
+                    <div class="admin-meta-chip"><strong>Prix:</strong> {{ produit.prix is not null ? produit.prix|number_format(2, ',', ' ') ~ ' TND' : '-' }}</div>
+                    {% if best_promotion and promo_price is not null %}
+                        <div class="admin-meta-chip"><strong>Promotion:</strong> <span class="badge badge-warn">{{ best_promotion.label }}</span></div>
+                        <div class="admin-meta-chip"><strong>Prix promo:</strong> {{ promo_price|number_format(2, ',', ' ') }} TND</div>
+                    {% elseif linked_promotion %}
+                        <div class="admin-meta-chip"><strong>Promotion choisie:</strong> <span class="badge badge-info">{{ linked_promotion.label }}</span></div>
+                    {% endif %}
+                </div>
+                <form method="post" action="{{ path('app_favoris_toggle', { idProduit: produit.idProduit }) }}" style="margin:.75rem 0 1rem 0;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_favorite_' ~ produit.idProduit) }}">
+                    <input type="hidden" name="_redirect" value="{{ app.request.uri }}">
+                    <button type="submit" class="btn {{ is_favorite ? 'btn-secondary' : 'btn-primary' }}">
+                        {{ is_favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+                    </button>
+                </form>
+
+                <h3>Materiels associes</h3>
+                <ul class="admin-simple-list">
+                    {% for materiel in produit.materiels %}
+                        <li>{{ materiel.nom }} — {{ materiel.etat }}</li>
+                    {% else %}
+                        <li>Aucun materiel associe.</li>
+                    {% endfor %}
+                </ul>
+
+                {% if recommendations is not empty %}
+                    <h3 style="margin-top:1rem;">Materiels recommandes pour ce produit</h3>
+                    <ul class="admin-simple-list">
+                        {% for r in recommendations %}
+                            {% set m = r.materiel %}
+                            <li>
+                                <strong>{{ m.nom }}</strong>
+                                — etat: {{ m.etat }}
+                                {% if r.curated %}
+                                    <span class="badge badge-info">Recommandation du gerant{% if r.priorityLabel %} ({{ r.priorityLabel }}){% endif %}</span>
+                                {% else %}
+                                    <span class="badge badge-warn">Match {{ r.score }}%</span>
+                                {% endif %}
+                                {% if r.reason %}
+                                    <br><small style="color:var(--color-muted);">{{ r.reason }}</small>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

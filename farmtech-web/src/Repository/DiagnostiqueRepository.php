@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Diagnostique;
+use App\Entity\Probleme;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -48,6 +49,51 @@ class DiagnostiqueRepository extends ServiceEntityRepository
             ->setParameter('pid', $problemeId)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Diagnostics approuvés du même type de problème (hors problème courant), les plus récents.
+     *
+     * @return Diagnostique[]
+     */
+    public function findApprovedSimilarByProblemType(string $type, int $excludeProblemeId, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('d')
+            ->join('d.probleme', 'p')
+            ->andWhere('p.type = :t')
+            ->andWhere('p.id != :pid')
+            ->andWhere('d.approuve = true')
+            ->setParameter('t', $type)
+            ->setParameter('pid', $excludeProblemeId)
+            ->orderBy('d.dateDiagnostique', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Diagnostique[]
+     */
+    public function findByProblemeOrderedByRevision(Probleme $probleme): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.probleme = :p')
+            ->setParameter('p', $probleme)
+            ->orderBy('d.numRevision', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getMaxRevisionNumForProbleme(int $problemeId): int
+    {
+        $r = $this->createQueryBuilder('d')
+            ->select('MAX(d.numRevision)')
+            ->andWhere('d.probleme = :pid')
+            ->setParameter('pid', $problemeId)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) ($r ?? 0);
     }
 
     /**

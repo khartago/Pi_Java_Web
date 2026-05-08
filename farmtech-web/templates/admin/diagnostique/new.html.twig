@@ -1,28 +1,97 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Nouveau diagnostic — Admin{% endblock %}
+{% block title %}{% if isRevisionFlow|default(false) %}Nouvelle révision{% else %}Nouveau diagnostic{% endif %} — Admin{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin-diagnostic-assist.js') }}" defer></script>
+{% endblock %}
 
 {% block admin_content %}
 <section class="page-hero">
     <span class="page-eyebrow">Création</span>
-    <h1>Nouveau diagnostic</h1>
+    <h1>{% if isRevisionFlow|default(false) %}Nouvelle révision du diagnostic{% else %}Nouveau diagnostic{% endif %}</h1>
     <p class="page-lead">{% if contextProbleme %}Contexte du signalement ci-dessous — saisissez le diagnostic.{% else %}Associez un diagnostic à un problème existant.{% endif %}</p>
 </section>
 {% if contextProbleme %}
-    {% include '_includes/probleme_context_card.html.twig' with { probleme: contextProbleme } only %}
+    {% include '_includes/probleme_context_card.html.twig' with {
+        probleme: contextProbleme,
+        contextPlantationLabel: contextPlantationLabel|default(null),
+        contextProduitLabel: contextProduitLabel|default(null),
+    } only %}
 {% endif %}
+
+{% if revisionsList is defined and revisionsList|length > 0 %}
+<div class="card" style="margin-bottom:1.25rem;">
+    <h3 class="font-display" style="margin-top:0;">Révisions précédentes</h3>
+    <ul style="margin:0;padding-left:1.1rem;line-height:1.55;">
+        {% for rev in revisionsList %}
+            <li style="margin-bottom:0.75rem;">
+                <strong>Réponse {{ loop.index }} — Révision {{ rev.numRevision }}</strong> — {{ rev.dateDiagnostique|date('d/m/Y H:i') }}
+                {% if rev.approuve %}<span class="badge badge-info">approuvé</span>{% endif %}
+                <div style="font-size:0.9rem;margin-top:0.25rem;color:var(--color-muted);">Cause : {{ rev.cause|slice(0, 200) }}{% if rev.cause|length > 200 %}…{% endif %}</div>
+                {% if rev.feedbackFermier %}
+                    <div style="font-size:0.88rem;margin-top:0.2rem;color:var(--color-muted);">
+                        <strong>Avis fermier :</strong> {{ rev.feedbackFermier == 'RESOLU' ? 'Résolu' : (rev.feedbackFermier == 'NON_RESOLU' ? 'Non résolu' : rev.feedbackFermier) }}
+                        {% if rev.dateFeedback %} · {{ rev.dateFeedback|date('d/m/Y H:i') }}{% endif %}
+                    </div>
+                    {% if rev.feedbackCommentaire %}
+                        <div style="font-size:0.88rem;margin-top:0.15rem;color:var(--color-muted);">
+                            <strong>Commentaire :</strong> {{ rev.feedbackCommentaire|nl2br }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if similaires is defined and similaires|length > 0 %}
+<div class="card" style="margin-bottom:1.25rem;">
+    <h3 class="font-display" style="margin-top:0;">Diagnostics similaires (autres dossiers)</h3>
+    <div style="display:grid;gap:0.75rem;">
+        {% for s in similaires %}
+            <div class="card" style="padding:0.75rem;margin:0;border:1px solid rgba(26,77,46,0.12);">
+                <p style="margin:0 0 0.35rem;font-size:0.88rem;"><strong>Cause</strong></p>
+                <p style="margin:0;font-size:0.9rem;line-height:1.5;">{{ s.cause|nl2br }}</p>
+                <p style="margin:0.5rem 0 0.35rem;font-size:0.88rem;"><strong>Solution</strong></p>
+                <p style="margin:0;font-size:0.9rem;line-height:1.5;">{{ s.solutionProposee|nl2br }}</p>
+                <button type="button" class="btn btn-ghost btn-sm js-copy-similaire" style="margin-top:0.5rem;"
+                    data-cause="{{ s.cause|e('html_attr') }}"
+                    data-solution="{{ s.solutionProposee|e('html_attr') }}"
+                    data-medicament="{{ (s.medicament ?? '')|e('html_attr') }}">Copier vers le formulaire</button>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <div class="card form-card form-card--wide">
-    {{ form_start(form) }}
+    {% if contextProbleme %}
+    <input type="hidden" id="ai-probleme-id" value="{{ contextProbleme.id }}">
+    <input type="hidden" id="ai-csrf" value="{{ csrf_token('ai_diagnostic') }}">
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:1rem;">
+        <button type="button" class="btn btn-secondary" id="btn-ai-suggest">Générer avec l’IA</button>
+        <span id="ai-status" style="font-size:0.9rem;color:var(--color-muted);" aria-live="polite"></span>
+    </div>
+    {% endif %}
+    {{ form_start(form, { attr: { id: 'diagnostic-form' } }) }}
+        {% if form.numRevision is not defined and contextProbleme is defined and contextProbleme %}
+        <p style="font-size:0.9rem;color:var(--color-muted);margin:0 0 1rem;">N° de révision : <strong>{{ form.vars.data.numRevision }}</strong></p>
+        {% endif %}
         {% if form.probleme is defined %}
             {{ form_row(form.probleme) }}
         {% endif %}
-        {{ form_row(form.cause) }}
-        {{ form_row(form.solutionProposee) }}
+        {{ form_row(form.cause, { attr: { id: 'diag-cause' } }) }}
+        {{ form_row(form.solutionProposee, { attr: { id: 'diag-solution' } }) }}
         {{ form_row(form.dateDiagnostique) }}
-        {{ form_row(form.resultat) }}
-        {{ form_row(form.medicament) }}
+        {{ form_row(form.resultat, { attr: { id: 'diag-resultat' } }) }}
+        {{ form_row(form.medicament, { attr: { id: 'diag-medicament' } }) }}
         {{ form_row(form.approuve) }}
-        {{ form_row(form.numRevision) }}
+        {% if form.numRevision is defined %}
+            {{ form_row(form.numRevision) }}
+        {% endif %}
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
             <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost">Annuler</a>

@@ -47,6 +47,6 @@ public class ArticleBaseController {
             if (cellData.getValue().getDateCreation() != null) {
             }
             );*/
-        }
     }
+}
 

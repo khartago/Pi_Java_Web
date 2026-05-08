@@ -4,8 +4,8 @@
 {% block title %}Mes problèmes — FARMTECH{% endblock %}
 
 {% block front_content %}
-{% set filtered = filters.q or filters.etat or filters.gravite %}
-{% set advanced = filters.etat or filters.gravite or (filters.sort|default('dateDetection')) != 'dateDetection' or (filters.dir|default('DESC')) != 'DESC' %}
+{% set filtered = filters.q or filters.etat or filters.gravite or filters.date_from|default(null) or filters.date_to|default(null) %}
+{% set advanced = filters.etat or filters.gravite or filters.date_from|default(null) or filters.date_to|default(null) or (filters.sort|default('dateDetection')) != 'dateDetection' or (filters.dir|default('DESC')) != 'DESC' %}
 <div class="farmer-feed">
     <header class="farmer-feed__hero">
         <h1 class="farmer-feed__title">Mes signalements</h1>
@@ -60,6 +60,14 @@
                                 <option value="{{ val }}" {{ filters.gravite == val ? 'selected' }}>{{ label }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                    <div class="farmer-feed__field">
+                        <label for="filter-df">Détecté après le</label>
+                        <input class="form-control" type="date" id="filter-df" name="date_from" value="{{ filters.date_from|default('') }}">
+                    </div>
+                    <div class="farmer-feed__field">
+                        <label for="filter-dt">Détecté avant le</label>
+                        <input class="form-control" type="date" id="filter-dt" name="date_to" value="{{ filters.date_to|default('') }}">
                     </div>
                     <div class="farmer-feed__field">
                         <label for="filter-sort">Trier par</label>

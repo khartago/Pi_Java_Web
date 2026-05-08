@@ -1,7 +1,7 @@
 {% import '_macros/probleme_labels.html.twig' as pl %}
-{# Variables: probleme (App\Entity\Probleme) #}
+{# Variables: probleme (App\Entity\Probleme), contextPlantationLabel (optional), contextProduitLabel (optional) #}
 <div class="card" style="margin-bottom:1.25rem;">
-    <h3 class="font-display" style="margin-top:0;">Signalement #{{ probleme.id }} — {{ probleme.type }}</h3>
+    <h3 class="font-display" style="margin-top:0;">{{ probleme.type }}</h3>
     <p style="margin:0 0 0.75rem;line-height:1.55;">{{ probleme.description|nl2br }}</p>
     <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
         <span class="badge badge-warn">{{ probleme.gravite }}</span>
@@ -10,6 +10,37 @@
     </div>
     {% if probleme.utilisateur %}
         <p style="margin:0 0 0.75rem;font-size:0.9rem;color:var(--color-muted);">Agriculteur : {{ probleme.utilisateur.email }}</p>
+    {% endif %}
+    {% if contextPlantationLabel is defined and contextPlantationLabel %}
+        <p style="margin:0 0 0.35rem;font-size:0.9rem;"><strong>Plantation</strong> — {{ contextPlantationLabel }}</p>
+    {% endif %}
+    {% if contextProduitLabel is defined and contextProduitLabel %}
+        <p style="margin:0 0 0.75rem;font-size:0.9rem;"><strong>Produit</strong> — {{ contextProduitLabel }}</p>
+    {% endif %}
+    {% if probleme.meteoSnapshot %}
+        {% set meteo = probleme.meteoSnapshot|json_decode %}
+        {% if meteo is iterable %}
+            <div class="card" style="margin:0 0 0.75rem;padding:0.75rem;background:rgba(26,77,46,0.06);border-radius:8px;">
+                <p style="margin:0 0 0.35rem;font-weight:600;font-size:0.9rem;">Météo au signalement</p>
+                {% if meteo.temp is defined %}
+                    <p style="margin:0;font-size:0.88rem;">Température : {{ meteo.temp }} °C</p>
+                {% endif %}
+                {% if meteo.description is defined %}
+                    <p style="margin:0.25rem 0 0;font-size:0.88rem;">Conditions : {{ meteo.description }}</p>
+                {% endif %}
+                {% if meteo.humidity is defined and meteo.humidity > 0 %}
+                    <p style="margin:0.25rem 0 0;font-size:0.88rem;">Humidité : {{ meteo.humidity }}%</p>
+                {% endif %}
+                {% if meteo.lat is defined and meteo.lon is defined %}
+                    <p style="margin:0.25rem 0 0;font-size:0.88rem;">Coordonnées : {{ meteo.lat }}, {{ meteo.lon }}</p>
+                {% endif %}
+                {% if meteo.timestamp is defined %}
+                    <p style="margin:0.25rem 0 0;font-size:0.82rem;color:var(--color-muted);">Relevé : {{ meteo.timestamp|date('d/m/Y H:i') }}</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p style="margin:0 0 0.75rem;font-size:0.88rem;color:var(--color-muted);">Météo indisponible pour ce signalement.</p>
+        {% endif %}
     {% endif %}
     {% if probleme.photos %}
         <p style="margin:0 0 0.35rem;font-weight:600;">Photos du signalement</p>

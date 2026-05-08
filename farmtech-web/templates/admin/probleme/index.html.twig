@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <form method="get" data-live-filter="1" class="filters-bar filters-bar--live" action="{{ path('admin_problemes_index') }}">
+        <form method="get" class="filters-bar" action="{{ path('admin_problemes_index') }}" data-live-filter="1">
             <div class="filters-bar__row">
                 <div class="filter-field form-row filter-field--grow" style="margin:0;">
                     <label for="pq">Recherche</label>
@@ -56,8 +56,33 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="psort">Tri</label>
+                    <select class="form-control" id="psort" name="sort">
+                        <option value="dateDetection" {{ filters.sort == 'dateDetection' ? 'selected' }}>Date</option>
+                        <option value="id" {{ filters.sort == 'id' ? 'selected' }}>N°</option>
+                        <option value="type" {{ filters.sort == 'type' ? 'selected' }}>Type</option>
+                        <option value="gravite" {{ filters.sort == 'gravite' ? 'selected' }}>Gravité</option>
+                        <option value="etat" {{ filters.sort == 'etat' ? 'selected' }}>État</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdir">Ordre</label>
+                    <select class="form-control" id="pdir" name="dir">
+                        <option value="DESC" {{ filters.dir == 'DESC' ? 'selected' }}>Décroissant</option>
+                        <option value="ASC" {{ filters.dir == 'ASC' ? 'selected' }}>Croissant</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdf">Du</label>
+                    <input class="form-control" type="date" id="pdf" name="date_from" value="{{ filters.date_from|default('') }}">
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdt">Au</label>
+                    <input class="form-control" type="date" id="pdt" name="date_to" value="{{ filters.date_to|default('') }}">
+                </div>
                 <div class="filters-bar__actions">
-                    <button type="submit" class="btn btn-secondary btn-sm btn-filter-fallback">Filtrer</button>
+                    <button type="submit" class="btn btn-secondary btn-sm">Filtrer</button>
                     <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost btn-sm">Réinit.</a>
                 </div>
             </div>
@@ -72,16 +97,16 @@
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
-                        <tr><th>#</th><th>Utilisateur</th><th>Type</th><th>Gravité</th><th>État</th><th>Date</th><th>Actions</th></tr>
+                        <tr><th>Utilisateur</th><th>Type</th><th>Gravité</th><th>État</th><th>Assigné</th><th>Date</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         {% for p in problemes %}
                         <tr>
-                            <td>{{ p.id }}</td>
                             <td>{{ p.utilisateur ? p.utilisateur.email : '—' }}</td>
                             <td>{{ p.type }}</td>
                             <td><span class="badge badge-warn">{{ p.gravite }}</span></td>
                             <td><span class="badge badge-info">{{ pl.etat_label(p.etat) }}</span></td>
+                            <td>{{ p.adminAssignee ? p.adminAssignee.nom ~ ' — ' ~ p.adminAssignee.email : '—' }}</td>
                             <td>{{ p.dateDetection|date('d/m/Y') }}</td>
                             <td class="table-actions">
                                 {% set latest = latestDiagnosticByProbleme[p.id] ?? null %}
@@ -89,6 +114,9 @@
                                     <a href="{{ path('admin_diagnostics_edit', {id: latest.id}) }}">Diagnostic</a>
                                 {% else %}
                                     <a href="{{ path('admin_diagnostics_new', {probleme: p.id}) }}">Diagnostic</a>
+                                {% endif %}
+                                {% if p.etat == 'REOUVERT' %}
+                                    <a href="{{ path('admin_diagnostics_new_revision', {probleme: p.id}) }}">Nouvelle révision</a>
                                 {% endif %}
                                 <a href="{{ path('admin_problemes_edit', {id: p.id}) }}">Éditer</a>
                                 <form method="post" action="{{ path('admin_problemes_delete', {id: p.id}) }}" onsubmit="return confirm('Supprimer ?');">

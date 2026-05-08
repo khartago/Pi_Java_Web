@@ -1,11 +1,33 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 parameters:
+    # Valeurs par défaut si absentes de .env (alignées config.properties JavaFX)
+    env(WEATHER_DEFAULT_LAT): '36.8065'
+    env(WEATHER_DEFAULT_LON): '10.1815'
+    env(PDF_REMOTE_URL): 'https://html2pdf.fly.dev/api/generate'
+    env(OPENROUTER_MODEL): 'google/gemma-4-26b-a4b-it'
+    env(OPENROUTER_API_KEY): ''
+    env(OPENROUTER_CHAT_URL): 'https://openrouter.ai/api/v1/chat/completions'
+    app.mailer_from_no_reply: 'tahajaballah07@gmail.com'
+    env(ASSISTANT_MODEL): 'gpt-4o-mini'
+    env(ASSISTANT_API_KEY): ''
+    env(ASSISTANT_BASE_URL): 'https://api.openai.com/v1'
+    env(STOCK_ALERT_THRESHOLD): '5'
+    env(ALERT_EMAIL_FROM): 'alerts@farmtech.local'
+    env(ALERT_EMAIL_TO): 'admin@farmtech.local'
+    env(WEATHER_API_KEY): ''
+    env(NEWS_API_KEY): ''
+    env(GAME_MAIL_FROM): 'alerts@farmtech.local'
+    env(GAME_MAIL_TO): 'admin@farmtech.local'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $stockThreshold: '%env(int:STOCK_ALERT_THRESHOLD)%'
+            $alertFromEmail: '%env(string:ALERT_EMAIL_FROM)%'
+            $alertToEmail: '%env(string:ALERT_EMAIL_TO)%'
 
     App\:
         resource: '../src/'
@@ -22,3 +44,51 @@ services:
     App\Service\ProblemePhotoPublicUrlResolver:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Service\WeatherSnapshotService:
+        arguments:
+            $defaultLat: '%env(float:WEATHER_DEFAULT_LAT)%'
+            $defaultLon: '%env(float:WEATHER_DEFAULT_LON)%'
+
+    App\Service\DiagnosticAIService:
+        arguments:
+            $openRouterApiKey: '%env(string:OPENROUTER_API_KEY)%'
+            $openRouterModel: '%env(OPENROUTER_MODEL)%'
+            $openRouterChatUrl: '%env(string:OPENROUTER_CHAT_URL)%'
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\ProblemePdfExportService:
+        arguments:
+            $pdfRemoteUrl: '%env(PDF_REMOTE_URL)%'
+
+    App\Service\DiagnosticApprovalNotifier:
+        arguments:
+            $fromEmail: '%app.mailer_from_no_reply%'
+
+    App\Service\ProductImageStorage:
+        arguments:
+            $productUploadDir: '%kernel.project_dir%/public/uploads/products'
+            $productUploadPath: 'uploads/products'
+
+    App\Service\AiAssistantClient:
+        arguments:
+            $apiKey: '%env(string:ASSISTANT_API_KEY)%'
+            $model: '%env(string:ASSISTANT_MODEL)%'
+            $baseUrl: '%env(string:ASSISTANT_BASE_URL)%'
+
+    App\Service\AssistantContextBuilder:
+        arguments:
+            $stockThreshold: '%env(int:STOCK_ALERT_THRESHOLD)%'
+
+    App\Service\WebWeatherService:
+        arguments:
+            $apiKey: '%env(string:WEATHER_API_KEY)%'
+
+    App\Service\WebNewsService:
+        arguments:
+            $apiKey: '%env(string:NEWS_API_KEY)%'
+
+    App\Service\GameMailerService:
+        arguments:
+            $fromEmail: '%env(string:GAME_MAIL_FROM)%'
+            $toEmail: '%env(string:GAME_MAIL_TO)%'

@@ -1,0 +1,93 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}News — FARMTECH{% endblock %}
+
+{% block front_content %}
+<div class="farmer-dashboard">
+
+    {# --- EMPTY STATE --- #}
+    {% if blogs is empty %}
+    <section class="farmer-home-zero">
+        <h1 class="farmer-home-zero__title">Aucune actualité</h1>
+        <p class="farmer-home-zero__lead">Commencez par créer un blog pour publier vos articles.</p>
+        <div class="farmer-home-zero__art" aria-hidden="true">
+            {% include '_includes/app_hero_image.html.twig' %}
+        </div>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <a href="{{ path('app_blog_new') }}" class="btn btn-primary farmer-home-zero__btn">Créer un premier blog</a>
+        {% endif %}
+    </section>
+
+    {# --- MAIN STATE --- #}
+    {% else %}
+
+    <article class="farmer-home-card">
+        <div class="farmer-home-card__intro">
+            <header class="farmer-home-card__head">
+                <h1 class="farmer-home-card__title">Actualités & Articles</h1>
+                <p class="farmer-home-card__lead">Cliquez sur un article pour le lire et laisser un commentaire.</p>
+            </header>
+            <div class="farmer-home-card__actions">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ path('app_blog_new') }}" class="btn btn-primary">Nouveau blog</a>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+
+    {% for blog in blogs %}
+    <article class="farmer-home-card mt-4">
+        <div class="farmer-home-card__intro">
+            <header class="farmer-home-card__head">
+                <a href="{{ path('app_blog_show', {'idBlog': blog.idBlog}) }}" class="text-decoration-none">
+                    <h2 class="farmer-home-card__title">{{ blog.titleBlog }}</h2>
+                </a>
+                <p class="farmer-home-card__lead">
+                    <span class="badge bg-secondary">{{ blog.blogTag }}</span>
+                    <small class="text-muted ms-2">Créé le {{ blog.dateBlog|date('d/m/Y') }}</small>
+                </p>
+            </header>
+            <div class="farmer-home-card__actions">
+                <a href="{{ path('app_blog_edit', {'idBlog': blog.idBlog}) }}" class="btn btn-ghost">Modifier</a>
+                <form method="POST" action="{{ path('app_blog_delete', {'idBlog': blog.idBlog}) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce blog et ses articles ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-blog-' ~ blog.idBlog) }}">
+                    <button type="submit" class="btn btn-ghost" style="color: #dc3545;">Supprimer</button>
+                </form>
+            </div>
+        </div>
+
+        {# --- ARTICLES LIST --- #}
+        {% set current_blog_articles = articles_by_blog[blog.idBlog]|default([]) %}
+
+        {% if current_blog_articles is not empty %}
+        <section class="farmer-home-follow" aria-label="Articles du blog {{ blog.titleBlog }}">
+            <h3 class="farmer-home-follow__h">Articles ({{ current_blog_articles|length }})</h3>
+            <ul class="farmer-home-follow__list">
+                {% for article in current_blog_articles %}
+                <li class="farmer-home-follow__item">
+                    {# Clickable Article Title using article.id #}
+                    <a href="{{ path('app_article_show', {'idArticle': article.id}) }}" class="farmer-home-follow__lbl">
+                        {{ article.title }}
+                        {% if article.edited %}<small class="text-warning">(Modifié)</small>{% endif %}
+                    </a>
+                    <span class="farmer-home-follow__n">
+                        <small>{{ article.createdAt|date('d/m/Y') }}</small>
+                        <span class="ms-2 text-success">👍 {{ article.likes|default(0) }}</span>
+                        <span class="text-danger">👎 {{ article.dislikes|default(0) }}</span>
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% else %}
+        <div class="farmer-home-summary mt-3">
+            <p class="farmer-home-summary__p">Aucun article publié dans ce blog.</p>
+        </div>
+        {% endif %}
+
+    </article>
+    {% endfor %}
+
+    {% endif %}
+</div>
+{% endblock %}

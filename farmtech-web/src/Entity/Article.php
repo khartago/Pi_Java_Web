@@ -3,59 +3,44 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
-#[ORM\Table(name: 'articles')]
+#[ORM\Table(name: 'article')]
 class Article
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'ArticleID', type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Title cannot be blank')]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(name:'Titre',length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255, unique: true)]
-    #[Assert\NotBlank]
-    private ?string $slug = null;
+    #[ORM\Column(name:'texte',type: Types::TEXT)]
+    private ?string $text = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Content cannot be blank')]
-    private ?string $content = null;
+    #[ORM\Column(name:'Likes',nullable: true)]
+    private ?int $likes = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $excerpt = null;
-
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $authorName = null;
+    #[ORM\Column(name:'Dislikes',nullable: true)]
+    private ?int $dislikes = null;
 
     #[ORM\Column]
-    private ?bool $isPublished = false;
+    private ?bool $edited = false;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'BlogID')]
+    private ?int $blogId = null;
+
+    #[ORM\Column(name: 'CreationDate', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
-
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class, cascade: ['persist', 'remove'])]
-    private Collection $comments;
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
-        $this->createdAt = new \DateTime();
+        // Automatically sets the creation date when the object is instantiated
+        $this->createdAt = new \DateTimeImmutable();
     }
-
-    // --- Getters and Setters ---
 
     public function getId(): ?int
     {
@@ -67,126 +52,75 @@ class Article
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
-        // Auto-generate slug if not set
-        if (!$this->slug) {
-            $this->slug = $this->generateSlug($title);
-        }
+
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getText(): ?string
     {
-        return $this->slug;
+        return $this->text;
     }
 
-    public function setSlug(string $slug): static
+    public function setText(?string $text): static
     {
-        $this->slug = $slug;
+        $this->text = $text;
+
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getLikes(): ?int
     {
-        return $this->content;
+        return $this->likes;
     }
 
-    public function setContent(string $content): static
+    public function setLikes(?int $likes): static
     {
-        $this->content = $content;
+        $this->likes = $likes;
+
         return $this;
     }
 
-    public function getExcerpt(): ?string
+    public function getDislikes(): ?int
     {
-        return $this->excerpt;
+        return $this->dislikes;
     }
 
-    public function setExcerpt(?string $excerpt): static
+    public function setDislikes(?int $dislikes): static
     {
-        $this->excerpt = $excerpt;
+        $this->dislikes = $dislikes;
+
         return $this;
     }
 
-    public function getAuthorName(): ?string
+    public function isEdited(): ?bool
     {
-        return $this->authorName;
+        return $this->edited;
     }
 
-    public function setAuthorName(?string $authorName): static
+    public function setEdited(?bool $edited): static
     {
-        $this->authorName = $authorName;
+        $this->edited = $edited;
+
         return $this;
     }
 
-    public function isPublished(): ?bool
+    public function getBlogId(): ?int
     {
-        return $this->isPublished;
+        return $this->blogId;
     }
 
-    public function setIsPublished(bool $isPublished): static
+    public function setBlogId(?int $blogId): static
     {
-        $this->isPublished = $isPublished;
+        $this->blogId = $blogId;
+
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Comment>
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(Comment $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setArticle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getArticle() === $this) {
-                $comment->setArticle(null);
-            }
-        }
-
-        return $this;
-    }
-
-    // Helper function to generate simple slug
-    private function generateSlug(string $text): string
-    {
-        return strtolower(preg_replace('/[^a-z0-9]+/i', '-', trim($text)));
     }
 }

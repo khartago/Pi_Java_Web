@@ -1,11 +1,11 @@
 {% extends 'front/layout.html.twig' %}
 
-{% block title %}Modifier problème #{{ probleme.id }} — FARMTECH{% endblock %}
+{% block title %}Modifier — {{ probleme.type }} — FARMTECH{% endblock %}
 
 {% block front_content %}
 <section class="farmer-form-head">
     <span class="farmer-form-head__eyebrow">Modifier le dossier</span>
-    <h1>Signalement n°{{ probleme.id }}</h1>
+    <h1>{{ probleme.type }}</h1>
     <p class="page-lead">Ajustez le texte ou les photos si la situation a évolué sur le terrain.</p>
 </section>
 <div class="card form-card form-card--wide">
@@ -14,6 +14,8 @@
         {{ form_row(form.description) }}
         {{ form_row(form.gravite) }}
         {{ form_row(form.dateDetection) }}
+        {% if form.idPlantation is defined %}{{ form_row(form.idPlantation) }}{% endif %}
+        {% if form.idProduit is defined %}{{ form_row(form.idProduit) }}{% endif %}
         {{ form_row(form.photoFiles) }}
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
