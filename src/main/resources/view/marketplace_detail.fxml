@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Fiche produit — même style que support_issue_detail.fxml
+    BorderPane + farmtech-theme.css + GridPane + TitledPane + Separator
+-->
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MarketplaceDetailController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true"
+                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    styleClass="transparent-scroll">
+            <VBox spacing="16">
+                <padding>
+                    <Insets top="20" right="24" bottom="20" left="24"/>
+                </padding>
+
+                <!-- ── En-tête : titre ── -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label fx:id="nomLabel" text="—" styleClass="title-label"/>
+                </HBox>
+
+                <!-- ── Image + catégorie ── -->
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <ImageView fx:id="imageView"
+                               fitWidth="180" fitHeight="130"
+                               preserveRatio="false" smooth="true"
+                               style="-fx-background-color: #E8F0E8;
+                                      -fx-background-radius: 10;
+                                      -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),6,0,0,2);"/>
+                    <VBox spacing="6">
+                        <Label fx:id="categorieLabel" text="Categorie: —"
+                               style="-fx-font-size: 14px; -fx-text-fill: #6B7280;"/>
+                        <Label fx:id="statutExpLabel" text=""
+                               style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <!-- ── Informations produit (GridPane style support_issue_detail) ── -->
+                <Label text="Informations produit" styleClass="section-title"/>
+
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="140" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+
+                    <Label text="Quantité :" styleClass="field-label"
+                           GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="quantiteLabel" text="—" wrapText="true"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Unité :" styleClass="field-label"
+                           GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="uniteLabel" text="—"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="Date d'expiration :" styleClass="field-label"
+                           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="expirationLabel" text="—"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                    <Label text="Prix unitaire :" styleClass="field-label"
+                           GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="prixLabel" text="—"
+                           style="-fx-font-weight: bold; -fx-font-size: 15px;"
+                           GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                </GridPane>
+
+                <!-- ── Promotion (TitledPane comme meteoPane) ── -->
+                <TitledPane fx:id="promoPane" text="Promotion appliquée"
+                            collapsible="false" expanded="true"
+                            visible="false" managed="false">
+                    <VBox spacing="8" style="-fx-padding: 8;">
+                        <Label fx:id="promoNomLabel" text=""
+                               style="-fx-font-weight: 600; -fx-font-size: 14px; -fx-text-fill: #1A4D2E;"/>
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                            <Label fx:id="promoPrixOriginalLabel" text=""
+                                   style="-fx-text-fill: #9CA3AF; -fx-strikethrough: true; -fx-font-size: 14px;"/>
+                            <Label fx:id="promoPrixFinalLabel" text=""
+                                   style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #1A4D2E;"/>
+                            <Label fx:id="promoBadgeLabel" text=""
+                                   style="-fx-background-color: #4CAF50; -fx-text-fill: white;
+                                          -fx-font-size: 12px; -fx-font-weight: bold;
+                                          -fx-padding: 4 10; -fx-background-radius: 8;"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+
+                <!-- ── Bouton Favoris ── -->
+                <Button fx:id="btnFavoris" text="Ajouter aux favoris"
+                        styleClass="primary-button"/>
+
+                <Separator/>
+
+                <!-- ── Matériels associés (TitledPane) ── -->
+                <TitledPane fx:id="materielsAssociesPane"
+                            text="Matériels associés"
+                            collapsible="true" expanded="true"
+                            visible="false" managed="false">
+                    <VBox fx:id="materielsAssociesList" spacing="6"
+                          style="-fx-padding: 8;"/>
+                </TitledPane>
+
+                <!-- ── Recommandations IA (TitledPane) ── -->
+                <TitledPane fx:id="recommandationsPane"
+                            text="Matériels recommandés pour ce produit"
+                            collapsible="true" expanded="true"
+                            visible="false" managed="false">
+                    <VBox fx:id="recommandationsList" spacing="8"
+                          style="-fx-padding: 8;"/>
+                </TitledPane>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

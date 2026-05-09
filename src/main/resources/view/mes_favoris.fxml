@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MesFavorisController"
+      spacing="0"
+      style="-fx-background-color: #F5F5F0;"
+      stylesheets="@../css/style.css, @../css/marketplace.css">
+
+    <!-- ═══ En-tête ═══ -->
+    <VBox style="-fx-padding: 24 32 12 32; -fx-background-color: #F5F5F0;">
+        <Label text="MARKETPLACE"
+               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #888;"/>
+        <Label fx:id="titleLabel" text="❤️ Mes Favoris"
+               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+        <Label text="Vos produits favoris en un coup d'œil"
+               style="-fx-font-size: 13px; -fx-text-fill: #666; -fx-padding: 2 0 0 0;"/>
+    </VBox>
+
+    <!-- ═══ Barre d'actions ═══ -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-padding: 10 32; -fx-background-color: #F5F5F0;">
+        <Button fx:id="backButton" text="← Retour marketplace"
+                onAction="#handleBack" styleClass="mk-btn-outline"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="clearButton" text="🗑 Tout vider"
+                onAction="#handleClearAll"
+                style="-fx-background-color: #DC2626; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-padding: 8 18;
+                       -fx-background-radius: 6; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- ═══ Message vide ═══ -->
+    <Label fx:id="emptyLabel" text="Aucun favori."
+           visible="false" managed="false"
+           style="-fx-font-size: 15px; -fx-text-fill: #888;
+                  -fx-padding: 40 32; -fx-wrap-text: true;"/>
+
+    <!-- ═══ Grille de cartes ═══ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <FlowPane fx:id="cardsPane" hgap="20" vgap="20"
+                  style="-fx-padding: 8 32 24 32; -fx-background-color: transparent;"/>
+    </ScrollPane>
+
+</VBox>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Marketplace — vue Fermier
+    Interface identique au Symfony : fond #F5F5F0, cartes blanches minimalistes,
+    catégorie en petit gris, nom en gras, badge promo vert.
+    Pas de bouton Promotions ici (géré côté admin).
+-->
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MarketplaceController"
+      spacing="0"
+      style="-fx-background-color: #F5F5F0;"
+      stylesheets="@../css/style.css, @../css/marketplace.css">
+
+    <!-- ═══ En-tête page (style Symfony) ═══ -->
+    <VBox style="-fx-padding: 28 32 16 32; -fx-background-color: #F5F5F0;">
+        <Label text="MARKETPLACE"
+               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #888;
+                      -fx-letter-spacing: 2px;"/>
+        <Label text="Catalogue produits"
+               style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+        <Label text="Catalogue produits avec categories et materiels associes."
+               style="-fx-font-size: 13px; -fx-text-fill: #666; -fx-padding: 2 0 0 0;"/>
+        <Label fx:id="labelResultInfo" text=""
+               style="-fx-font-size: 13px; -fx-text-fill: #666;"/>
+        <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+            <Button fx:id="btnFavoris" text="Mes favoris (0)"
+                    onAction="#handleOpenFavoris"
+                    styleClass="mk-btn-outline"/>
+        </HBox>
+    </VBox>
+
+    <!-- ═══ Barre de filtres (style Symfony) ═══ -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-padding: 12 32; -fx-background-color: #F5F5F0;">
+        <TextField fx:id="searchField" promptText="Recherche"
+                   prefWidth="280" styleClass="mk-search"
+                   onAction="#handleFilter"/>
+        <ComboBox fx:id="uniteFilter"  prefWidth="160" styleClass="mk-combo"
+                  promptText="Toutes unites"/>
+        <ComboBox fx:id="categorieFilter" prefWidth="180" styleClass="mk-combo"
+                  promptText="Toutes categories"/>
+        <Button text="Filtrer" onAction="#handleFilter" styleClass="mk-btn-dark"/>
+        <Button text="Reset"   onAction="#handleReset"  styleClass="mk-btn-outline"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="← Retour admin" onAction="#handleBackToAdmin"
+                styleClass="mk-btn-outline"
+                style="-fx-font-size: 12px;"/>
+    </HBox>
+
+    <!-- ═══ Grille de cartes + pagination ═══ -->
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: #F5F5F0;">
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                    style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <FlowPane fx:id="cardsPane" hgap="20" vgap="20"
+                      style="-fx-padding: 8 32 16 32; -fx-background-color: transparent;"/>
+        </ScrollPane>
+
+        <!-- Pagination style Symfony -->
+        <HBox fx:id="paginationBar" spacing="6" alignment="CENTER"
+              style="-fx-padding: 14 32; -fx-background-color: #F5F5F0;">
+            <Button fx:id="btnPrev" text="‹"
+                    onAction="#handlePrevPage" styleClass="mk-page-btn"/>
+            <HBox fx:id="pageNumbersBox" spacing="4" alignment="CENTER"/>
+            <Button fx:id="btnNext" text="›"
+                    onAction="#handleNextPage" styleClass="mk-page-btn"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="labelPageInfo"
+                   style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+        </HBox>
+    </VBox>
+
+</VBox>

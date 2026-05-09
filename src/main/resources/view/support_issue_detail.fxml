@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.SupportIssueDetailController"
+            stylesheets="@farmtech-theme.css">
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
+            <VBox spacing="16.0">
+                <padding>
+                    <Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/>
+                </padding>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Détail du problème" styleClass="title-label"/>
+                    <Button fx:id="exportPdfButton" text="Exporter en PDF" onAction="#exportToPdf" styleClass="secondary-button"/>
+                </HBox>
+
+                <GridPane hgap="12.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="120" halignment="RIGHT"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+
+                    <Label text="Type :" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="typeLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Description :" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="descriptionLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="Gravité :" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="graviteLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                    <Label text="Date détection :" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="dateLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                    <Label text="État :" styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="etatLabel" wrapText="true" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                </GridPane>
+
+                <TitledPane fx:id="meteoPane" text="Météo au moment de la création" collapsible="true" expanded="false">
+                    <Label fx:id="meteoLabel" wrapText="true" style="-fx-padding: 8;"/>
+                </TitledPane>
+
+                <Separator/>
+
+                <Label text="Photos" styleClass="section-title"/>
+                <FlowPane fx:id="photosFlowPane" hgap="12.0" vgap="12.0" style="-fx-padding: 8 0;"/>
+
+                <Separator/>
+
+                <Label text="Diagnostic" styleClass="section-title"/>
+                <VBox spacing="8.0">
+                    <Label fx:id="diagnosticStatusLabel" style="-fx-font-weight: 600;"/>
+                    <Label text="Cause :" styleClass="field-label"/>
+                    <Label fx:id="causeLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                    <Label text="Solution proposée :" styleClass="field-label"/>
+                    <Label fx:id="solutionLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                    <Label text="Résultat :" styleClass="field-label"/>
+                    <Label fx:id="resultatLabel" wrapText="true"/>
+                    <Label text="Médicament recommandé :" styleClass="field-label"/>
+                    <Label fx:id="medicamentLabel" wrapText="true" style="-fx-wrap-text: true; -fx-max-width: Infinity;"/>
+                </VBox>
+
+                <TitledPane fx:id="feedbackPane" text="Votre avis sur la solution" collapsible="false" expanded="true">
+                    <VBox spacing="10">
+                        <Label text="La solution proposée a-t-elle résolu votre problème ?"/>
+                        <TextArea fx:id="feedbackCommentArea" promptText="Commentaire (optionnel)" wrapText="true" prefRowCount="3"/>
+                        <HBox spacing="12">
+                            <Button fx:id="marquerResoluButton" text="Marquer comme résolu" onAction="#marquerResolu" styleClass="primary-button"/>
+                            <Button fx:id="marquerNonResoluButton" text="Non résolu" onAction="#marquerNonResolu" styleClass="secondary-button"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.StatisticsController"
+            fitToWidth="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
+            styleClass="transparent-scroll">
+    <VBox spacing="0" styleClass="page-with-hero" style="-fx-background-color: transparent;">
+        <VBox styleClass="hero-section" style="-fx-padding: 24 24 20 24;">
+            <Label text="Statistiques" styleClass="hero-title" style="-fx-font-size: 28px;"/>
+            <Label text="Indicateurs clés, graphiques et export PDF" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
+        </VBox>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="backButton" text="Retour" onAction="#goBack" styleClass="secondary-button"/>
+                <Button fx:id="refreshButton" text="Rafraîchir" onAction="#handleRefresh" styleClass="primary-button"/>
+                <Button fx:id="exportButton" text="Exporter PDF" onAction="#exportToPDF" styleClass="primary-button"/>
+            </HBox>
+            <Label text="Indicateurs clés" style="-fx-font-weight: bold;"/>
+            <GridPane hgap="15" vgap="8">
+                <Label text="Total produits:"/><Label fx:id="totalProductsLabel" text="0" GridPane.columnIndex="1"/>
+                <Label text="Stock total:" GridPane.rowIndex="1"/><Label fx:id="totalStockLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Stock moyen:" GridPane.rowIndex="2"/><Label fx:id="averageStockLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Score santé:" GridPane.rowIndex="3"/><Label fx:id="healthScoreLabel" text="0%" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Expirés:" GridPane.rowIndex="4"/><Label fx:id="expiredLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="Expire bientôt (7j):" GridPane.rowIndex="5"/><Label fx:id="expiringLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <Label text="Stock faible (&lt;5):" GridPane.rowIndex="6"/><Label fx:id="lowStockLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <Label text="Valeur totale:" GridPane.rowIndex="7"/><Label fx:id="totalValueLabel" text="0 €" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+            </GridPane>
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <VBox fx:id="stockChartPane" prefWidth="400" minWidth="300" prefHeight="250"/>
+                <VBox fx:id="unitsChartPane" prefWidth="400" minWidth="300" prefHeight="250"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

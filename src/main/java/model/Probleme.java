@@ -1,0 +1,135 @@
+package model;
+
+import java.time.LocalDateTime;
+
+public class Probleme {
+
+    private int id;
+    private Integer idUtilisateur;
+    private String type;
+    private String description;
+    private String gravite;
+    private LocalDateTime dateDetection;
+    private String etat;
+    private String photos;
+    private Integer idPlantation;
+    private Integer idProduit;
+    /** JSON snapshot meteo au moment de la creation (temp, conditions, etc.) */
+    private String meteoSnapshot;
+    private Integer idAdminAssignee;
+
+    public Probleme() {
+    }
+
+    public Probleme(int id, Integer idUtilisateur, String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
+        this.id = id;
+        this.idUtilisateur = idUtilisateur;
+        this.type = type;
+        this.description = description;
+        this.gravite = gravite;
+        this.dateDetection = dateDetection;
+        this.etat = etat;
+        this.photos = photos;
+    }
+
+    public Probleme(int id, String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
+        this(id, null, type, description, gravite, dateDetection, etat, photos);
+    }
+
+    public Probleme(String type, String description, String gravite, LocalDateTime dateDetection, String etat, String photos) {
+        this.type = type;
+        this.description = description;
+        this.gravite = gravite;
+        this.dateDetection = dateDetection;
+        this.etat = etat;
+        this.photos = photos;
+    }
+
+    public Integer getIdUtilisateur() {
+        return idUtilisateur;
+    }
+
+    public void setIdUtilisateur(Integer idUtilisateur) {
+        this.idUtilisateur = idUtilisateur;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getGravite() {
+        return gravite;
+    }
+
+    public void setGravite(String gravite) {
+        this.gravite = gravite;
+    }
+
+    public LocalDateTime getDateDetection() {
+        return dateDetection;
+    }
+
+    public void setDateDetection(LocalDateTime dateDetection) {
+        this.dateDetection = dateDetection;
+    }
+
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
+    public String getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(String photos) {
+        this.photos = photos;
+    }
+
+    public Integer getIdPlantation() { return idPlantation; }
+    public void setIdPlantation(Integer idPlantation) { this.idPlantation = idPlantation; }
+    public Integer getIdProduit() { return idProduit; }
+    public void setIdProduit(Integer idProduit) { this.idProduit = idProduit; }
+    public String getMeteoSnapshot() { return meteoSnapshot; }
+    public void setMeteoSnapshot(String meteoSnapshot) { this.meteoSnapshot = meteoSnapshot; }
+    public Integer getIdAdminAssignee() { return idAdminAssignee; }
+    public void setIdAdminAssignee(Integer idAdminAssignee) { this.idAdminAssignee = idAdminAssignee; }
+
+    @Override
+    public String toString() {
+        return "Probleme{" +
+                "id=" + id +
+                ", idUtilisateur=" + idUtilisateur +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", gravite='" + gravite + '\'' +
+                ", dateDetection=" + dateDetection +
+                ", etat='" + etat + '\'' +
+                ", photos='" + photos + '\'' +
+                '}';
+    }
+}
+
