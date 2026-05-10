@@ -10,6 +10,10 @@ nav:
   home: "Accueil"
   my_files: "Mes dossiers"
   marketplace: "Marketplace"
+  favorites: "Favoris"
+  game: "Jeu"
+  news: "Actualités"
+  blogs: "Blogs"
   logout: "Déconnexion"
   language: "Langue"
 game:

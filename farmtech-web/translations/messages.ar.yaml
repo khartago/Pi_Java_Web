@@ -10,6 +10,10 @@ nav:
   home: "الرئيسية"
   my_files: "ملفاتي"
   marketplace: "السوق"
+  favorites: "المفضلة"
+  game: "اللعبة"
+  news: "الأخبار"
+  blogs: "المدونات"
   logout: "تسجيل الخروج"
   language: "اللغة"
 game:

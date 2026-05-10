@@ -23,9 +23,10 @@
                 <a href="{{ path('app_home') }}" class="farmer-nav__link {{ front_route == 'app_home' ? 'is-active' }}" {% if front_route == 'app_home' %}aria-current="page"{% endif %}>{{ 'nav.home'|trans }}</a>
                 <a href="{{ path('app_problemes_index') }}" class="farmer-nav__link {{ front_route starts with 'app_problemes' ? 'is-active' }}" {% if front_route starts with 'app_problemes' %}aria-current="page"{% endif %}>{{ 'nav.my_files'|trans }}</a>
                 <a href="{{ path('app_marketplace_index') }}" class="farmer-nav__link {{ front_route starts with 'app_marketplace_' ? 'is-active' }}" {% if front_route starts with 'app_marketplace_' %}aria-current="page"{% endif %}>{{ 'nav.marketplace'|trans }}</a>
-            <a href="{{ path('app_favoris_index') }}" class="farmer-nav__link {{ front_route starts with 'app_favoris_' ? 'is-active' }}" {% if front_route starts with 'app_favoris_' %}aria-current="page"{% endif %}>Favoris</a>
-                <a href="{{ path('app_game') }}" class="farmer-nav__link {{ front_route starts with 'app_game' ? 'is-active' }}" {% if front_route starts with 'app_game' %}aria-current="page"{% endif %}>Game</a>
-                <a href="{{ path('app_news') }}" class="farmer-nav__link {{ front_route starts with 'app_news' ? 'is-active' }}" {% if front_route starts with 'app_news' %}aria-current="page"{% endif %}>News</a>
+            <a href="{{ path('app_favoris_index') }}" class="farmer-nav__link {{ front_route starts with 'app_favoris_' ? 'is-active' }}" {% if front_route starts with 'app_favoris_' %}aria-current="page"{% endif %}>{{ 'nav.favorites'|trans }}</a>
+                <a href="{{ path('app_game') }}" class="farmer-nav__link {{ front_route starts with 'app_game' ? 'is-active' }}" {% if front_route starts with 'app_game' %}aria-current="page"{% endif %}>{{ 'nav.game'|trans }}</a>
+                <a href="{{ path('app_news') }}" class="farmer-nav__link {{ front_route == 'app_news' ? 'is-active' }}" {% if front_route == 'app_news' %}aria-current="page"{% endif %}>{{ 'nav.news'|trans }}</a>
+                <a href="{{ path('app_blog_index') }}" class="farmer-nav__link {{ (front_route starts with 'app_blog') or (front_route starts with 'app_article') ? 'is-active' }}" {% if (front_route starts with 'app_blog') or (front_route starts with 'app_article') %}aria-current="page"{% endif %}>{{ 'nav.blogs'|trans }}</a>
                 {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('admin_dashboard') }}" class="farmer-nav__link farmer-nav__link--admin">Admin</a>
                 {% endif %}
