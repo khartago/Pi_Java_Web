@@ -30,6 +30,22 @@ public class HomeController {
     }
 
     @FXML
+    private void handleBlog(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/view/BlogDashboard.fxml"));
+            Parent root = loader.load();
+            Node source = (Node) event.getSource();
+            Stage stage = (Stage) source.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleLogin(ActionEvent event) {
         try {
             Node source = (Node) event.getSource();

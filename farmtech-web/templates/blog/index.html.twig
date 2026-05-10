@@ -1,0 +1,61 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Blogs | FarmTech{% endblock %}
+
+{% block front_content %}
+<div class="farmer-dashboard">
+    <article class="farmer-home-card card mb-4">
+        <div class="farmer-home-card__intro p-3">
+            <header class="farmer-home-card__head">
+                <h1 class="farmer-home-card__title">Blogs</h1>
+                <p class="farmer-home-card__lead">Recherchez par titre ou filtrez par tag.</p>
+            </header>
+            <div class="farmer-home-card__actions">
+                <a href="{{ path('app_news') }}" class="btn btn-ghost">&larr; Actualites</a>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ path('app_blog_new') }}" class="btn btn-primary">Nouveau blog</a>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+
+    <form method="get" action="{{ path('app_blog_index') }}" class="card p-3 mb-4 d-flex flex-wrap gap-2 align-items-end">
+        <div class="flex-grow-1" style="min-width: 200px;">
+            <label class="form-label" for="recherche">Recherche</label>
+            <input type="text" class="form-control" id="recherche" name="recherche" value="{{ recherche|e }}" placeholder="Titre...">
+        </div>
+        <div style="min-width: 160px;">
+            <label class="form-label" for="tag">Tag</label>
+            <select class="form-select" id="tag" name="tag">
+                <option value="">(tous)</option>
+                {% for t in tags %}
+                    <option value="{{ t|e }}" {% if tag == t %}selected{% endif %}>{{ t|e }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+
+    {% if blogs is empty %}
+        <section class="card p-4">
+            <p class="mb-0">Aucun blog ne correspond aux filtres.</p>
+        </section>
+    {% else %}
+        <ul class="list-unstyled">
+            {% for blog in blogs %}
+                <li class="mb-3">
+                    <article class="card p-3">
+                        <h2 class="h5 mb-1">
+                            <a href="{{ path('app_blog_show', {'idBlog': blog.idBlog}) }}">{{ blog.titleBlog }}</a>
+                        </h2>
+                        <p class="text-muted small mb-0">
+                            <span class="badge bg-secondary">{{ blog.blogTag }}</span>
+                            <span class="ms-2">{{ blog.dateBlog|date('d/m/Y') }}</span>
+                        </p>
+                    </article>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

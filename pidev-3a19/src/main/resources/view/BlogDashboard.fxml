@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.BlogDashboardController"
+      styleClass="root" prefHeight="700" prefWidth="1000">
+
+    <!-- Top Menu Bar -->
+    <MenuBar>
+        <Menu text="File">
+            <MenuItem text="New Article" onAction="#handleNewArticle"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Exit" onAction="#handleExit"/>
+        </Menu>
+
+
+    </MenuBar>
+
+    <!-- Header -->
+    <HBox styleClass="header" alignment="CENTER_LEFT" spacing="20">
+        <padding>
+            <Insets top="15" right="20" bottom="15" left="20"/>
+        </padding>
+        <Label text="Blog Dashboard" styleClass="header-title">
+            <font>
+                <Font name="Arial Bold" size="24"/>
+            </font>
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search articles..."
+                   styleClass="search-field" prefWidth="250"/>
+
+        <Button text="+ New Article" onAction="#handleNewArticle" styleClass="btn-success"/>
+    </HBox>
+
+    <!-- Articles Table -->
+    <TableView fx:id="articlesTable" styleClass="articles-table" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="titleColumn" text="Title" prefWidth="300"/>
+            <TableColumn fx:id="authorColumn" text="Author" prefWidth="120"/>
+            <TableColumn fx:id="dateColumn" text="Created" prefWidth="120"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+</VBox>

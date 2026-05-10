@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.ArticleEditorController"
+      styleClass="root" prefHeight="650" prefWidth="800" spacing="10">
+
+    <!-- Top Bar -->
+    <HBox styleClass="editor-header" alignment="CENTER_LEFT">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+        <Button text="← Back" onAction="#handleBack" styleClass="btn-secondary"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Save" onAction="#saveArticle"/>
+
+    </HBox>
+
+    <!-- Title -->
+    <VBox styleClass="form-group">
+        <padding>
+            <Insets left="15" right="15"/>
+        </padding>
+        <Label text="Article Title" styleClass="form-label"/>
+        <TextField fx:id="titleField" promptText="Enter article title..." styleClass="form-input-title">
+            <font>
+                <Font size="18"/>
+            </font>
+        </TextField>
+    </VBox>
+
+
+    <!-- Content Editor -->
+    <VBox styleClass="form-group" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets left="15" right="15"/>
+        </padding>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Content" styleClass="form-label"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="wordCountLabel" text="0 words" styleClass="word-count"/>
+        </HBox>
+
+        <!-- Simple Toolbar -->
+        <HBox styleClass="editor-toolbar" spacing="5">
+            <Button text="B" styleClass="toolbar-btn" onAction="#handleBold"/>
+            <Button text="I" styleClass="toolbar-btn" onAction="#handleItalic"/>
+            <Button text="U" styleClass="toolbar-btn" onAction="#handleUnderline"/>
+            <Separator orientation="VERTICAL"/>
+            <Button text="H1" styleClass="toolbar-btn" onAction="#handleHeading1"/>
+            <Button text="H2" styleClass="toolbar-btn" onAction="#handleHeading2"/>
+            <Separator orientation="VERTICAL"/>
+            <Button text="UL" styleClass="toolbar-btn" onAction="#handleUnorderedList"/>
+            <Button text="OL" styleClass="toolbar-btn" onAction="#handleOrderedList"/>
+            <Separator orientation="VERTICAL"/>
+            <Button text="Link" styleClass="toolbar-btn" onAction="#handleLink"/>
+            <Button text="Image" styleClass="toolbar-btn" onAction="#handleImage"/>
+            <Button text="Code" styleClass="toolbar-btn" onAction="#handleCode"/>
+        </HBox>
+
+        <TextArea fx:id="contentArea" promptText="Write your article content here... (Markdown supported)"
+                  wrapText="true" styleClass="form-input-content" VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+
+</VBox>

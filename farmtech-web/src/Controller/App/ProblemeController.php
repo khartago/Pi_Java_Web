@@ -134,7 +134,7 @@ class ProblemeController extends AbstractController
         }
         $diag = $diagnostiqueRepository->findLatestApprovedForProbleme($id);
         $bytes = $pdfExportService->generateReportPdf($probleme, $diag);
-        if (null === $bytes) {
+        if (null === $bytes || '' === $bytes) {
             $this->addFlash('danger', 'Impossible de générer le PDF (réseau ou API indisponible).');
 
             return $this->redirectToRoute('app_problemes_show', ['id' => $id]);
