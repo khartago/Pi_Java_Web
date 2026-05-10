@@ -18,11 +18,11 @@ class Commentaire
     #[ORM\Column(name: 'texte' ,type: Types::TEXT)]
     private ?string $contenu = null;
 
-    #[ORM\ManyToOne(inversedBy: 'commentaires')]
-    #[ORM\JoinColumn(name: 'idArticle', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'idArticle', referencedColumnName: 'ArticleID', nullable: false)]
     private ?Article $article = null;
 
-    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'idUser', referencedColumnName: 'id', nullable: false)]
     private ?Utilisateur $utilisateur = null;
 

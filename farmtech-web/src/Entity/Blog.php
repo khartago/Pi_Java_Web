@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\BlogRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,9 +21,9 @@ class Blog
     #[ORM\Column(name: 'BlogTag', length: 255)]
     private ?string $blogTag = null;
 
-    #[ORM\ManyToOne(inversedBy: 'blogs')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'idutilisateur', referencedColumnName: 'id', nullable: false)]
-    private ?Utilisateur $utilisateur = null; // <-- MUST be $utilisateur
+    private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(name: 'DateBlog', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $dateBlog = null;
@@ -34,7 +32,6 @@ class Blog
 
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
         $this->dateBlog = new \DateTimeImmutable();
     }
 
