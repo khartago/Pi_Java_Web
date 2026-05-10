@@ -4,297 +4,413 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Produit;
 import model.ProduitDAO;
 import model.FavorisDAO;
+import model.Promotion;
 import Services.OpenAiChatService;
+import Services.PromotionService;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MarketplaceController {
 
-    @FXML private FlowPane cardsPane;
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> uniteFilter;
-    @FXML private CheckBox expiringSoonCheck;
+    // ------------------------------------------------------------------ //
+    //  FXML bindings
+    // ------------------------------------------------------------------ //
 
-    @FXML private TextArea chatArea;
-    @FXML private TextField chatInput;
-    @FXML private Button chatSendButton;
-    @FXML private ProgressIndicator chatLoading;
-    @FXML private Label chatHintLabel;
+    @FXML private FlowPane            cardsPane;
+    @FXML private TextField           searchField;
+    @FXML private ComboBox<String>    uniteFilter;
+    @FXML private ComboBox<String>    categorieFilter;
+    @FXML private Label               labelResultInfo;
+    @FXML private Button              btnFavoris;
 
-    private final ProduitDAO produitDAO = new ProduitDAO();
-    private final FavorisDAO favorisDAO = new FavorisDAO();
-    private List<Produit> allProduits;
+    // Pagination
+    @FXML private HBox   paginationBar;
+    @FXML private Label  labelPageInfo;
+    @FXML private Button btnPrev;
+    @FXML private Button btnNext;
+    @FXML private HBox   pageNumbersBox;
 
-    private final List<OpenAiChatService.Msg> chatHistory = new ArrayList<>();
+    // ------------------------------------------------------------------ //
+    //  Pagination
+    // ------------------------------------------------------------------ //
+
+    private static final int PAGE_SIZE = 8;
+    private int currentPage = 1;
+    private int totalPages  = 1;
+    private List<Produit> filteredProduits = new ArrayList<>();
+
+    // ------------------------------------------------------------------ //
+    //  Services
+    // ------------------------------------------------------------------ //
+
+    private final ProduitDAO       produitDAO       = new ProduitDAO();
+    private final FavorisDAO       favorisDAO       = new FavorisDAO();
+    private final PromotionService promotionService = new PromotionService();
+    private List<Produit>          allProduits;
+
+    // ------------------------------------------------------------------ //
+    //  Init
+    // ------------------------------------------------------------------ //
 
     @FXML
     private void initialize() {
         reloadData();
-        initChat();
-    }
-
-    private void initChat() {
-        if (chatArea != null) {
-            chatArea.setText("Assistant: Bonjour ! Posez-moi une question sur les produits (stock, expiration, etc.).");
-        }
-        String apiKey = System.getenv("OPENAI_API_KEY");
-        if (apiKey == null || apiKey.isBlank()) {
-            if (chatHintLabel != null) chatHintLabel.setText("Note: configurez OPENAI_API_KEY pour activer les réponses IA.");
-        } else {
-            if (chatHintLabel != null) chatHintLabel.setText("");
-        }
     }
 
     private void reloadData() {
         allProduits = produitDAO.getAll();
-        Set<String> unites = allProduits.stream()
+
+        // Unités
+        List<String> unites = allProduits.stream()
                 .map(Produit::getUnite)
                 .filter(u -> u != null && !u.isBlank())
-                .collect(Collectors.toSet());
+                .distinct().sorted().collect(Collectors.toList());
         uniteFilter.getItems().clear();
-        uniteFilter.getItems().add("Toutes");
+        uniteFilter.getItems().add("Toutes unites");
         uniteFilter.getItems().addAll(unites);
-        uniteFilter.setValue("Toutes");
-        renderCards(allProduits);
+        uniteFilter.setValue("Toutes unites");
+
+        // Catégories
+        List<String> cats = allProduits.stream()
+                .map(this::resolveCategory)
+                .distinct().sorted().collect(Collectors.toList());
+        categorieFilter.getItems().clear();
+        categorieFilter.getItems().add("Toutes categories");
+        categorieFilter.getItems().addAll(cats);
+        categorieFilter.setValue("Toutes categories");
+
+        updateFavorisBtn();
+        currentPage = 1;
+        applyFilterAndRender();
     }
+
+    private void updateFavorisBtn() {
+        if (btnFavoris == null) return;
+        int count = favorisDAO.getAllFavoris().size();
+        btnFavoris.setText("Mes favoris (" + count + ")");
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Filtrage + pagination
+    // ------------------------------------------------------------------ //
 
     @FXML
     private void handleFilter() {
-        String q = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
-        String unite = uniteFilter.getValue();
-        boolean soon = expiringSoonCheck.isSelected();
-        LocalDate today = LocalDate.now();
-        LocalDate limit = today.plusDays(7);
-        List<Produit> filtered = allProduits.stream()
-                .filter(p -> q.isEmpty() || (p.getNom() != null && p.getNom().toLowerCase().contains(q)))
-                .filter(p -> unite == null || unite.equals("Toutes") || unite.equals(p.getUnite()))
-                .filter(p -> {
-                    if (!soon) return true;
-                    if (p.getDateExpiration() == null) return false;
-                    return !p.getDateExpiration().isBefore(today) && !p.getDateExpiration().isAfter(limit);
-                })
-                .toList();
-        renderCards(filtered);
+        currentPage = 1;
+        applyFilterAndRender();
     }
 
     @FXML
     private void handleReset() {
         searchField.clear();
-        uniteFilter.setValue("Toutes");
-        expiringSoonCheck.setSelected(false);
-        renderCards(allProduits);
+        uniteFilter.setValue("Toutes unites");
+        categorieFilter.setValue("Toutes categories");
+        currentPage = 1;
+        applyFilterAndRender();
     }
 
-    private void renderCards(List<Produit> produits) {
+    private void applyFilterAndRender() {
+        String q      = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
+        String unite  = uniteFilter.getValue();
+        String cat    = categorieFilter.getValue();
+
+        filteredProduits = allProduits.stream()
+                .filter(p -> q.isEmpty() || (p.getNom() != null && p.getNom().toLowerCase().contains(q)))
+                .filter(p -> unite == null || unite.equals("Toutes unites") || unite.equals(p.getUnite()))
+                .filter(p -> cat == null || cat.equals("Toutes categories")
+                        || cat.equals(resolveCategory(p)))
+                .collect(Collectors.toList());
+
+        totalPages  = Math.max(1, (int) Math.ceil((double) filteredProduits.size() / PAGE_SIZE));
+        currentPage = Math.min(currentPage, totalPages);
+
+        // Label résultats style Symfony : "11 resultat(s) - page 1/2"
+        if (labelResultInfo != null) {
+            labelResultInfo.setText(filteredProduits.size() + " resultat(s) - page "
+                    + currentPage + "/" + totalPages);
+        }
+
+        renderCurrentPage();
+        updatePaginationBar();
+    }
+
+    private void renderCurrentPage() {
         cardsPane.getChildren().clear();
-        for (Produit p : produits) {
-            cardsPane.getChildren().add(createCard(p));
+        int from = (currentPage - 1) * PAGE_SIZE;
+        int to   = Math.min(from + PAGE_SIZE, filteredProduits.size());
+        for (int i = from; i < to; i++) {
+            cardsPane.getChildren().add(createCard(filteredProduits.get(i)));
         }
     }
 
-    private VBox createCard(Produit p) {
-        VBox card = new VBox(8);
-        card.setPrefWidth(260);
-        card.getStyleClass().add("product-card");
+    // ------------------------------------------------------------------ //
+    //  Pagination
+    // ------------------------------------------------------------------ //
 
+    private void updatePaginationBar() {
+        if (paginationBar == null) return;
+        if (btnPrev != null) btnPrev.setDisable(currentPage <= 1);
+        if (btnNext != null) btnNext.setDisable(currentPage >= totalPages);
+        if (labelPageInfo != null)
+            labelPageInfo.setText("Page " + currentPage + " / " + totalPages);
+
+        if (pageNumbersBox != null) {
+            pageNumbersBox.getChildren().clear();
+            int start = Math.max(1, currentPage - 2);
+            int end   = Math.min(totalPages, currentPage + 2);
+            if (start > 1) {
+                pageNumbersBox.getChildren().add(makePageBtn(1));
+                if (start > 2) pageNumbersBox.getChildren().add(makeEllipsis());
+            }
+            for (int i = start; i <= end; i++)
+                pageNumbersBox.getChildren().add(makePageBtn(i));
+            if (end < totalPages) {
+                if (end < totalPages - 1) pageNumbersBox.getChildren().add(makeEllipsis());
+                pageNumbersBox.getChildren().add(makePageBtn(totalPages));
+            }
+        }
+    }
+
+    private Button makePageBtn(int page) {
+        Button btn = new Button(String.valueOf(page));
+        btn.getStyleClass().add(page == currentPage ? "mk-page-btn-active" : "mk-page-btn");
+        btn.setOnAction(e -> goToPage(page));
+        return btn;
+    }
+
+    private Label makeEllipsis() {
+        Label l = new Label("…");
+        l.setStyle("-fx-padding: 0 4; -fx-text-fill: #888;");
+        return l;
+    }
+
+    private void goToPage(int page) {
+        currentPage = page;
+        if (labelResultInfo != null)
+            labelResultInfo.setText(filteredProduits.size() + " resultat(s) - page "
+                    + currentPage + "/" + totalPages);
+        renderCurrentPage();
+        updatePaginationBar();
+    }
+
+    @FXML private void handlePrevPage() { if (currentPage > 1)         goToPage(currentPage - 1); }
+    @FXML private void handleNextPage() { if (currentPage < totalPages) goToPage(currentPage + 1); }
+
+    // ------------------------------------------------------------------ //
+    //  Création des cartes — style identique Symfony
+    // ------------------------------------------------------------------ //
+
+    private VBox createCard(Produit p) {
+        VBox card = new VBox(0);
+        card.setPrefWidth(220);
+        card.setMaxWidth(220);
+        card.getStyleClass().add("mk-card");
+
+        // ── Image ──
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(240);
-        imageView.setFitHeight(140);
+        imageView.setFitWidth(220);
+        imageView.setFitHeight(130);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(true);
         imageView.setImage(loadProductImage(p.getImagePath()));
-        imageView.getStyleClass().add("product-card-image");
+        imageView.getStyleClass().add("mk-card-image");
 
-        Label title = new Label(p.getNom());
-        title.getStyleClass().add("product-title");
+        // ── Catégorie (SEMENCES, EQUIPEMENTS…) ──
+        Label catLabel = new Label(resolveCategory(p).toUpperCase());
+        catLabel.getStyleClass().add("mk-category");
 
-        Button favorisEmoji = new Button();
-        favorisEmoji.setPrefWidth(40);
-        favorisEmoji.setPrefHeight(40);
-        favorisEmoji.setStyle("-fx-font-size: 24px; -fx-padding: 0; -fx-background-color: transparent;");
-        updateFavorisEmoji(favorisEmoji, p);
-        favorisEmoji.setOnAction(e -> toggleFavoriSimple(favorisEmoji, p));
+        // ── Nom ──
+        Label nomLabel = new Label(p.getNom());
+        nomLabel.getStyleClass().add("mk-product-name");
+        nomLabel.setMaxWidth(196);
 
-        HBox titleBar = new HBox(8);
-        titleBar.setPrefWidth(240);
-        titleBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        titleBar.getChildren().addAll(title, spacer, favorisEmoji);
+        // ── Quantité + unité ──
+        Label qteLabel = new Label(p.getQuantite() + " " + (p.getUnite() != null ? p.getUnite() : ""));
+        qteLabel.getStyleClass().add("mk-meta");
 
-        Label stock = new Label("Stock: " + p.getQuantite() + " " + p.getUnite());
-        stock.getStyleClass().add("product-meta");
-        Label exp = new Label("Expiration: " + (p.getDateExpiration() == null ? "-" : p.getDateExpiration().toString()));
-        exp.getStyleClass().add("product-meta");
+        // ── Nombre de matériels (0 pour l'instant, extensible) ──
+        Label matLabel = new Label("0 materiel(s)");
+        matLabel.getStyleClass().add("mk-meta");
 
-        Label badge = new Label("");
-        if (p.getDateExpiration() != null) {
-            LocalDate today = LocalDate.now();
-            if (!p.getDateExpiration().isBefore(today) && !p.getDateExpiration().isAfter(today.plusDays(7))) {
-                badge.setText("Expire bientôt");
-                badge.getStyleClass().add("badge-soon");
+        // ── Prix + promo ──
+        Promotion bestPromo = promotionService.getBestPromotionForProduct(p);
+        VBox prixBox = buildPrixBox(p, bestPromo);
+
+        // ── Bouton favoris / actions admin ──
+        boolean isFav = favorisDAO.isFavoris(p.getIdProduit());
+        Button favBtn = new Button(isFav ? "❤ Retirer des favoris" : "Ajouter favoris");
+        favBtn.getStyleClass().add(isFav ? "mk-btn-fav-active" : "mk-btn-fav");
+        favBtn.setMaxWidth(Double.MAX_VALUE);
+        favBtn.setOnAction(e -> {
+            if (favorisDAO.isFavoris(p.getIdProduit())) {
+                favorisDAO.removeFavoris(p.getIdProduit());
+                favBtn.setText("Ajouter favoris");
+                favBtn.getStyleClass().setAll("mk-btn-fav");
+            } else {
+                favorisDAO.addFavoris(p.getIdProduit());
+                favBtn.setText("❤ Retirer des favoris");
+                favBtn.getStyleClass().setAll("mk-btn-fav-active");
             }
-        }
+            updateFavorisBtn();
+        });
 
-        Button detailsBtn = new Button("Détails");
-        detailsBtn.getStyleClass().add("secondary-button");
-        detailsBtn.setOnAction(e -> openDetails(p));
-        Button editBtn = new Button("Modifier");
-        editBtn.getStyleClass().add("primary-button");
+        // Bouton "Voir fiche" — vert foncé, pleine largeur
+        Button ficheBtn = new Button("Voir fiche produit");
+        ficheBtn.getStyleClass().add("mk-btn-detail");
+        ficheBtn.setMaxWidth(Double.MAX_VALUE);
+        ficheBtn.setOnAction(e -> openFiche(p, bestPromo));
+
+        // Boutons admin (Modifier / Supprimer) — petits, discrets
+        Button editBtn   = new Button("✏");
+        Button deleteBtn = new Button("🗑");
+        editBtn.getStyleClass().add("mk-btn-edit");
+        deleteBtn.getStyleClass().add("mk-btn-delete");
         editBtn.setOnAction(e -> openEditForm(p));
-        Button deleteBtn = new Button("Supprimer");
-        deleteBtn.getStyleClass().add("danger-button");
         deleteBtn.setOnAction(e -> handleDelete(p));
-        HBox actions = new HBox(8, detailsBtn, editBtn, deleteBtn);
-        actions.getStyleClass().add("product-actions");
+        HBox adminBtns = new HBox(6, editBtn, deleteBtn);
+        adminBtns.setAlignment(Pos.CENTER_RIGHT);
+        adminBtns.setStyle("-fx-padding: 6 12 4 12;");
 
-        card.getChildren().addAll(imageView, titleBar, badge, stock, exp, actions);
+        card.getChildren().addAll(
+                imageView, catLabel, nomLabel, qteLabel, matLabel, prixBox,
+                adminBtns, ficheBtn, favBtn);
         return card;
     }
 
-    private void updateFavorisEmoji(Button btn, Produit p) {
-        btn.setText(favorisDAO.isFavoris(p.getIdProduit()) ? "❤️" : "🤍");
+    /** Bloc prix — style Symfony : prix barré + prix promo + badge vert */
+    private VBox buildPrixBox(Produit p, Promotion promo) {
+        VBox box = new VBox(2);
+        box.setStyle("-fx-padding: 4 12 4 12;");
+
+        if (p.getPrixUnitaire() > 0) {
+            if (promo != null) {
+                double promoPrice = promo.applyTo(p.getPrixUnitaire(), 1);
+
+                Label original = new Label(String.format("%.2f TND", p.getPrixUnitaire()));
+                original.getStyleClass().add("mk-price-original");
+
+                Label discounted = new Label(String.format("%.2f TND", promoPrice));
+                discounted.getStyleClass().add("mk-price-promo");
+
+                // Badge vert style Symfony : "PROMO CHOISIE: -40%"
+                Label badge = new Label("PROMO CHOISIE: " + promo.getLabel());
+                badge.getStyleClass().add("mk-promo-badge");
+
+                box.getChildren().addAll(original, discounted, badge);
+            } else {
+                Label price = new Label(String.format("%.2f TND", p.getPrixUnitaire()));
+                price.getStyleClass().add("mk-price");
+                box.getChildren().add(price);
+            }
+        }
+        return box;
     }
 
-    private void toggleFavoriSimple(Button btn, Produit p) {
-        if (favorisDAO.isFavoris(p.getIdProduit())) {
-            favorisDAO.removeFavoris(p.getIdProduit());
-        } else {
-            favorisDAO.addFavoris(p.getIdProduit());
-        }
-        updateFavorisEmoji(btn, p);
+    // ------------------------------------------------------------------ //
+    //  Catégorie (logique identique Symfony)
+    // ------------------------------------------------------------------ //
+
+    private String resolveCategory(Produit p) {
+        if (p == null) return "Autres";
+        String name = p.getNom() != null ? p.getNom().toLowerCase() : "";
+        String unit = p.getUnite() != null ? p.getUnite().toLowerCase() : "";
+
+        if (name.matches(".*\\b(semence|graine|grain|plant|fourrage).*")) return "Semences";
+        if (name.matches(".*\\b(engrais|fertili|compost|amendement).*"))  return "Fertilisants";
+        if (unit.equals("l") || name.matches(".*\\b(lait|huile|sirop|jus|liquide).*")) return "Liquides";
+        if (unit.equals("piece") || unit.equals("pièce") || unit.equals("unité") || unit.equals("unite")) return "Equipements";
+        if (unit.equals("kg")) return "Intrants solides";
+        return "Autres";
     }
+
+    // ------------------------------------------------------------------ //
+    //  Image
+    // ------------------------------------------------------------------ //
 
     private Image loadProductImage(String path) {
         try {
             if (path != null && !path.isBlank()) {
                 File file = new File(path);
                 if (file.exists()) return new Image(file.toURI().toString(), true);
-                if (path.startsWith("http://") || path.startsWith("https://")) return new Image(path, true);
-                if (path.startsWith("/")) {
+                if (path.startsWith("http://") || path.startsWith("https://"))
+                    return new Image(path, true);
+                if (path.startsWith("/"))
                     return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-                }
             }
         } catch (Exception ignored) {}
         InputStream def = getClass().getResourceAsStream("/images/products/default.png");
         return def != null ? new Image(def) : null;
     }
 
-    private void openDetails(Produit produit) {
+    // ------------------------------------------------------------------ //
+    //  Navigation
+    // ------------------------------------------------------------------ //
+
+    private void openFiche(Produit produit, Promotion bestPromotion) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marketplace_detail.fxml"));
             Parent root = loader.load();
-            MarketplaceDetailController controller = loader.getController();
-            controller.setProduit(produit);
-            Stage stage = (Stage) cardsPane.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Détails - " + produit.getNom());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            MarketplaceDetailController ctrl = loader.getController();
+            ctrl.setProduit(produit, bestPromotion);
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(cardsPane.getScene().getWindow());
+            dialog.setTitle("Fiche produit — " + produit.getNom() + " - FARMTECH");
+            dialog.setScene(new Scene(root, 700, 600));
+            dialog.setResizable(true);
+            dialog.showAndWait();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    @FXML
-    private void handleChatSend() {
-        if (chatInput == null) return;
-        String userText = chatInput.getText() == null ? "" : chatInput.getText().trim();
-        if (userText.isEmpty()) return;
-        appendChat("Vous", userText);
-        chatInput.clear();
-        String apiKey = System.getenv("OPENAI_API_KEY");
-        if (apiKey == null || apiKey.isBlank()) {
-            appendChat("Assistant", "Veuillez configurer la variable d'environnement OPENAI_API_KEY pour activer le chatbot IA.");
-            return;
-        }
-        setChatBusy(true);
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                List<OpenAiChatService.Msg> msgs = buildPrompt(userText);
-                return OpenAiChatService.chat(msgs);
-            }
-        };
-        task.setOnSucceeded(ev -> {
-            setChatBusy(false);
-            appendChat("Assistant", task.getValue());
-        });
-        task.setOnFailed(ev -> {
-            setChatBusy(false);
-            Throwable ex = task.getException();
-            appendChat("Assistant", "Erreur IA: " + (ex == null ? "inconnue" : ex.getMessage()));
-        });
-        Thread t = new Thread(task, "openai-chat");
-        t.setDaemon(true);
-        t.start();
+    private void openEditForm(Produit produit) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/produit_form.fxml"));
+            Parent root = loader.load();
+            ProduitFormController ctrl = loader.getController();
+            ctrl.setProduitDAO(produitDAO);
+            ctrl.setProduit(produit);
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setTitle("Modifier — " + produit.getNom());
+            dialog.setScene(new Scene(root));
+            dialog.showAndWait();
+            allProduits = produitDAO.getAll();
+            applyFilterAndRender();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    private List<OpenAiChatService.Msg> buildPrompt(String userText) {
-        String q = userText.toLowerCase();
-        List<Produit> matches = allProduits == null ? List.of() : allProduits.stream()
-                .filter(p -> p.getNom() != null && p.getNom().toLowerCase().contains(q))
-                .limit(5)
-                .toList();
-        DateTimeFormatter df = DateTimeFormatter.ISO_DATE;
-        StringBuilder ctx = new StringBuilder();
-        ctx.append("Contexte produits (extraits du catalogue):\n");
-        if (matches.isEmpty()) {
-            ctx.append("- Aucun match direct sur le nom.\n");
-        } else {
-            for (Produit p : matches) {
-                ctx.append("- id=").append(p.getIdProduit()).append(", nom=").append(p.getNom())
-                        .append(", stock=").append(p.getQuantite()).append(" ").append(p.getUnite())
-                        .append(", expiration=").append(p.getDateExpiration() == null ? "-" : p.getDateExpiration().format(df)).append("\n");
+    private void handleDelete(Produit produit) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Supprimer « " + produit.getNom() + " » ?");
+        confirm.setContentText("Cette action est irréversible.");
+        Optional<ButtonType> res = confirm.showAndWait();
+        if (res.isPresent() && res.get() == ButtonType.OK) {
+            if (produitDAO.delete(produit.getIdProduit())) {
+                allProduits = produitDAO.getAll();
+                applyFilterAndRender();
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Suppression impossible.").showAndWait();
             }
         }
-        List<OpenAiChatService.Msg> msgs = new ArrayList<>();
-        msgs.add(new OpenAiChatService.Msg("system",
-                "Tu es un assistant de marketplace pour une application de gestion de produits agricoles. Réponds en français, de façon concise et utile."));
-        msgs.add(new OpenAiChatService.Msg("system", ctx.toString()));
-        int keep = 8;
-        int start = Math.max(0, chatHistory.size() - keep);
-        for (int i = start; i < chatHistory.size(); i++) msgs.add(chatHistory.get(i));
-        msgs.add(new OpenAiChatService.Msg("user", userText));
-        chatHistory.add(new OpenAiChatService.Msg("user", userText));
-        return msgs;
-    }
-
-    private void appendChat(String who, String text) {
-        if (chatArea == null) return;
-        String current = chatArea.getText() == null ? "" : chatArea.getText();
-        String next = (current.isBlank() ? "" : current + "\n\n") + who + ": " + text;
-        chatArea.setText(next);
-        chatArea.positionCaret(next.length());
-        if ("Assistant".equals(who)) chatHistory.add(new OpenAiChatService.Msg("assistant", text));
-    }
-
-    private void setChatBusy(boolean busy) {
-        if (chatLoading != null) { chatLoading.setVisible(busy); chatLoading.setManaged(busy); }
-        if (chatSendButton != null) chatSendButton.setDisable(busy);
-        if (chatInput != null) chatInput.setDisable(busy);
     }
 
     @FXML
@@ -305,50 +421,8 @@ public class MarketplaceController {
             scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             Stage stage = (Stage) cardsPane.getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("Gestion des Produits et Matériels");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openEditForm(Produit produit) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/produit_form.fxml"));
-            Parent root = loader.load();
-            ProduitFormController controller = loader.getController();
-            controller.setProduitDAO(produitDAO);
-            controller.setProduit(produit);
-            Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setTitle("Modifier produit");
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-            allProduits = produitDAO.getAll();
-            handleFilter();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void handleDelete(Produit produit) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation");
-        confirm.setHeaderText("Supprimer le produit");
-        confirm.setContentText("Voulez-vous supprimer : " + produit.getNom() + " ?");
-        Optional<ButtonType> res = confirm.showAndWait();
-        if (res.isPresent() && res.get() == ButtonType.OK) {
-            boolean ok = produitDAO.delete(produit.getIdProduit());
-            if (ok) {
-                allProduits = produitDAO.getAll();
-                handleFilter();
-            } else {
-                Alert err = new Alert(Alert.AlertType.ERROR);
-                err.setTitle("Erreur");
-                err.setHeaderText("Suppression impossible");
-                err.setContentText("Le produit ne peut pas être supprimé (peut-être référencé par un matériel).");
-                err.showAndWait();
-            }
-        }
+            stage.setTitle("Gestion des Produits");
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     @FXML
@@ -360,12 +434,6 @@ public class MarketplaceController {
             Stage stage = (Stage) cardsPane.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("❤️ Mes Favoris");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert err = new Alert(Alert.AlertType.ERROR);
-            err.setTitle("Erreur");
-            err.setContentText("Impossible d'ouvrir la page des favoris: " + e.getMessage());
-            err.showAndWait();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

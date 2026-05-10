@@ -286,3 +286,148 @@
 .date-picker .arrow-button .arrow {
     -fx-background-color: #1A4D2E;
 }
+
+/* ========== PAGINATION MARKETPLACE ========== */
+
+.page-btn {
+    -fx-background-color: white;
+    -fx-text-fill: #1A4D2E;
+    -fx-border-color: #C8DCC8;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-min-width: 36px;
+    -fx-min-height: 32px;
+}
+
+.page-btn:hover {
+    -fx-background-color: #E8F5E9;
+    -fx-border-color: #1A4D2E;
+}
+
+.page-btn:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+.page-btn-active {
+    -fx-background-color: #1A4D2E;
+    -fx-text-fill: white;
+    -fx-border-color: #1A4D2E;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: default;
+    -fx-min-width: 36px;
+    -fx-min-height: 32px;
+}
+
+/* ========== BADGE EXPIRATION ========== */
+.badge-soon {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #92400E;
+    -fx-padding: 2 8;
+    -fx-background-radius: 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+/* ========== BOUTONS ACTIONS PRODUIT LIST ========== */
+
+/* Boutons outils (Statistiques, IA, Traçabilité…) */
+.action-btn-tool {
+    -fx-background-color: white;
+    -fx-text-fill: #374151;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-padding: 7 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.action-btn-tool:hover {
+    -fx-background-color: #F3F4F6;
+    -fx-border-color: #9CA3AF;
+}
+
+/* Bouton Ajouter */
+.action-btn-add {
+    -fx-background-color: #1A4D2E;
+    -fx-text-fill: white;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-padding: 7 18;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.action-btn-add:hover {
+    -fx-background-color: #245326;
+}
+
+/* Bouton Modifier */
+.action-btn-edit {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-padding: 7 18;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.action-btn-edit:hover {
+    -fx-background-color: #1D4ED8;
+}
+
+/* Bouton Supprimer */
+.action-btn-delete {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-padding: 7 18;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.action-btn-delete:hover {
+    -fx-background-color: #B91C1C;
+}
+
+/* ========== TABLE PRODUITS AMÉLIORÉE ========== */
+
+#produitTable .column-header-background {
+    -fx-background-color: #1A4D2E;
+    -fx-background-radius: 10 10 0 0;
+}
+
+#produitTable .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+    -fx-padding: 10 8;
+}
+
+#produitTable .table-row-cell:hover {
+    -fx-background-color: #F0FDF4;
+}
+
+#produitTable .table-row-cell:selected {
+    -fx-background-color: #DCFCE7;
+}
+
+#produitTable .table-row-cell:selected .table-cell {
+    -fx-text-fill: #14532D;
+}

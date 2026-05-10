@@ -120,4 +120,58 @@ public class MaterielDAO {
         }
         return null;
     }
+
+    /**
+     * Retourne tous les matériels qui N'appartiennent PAS au produit donné.
+     * Utilisé par MaterielRecommendationService (miroir Symfony findAllWithProduit).
+     */
+    public List<Materiel> getAllExcludingProduit(int idProduit) {
+        List<Materiel> list = new ArrayList<>();
+        String sql = "SELECT idMateriel, nom, etat, dateAchat, cout, idProduit "
+                + "FROM materiel WHERE idProduit != ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idProduit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Materiel m = new Materiel();
+                    m.setIdMateriel(rs.getInt("idMateriel"));
+                    m.setNom(rs.getString("nom"));
+                    m.setEtat(rs.getString("etat"));
+                    Date achat = rs.getDate("dateAchat");
+                    m.setDateAchat(achat != null ? achat.toLocalDate() : null);
+                    m.setCout(rs.getDouble("cout"));
+                    m.setIdProduit(rs.getInt("idProduit"));
+                    list.add(m);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /** Retourne tous les matériels (toutes tables confondues). */
+    public List<Materiel> getAll() {
+        List<Materiel> list = new ArrayList<>();
+        String sql = "SELECT idMateriel, nom, etat, dateAchat, cout, idProduit FROM materiel";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Materiel m = new Materiel();
+                m.setIdMateriel(rs.getInt("idMateriel"));
+                m.setNom(rs.getString("nom"));
+                m.setEtat(rs.getString("etat"));
+                Date achat = rs.getDate("dateAchat");
+                m.setDateAchat(achat != null ? achat.toLocalDate() : null);
+                m.setCout(rs.getDouble("cout"));
+                m.setIdProduit(rs.getInt("idProduit"));
+                list.add(m);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

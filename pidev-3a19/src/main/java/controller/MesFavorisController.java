@@ -1,60 +1,66 @@
 package controller;
 
+import Services.PromotionService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import model.Produit;
 import model.FavorisDAO;
-import model.ProduitDAO;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
+import model.Produit;
+import model.Promotion;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
+import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 public class MesFavorisController {
 
     @FXML private FlowPane cardsPane;
-    @FXML private Label titleLabel;
-    @FXML private Label emptyLabel;
-    @FXML private Button backButton;
-    @FXML private Button clearButton;
+    @FXML private Label    titleLabel;
+    @FXML private Label    emptyLabel;
+    @FXML private Button   backButton;
+    @FXML private Button   clearButton;
 
-    private final FavorisDAO favorisDAO = new FavorisDAO();
-    private final ProduitDAO produitDAO = new ProduitDAO();
+    private final FavorisDAO       favorisDAO       = new FavorisDAO();
+    private final PromotionService promotionService = new PromotionService();
 
     @FXML
     private void initialize() {
         loadFavoris();
     }
 
+    // ------------------------------------------------------------------ //
+    //  Chargement
+    // ------------------------------------------------------------------ //
+
     private void loadFavoris() {
         List<Produit> favoris = favorisDAO.getAllFavoris();
-        if (titleLabel != null) titleLabel.setText("❤️ Mes Favoris (" + favoris.size() + ")");
+
+        if (titleLabel != null)
+            titleLabel.setText("❤️ Mes Favoris (" + favoris.size() + ")");
+
         if (favoris.isEmpty()) {
             if (emptyLabel != null) {
                 emptyLabel.setVisible(true);
-                emptyLabel.setText("Aucun favori pour le moment.\nExplorez le Marketplace et ajoutez des produits à vos favoris!");
+                emptyLabel.setManaged(true);
+                emptyLabel.setText("Aucun favori pour le moment.\nExplorez le Marketplace et ajoutez des produits !");
             }
-            if (cardsPane != null) cardsPane.setVisible(false);
+            if (cardsPane != null) { cardsPane.setVisible(false); cardsPane.setManaged(false); }
             if (clearButton != null) clearButton.setDisable(true);
         } else {
-            if (emptyLabel != null) emptyLabel.setVisible(false);
+            if (emptyLabel != null) { emptyLabel.setVisible(false); emptyLabel.setManaged(false); }
             if (cardsPane != null) {
                 cardsPane.setVisible(true);
+                cardsPane.setManaged(true);
                 renderCards(favoris);
             }
             if (clearButton != null) clearButton.setDisable(false);
@@ -68,97 +74,142 @@ public class MesFavorisController {
         }
     }
 
-    private VBox createCard(Produit p) {
-        VBox card = new VBox(8);
-        card.setPrefWidth(260);
-        card.getStyleClass().add("product-card");
+    // ------------------------------------------------------------------ //
+    //  Carte — style identique marketplace
+    // ------------------------------------------------------------------ //
 
+    private VBox createCard(Produit p) {
+        Promotion bestPromo = promotionService.getBestPromotionForProduct(p);
+
+        VBox card = new VBox(0);
+        card.setPrefWidth(220);
+        card.setMaxWidth(220);
+        card.getStyleClass().add("mk-card");
+
+        // Image
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(240);
-        imageView.setFitHeight(140);
+        imageView.setFitWidth(220);
+        imageView.setFitHeight(130);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(true);
         imageView.setImage(loadProductImage(p.getImagePath()));
-        imageView.getStyleClass().add("product-card-image");
 
-        Label title = new Label(p.getNom());
-        title.getStyleClass().add("product-title");
-        title.setWrapText(true);
+        // Catégorie
+        Label catLabel = new Label(resolveCategory(p).toUpperCase());
+        catLabel.getStyleClass().add("mk-category");
 
-        String metaText = "Stock: " + p.getQuantite() + " " + p.getUnite();
-        Label meta = new Label(metaText);
-        meta.getStyleClass().add("product-meta");
+        // Nom
+        Label nomLabel = new Label(p.getNom());
+        nomLabel.getStyleClass().add("mk-product-name");
+        nomLabel.setMaxWidth(196);
+        nomLabel.setWrapText(true);
 
-        Label expirationLabel = new Label();
+        // Quantité
+        Label qteLabel = new Label(p.getQuantite() + " "
+                + (p.getUnite() != null ? p.getUnite() : ""));
+        qteLabel.getStyleClass().add("mk-meta");
+
+        // Expiration
+        Label expLabel = new Label();
         if (p.getDateExpiration() != null) {
-            expirationLabel.setText("Expire: " + p.getDateExpiration().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            if (p.getDateExpiration().minusDays(7).isBefore(java.time.LocalDate.now())) {
-                expirationLabel.getStyleClass().add("badge-soon");
-            } else {
-                expirationLabel.getStyleClass().add("product-meta");
+            LocalDate today = LocalDate.now();
+            if (p.getDateExpiration().isBefore(today)) {
+                expLabel.setText("⛔ Expiré");
+                expLabel.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 12px; -fx-padding: 1 12;");
+            } else if (!p.getDateExpiration().isAfter(today.plusDays(7))) {
+                expLabel.setText("⚠ Expire bientôt");
+                expLabel.setStyle("-fx-text-fill: #D97706; -fx-font-size: 12px; -fx-padding: 1 12;");
             }
         }
 
-        VBox actions = new VBox(6);
-        actions.setStyle("-fx-padding: 8 0 0 0;");
-        Button detailsButton = new Button("Détails");
-        detailsButton.setPrefWidth(240);
-        detailsButton.getStyleClass().add("secondary-button");
-        detailsButton.setOnAction(e -> openDetails(p));
-        Button removeButton = new Button("Retirer des favoris");
-        removeButton.setPrefWidth(240);
-        removeButton.getStyleClass().add("danger-button");
-        removeButton.setOnAction(e -> removeFavoris(p));
-        actions.getChildren().addAll(detailsButton, removeButton);
+        // Prix + promo
+        VBox prixBox = buildPrixBox(p, bestPromo);
 
-        card.getChildren().addAll(imageView, title, meta);
-        if (p.getDateExpiration() != null) card.getChildren().add(expirationLabel);
-        card.getChildren().add(actions);
+        // Boutons actions
+        Button ficheBtn = new Button("Voir fiche produit");
+        ficheBtn.getStyleClass().add("mk-btn-detail");
+        ficheBtn.setMaxWidth(Double.MAX_VALUE);
+        ficheBtn.setOnAction(e -> openFiche(p, bestPromo));
+
+        Button removeBtn = new Button("❤ Retirer des favoris");
+        removeBtn.getStyleClass().add("mk-btn-fav-active");
+        removeBtn.setMaxWidth(Double.MAX_VALUE);
+        removeBtn.setOnAction(e -> handleRemove(p));
+
+        card.getChildren().addAll(imageView, catLabel, nomLabel, qteLabel);
+        if (expLabel.getText() != null && !expLabel.getText().isBlank())
+            card.getChildren().add(expLabel);
+        card.getChildren().addAll(prixBox, ficheBtn, removeBtn);
         return card;
     }
 
-    private void openDetails(Produit p) {
+    private VBox buildPrixBox(Produit p, Promotion promo) {
+        VBox box = new VBox(2);
+        box.setStyle("-fx-padding: 4 12 4 12;");
+        if (p.getPrixUnitaire() > 0) {
+            if (promo != null) {
+                double promoPrice = promo.applyTo(p.getPrixUnitaire(), 1);
+                Label original = new Label(String.format("%.2f TND", p.getPrixUnitaire()));
+                original.getStyleClass().add("mk-price-original");
+                Label discounted = new Label(String.format("%.2f TND", promoPrice));
+                discounted.getStyleClass().add("mk-price-promo");
+                Label badge = new Label("PROMO CHOISIE: " + promo.getLabel());
+                badge.getStyleClass().add("mk-promo-badge");
+                box.getChildren().addAll(original, discounted, badge);
+            } else {
+                Label price = new Label(String.format("%.2f TND", p.getPrixUnitaire()));
+                price.getStyleClass().add("mk-price");
+                box.getChildren().add(price);
+            }
+        }
+        return box;
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Actions
+    // ------------------------------------------------------------------ //
+
+    private void openFiche(Produit p, Promotion bestPromotion) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marketplace_detail.fxml"));
             Parent root = loader.load();
-            MarketplaceDetailController controller = loader.getController();
-            controller.setProduit(p);
-            Stage stage = new Stage();
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            stage.setTitle("Détails - " + p.getNom());
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
+            MarketplaceDetailController ctrl = loader.getController();
+            ctrl.setProduit(p, bestPromotion);
+
+            Stage dialog = new Stage();
+            dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            dialog.initOwner(cardsPane.getScene().getWindow());
+            dialog.setTitle("Fiche produit — " + p.getNom() + " - FARMTECH");
+            dialog.setScene(new Scene(root, 700, 600));
+            dialog.setResizable(true);
+            dialog.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Erreur", "Impossible d'ouvrir les détails du produit.");
+            showError("Erreur", "Impossible d'ouvrir la fiche produit.");
         }
     }
 
-    private void removeFavoris(Produit p) {
+    private void handleRemove(Produit p) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Retirer des favoris");
-        confirm.setHeaderText("Êtes-vous sûr?");
-        confirm.setContentText("Voulez-vous retirer \"" + p.getNom() + "\" de vos favoris?");
-        if (confirm.showAndWait().orElse(null) == javafx.scene.control.ButtonType.OK) {
-            if (favorisDAO.removeFavoris(p.getIdProduit())) {
-                showInfo("Succès", "Produit retiré de vos favoris.");
-                loadFavoris();
-            } else {
-                showError("Erreur", "Impossible de retirer le produit des favoris.");
-            }
+        confirm.setHeaderText("Retirer « " + p.getNom() + " » ?");
+        confirm.setContentText("Cette action est réversible depuis le Marketplace.");
+        if (confirm.showAndWait().orElse(null) == ButtonType.OK) {
+            favorisDAO.removeFavoris(p.getIdProduit());
+            loadFavoris();
         }
     }
 
     @FXML
-    private void handleBack(ActionEvent event) {
+    private void handleBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marketplace.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/view/marketplace.fxml"));
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            scene.getStylesheets().add(getClass().getResource("/css/marketplace.css").toExternalForm());
+            Stage stage = (Stage) cardsPane.getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("Marketplace - Catalogue");
+            stage.setTitle("Marketplace — Catalogue");
         } catch (IOException e) {
             e.printStackTrace();
             showError("Erreur", "Impossible de retourner au Marketplace.");
@@ -169,28 +220,39 @@ public class MesFavorisController {
     private void handleClearAll() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Vider tous les favoris");
-        confirm.setHeaderText("Êtes-vous sûr?");
-        confirm.setContentText("Voulez-vous supprimer TOUS vos favoris? Cette action est irréversible.");
-        if (confirm.showAndWait().orElse(null) == javafx.scene.control.ButtonType.OK) {
-            if (favorisDAO.clearAllFavoris()) {
-                showInfo("Succès", "Tous les favoris ont été supprimés.");
-                loadFavoris();
-            } else {
-                showError("Erreur", "Impossible de vider les favoris.");
-            }
+        confirm.setHeaderText("Supprimer TOUS les favoris ?");
+        confirm.setContentText("Cette action est irréversible.");
+        if (confirm.showAndWait().orElse(null) == ButtonType.OK) {
+            favorisDAO.clearAllFavoris();
+            loadFavoris();
         }
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Helpers
+    // ------------------------------------------------------------------ //
+
+    private String resolveCategory(Produit p) {
+        if (p == null) return "Autres";
+        String name = p.getNom() != null ? p.getNom().toLowerCase() : "";
+        String unit = p.getUnite() != null ? p.getUnite().toLowerCase() : "";
+        if (name.matches(".*\\b(semence|graine|grain|plant|fourrage).*")) return "Semences";
+        if (name.matches(".*\\b(engrais|fertili|compost|amendement).*"))  return "Fertilisants";
+        if (unit.equals("l") || name.matches(".*\\b(lait|huile|sirop|jus|liquide).*")) return "Liquides";
+        if (unit.equals("piece") || unit.equals("pièce") || unit.equals("unité") || unit.equals("unite")) return "Equipements";
+        if (unit.equals("kg")) return "Intrants solides";
+        return "Autres";
     }
 
     private Image loadProductImage(String path) {
         try {
             if (path != null && !path.isBlank()) {
                 File file = new File(path);
-                if (file.exists()) return new Image(file.toURI().toString());
-                if (path.startsWith("http://") || path.startsWith("https://")) return new Image(path);
-                if (path.startsWith("/")) {
-                    var is = getClass().getResourceAsStream(path);
-                    if (is != null) return new Image(is);
-                }
+                if (file.exists()) return new Image(file.toURI().toString(), true);
+                if (path.startsWith("http://") || path.startsWith("https://"))
+                    return new Image(path, true);
+                if (path.startsWith("/"))
+                    return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
             }
         } catch (Exception ignored) {}
         InputStream def = getClass().getResourceAsStream("/images/products/default.png");
@@ -198,18 +260,7 @@ public class MesFavorisController {
     }
 
     private void showError(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    private void showInfo(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Erreur"); a.setHeaderText(header); a.setContentText(content); a.showAndWait();
     }
 }
