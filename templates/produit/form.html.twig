@@ -1,0 +1,26 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ mode == 'creation' ? 'Nouveau produit' : 'Modifier produit' }} | FarmTech{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Stock interne</p>
+        <h1>{{ mode == 'creation' ? 'Nouveau produit' : 'Modifier produit' }}</h1>
+        {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
+            <div class="form-row">{{ form_row(form.nom) }}</div>
+            <div class="form-row">{{ form_row(form.quantite) }}</div>
+            <div class="form-row">{{ form_row(form.unite) }}</div>
+            <div class="form-row">{{ form_row(form.dateExpiration) }}</div>
+            <div class="form-row">{{ form_row(form.prix) }}</div>
+            <div class="form-row">{{ form_row(form.imageFile) }}</div>
+            {% if current_image_path is defined and current_image_path %}
+                <p>Image actuelle:</p>
+                <img src="{{ asset(current_image_path) }}" alt="Image produit" style="max-width: 180px; height: auto;">
+            {% endif %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">{{ mode == 'creation' ? 'Creer' : 'Enregistrer' }}</button>
+                <a class="btn btn-ghost" href="{{ path('app_produit_index') }}">Retour</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

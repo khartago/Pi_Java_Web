@@ -1,0 +1,36 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ produit.nom }} | Produit{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <a href="{{ path('app_produit_index') }}">← Retour produits</a>
+        <h1>{{ produit.nom }}</h1>
+        <img
+            src="{{ asset(produit.imageAssetPath) }}"
+            alt="{{ produit.nom }}"
+            class="admin-media"
+            onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
+        >
+        <div class="admin-meta-grid">
+            <div class="admin-meta-chip"><strong>Quantite:</strong> {{ produit.quantite }} {{ produit.unite }}</div>
+            <div class="admin-meta-chip"><strong>Expiration:</strong> {{ produit.dateExpirationLabel }}</div>
+            <div class="admin-meta-chip"><strong>Prix:</strong> {{ produit.prix is not null ? produit.prix|number_format(2, ',', ' ') ~ ' TND' : '-' }}</div>
+        </div>
+        <p>
+            <a href="{{ path('app_produit_edit', { idProduit: produit.idProduit }) }}">Modifier</a> |
+            <a href="{{ path('app_materiel_new', { idProduit: produit.idProduit }) }}">Ajouter materiel</a>
+        </p>
+        <h3>Materiels</h3>
+        <ul class="admin-simple-list">
+            {% for materiel in produit.materiels %}
+                <li>
+                    {{ materiel.nom }} - {{ materiel.etat }}
+                    <a href="{{ path('app_materiel_edit', { idMateriel: materiel.idMateriel }) }}">Modifier</a>
+                </li>
+            {% else %}
+                <li>Aucun materiel.</li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}

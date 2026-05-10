@@ -1,0 +1,13 @@
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    ignoreErrors:
+        # Doctrine hydrates entity IDs via reflection; PHPStan does not see assignments.
+        -
+            identifier: property.unusedType
+            path: src/Entity/*

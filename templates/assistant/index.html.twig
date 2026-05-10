@@ -1,0 +1,56 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Assistant IA | FarmTech{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Assistant</p>
+        <h1>Assistant IA Stock</h1>
+        <p class="page-lead">Posez vos questions sur les stocks, produits et materiels.</p>
+        <div id="assistant-messages" class="admin-chat-panel diagnostic-assist-messages"></div>
+        <form id="assistant-form" class="admin-chat-form diagnostic-assist-form">
+            <textarea id="assistant-input" class="admin-chat-input diagnostic-assist-input" rows="3" placeholder="Ex: Quels produits sont en rupture ?"></textarea>
+            <button class="btn btn-primary" type="submit">Envoyer</button>
+        </form>
+    </section>
+
+    <script>
+        (() => {
+            const form = document.getElementById('assistant-form');
+            const input = document.getElementById('assistant-input');
+            const panel = document.getElementById('assistant-messages');
+            const messages = [];
+
+            const add = (role, text) => {
+                const item = document.createElement('div');
+                item.className = 'diagnostic-assist-message ' + (role === 'user' ? 'is-user' : 'is-assistant');
+                item.textContent = (role === 'user' ? 'Vous: ' : 'Assistant: ') + text;
+                panel.appendChild(item);
+                panel.scrollTop = panel.scrollHeight;
+            };
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const content = input.value.trim();
+                if (!content) return;
+                messages.push({ role: 'user', content });
+                add('user', content);
+                input.value = '';
+
+                try {
+                    const response = await fetch('{{ path('app_assistant_chat') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body: JSON.stringify({ messages })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.error || 'Assistant indisponible');
+                    messages.push({ role: 'assistant', content: data.reply });
+                    add('assistant', data.reply);
+                } catch (e) {
+                    add('assistant', e.message || 'Erreur');
+                }
+            });
+        })();
+    </script>
+{% endblock %}

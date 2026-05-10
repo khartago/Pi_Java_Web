@@ -1,0 +1,22 @@
+{# Probleme.photos (segments ;) → <img> : URL absolue, chemin absolu site, ou chemin relatif à public/ #}
+{% if photos is defined and photos|trim %}
+<div class="probleme-photo-gallery" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.75rem;">
+    {% for seg in photos|split(';') %}
+        {% set u = seg|trim %}
+        {% if u %}
+            {% if u starts with 'http://' or u starts with 'https://' %}
+                <img src="{{ u }}" alt="Photo signalement" loading="lazy" style="max-width:min(100%,220px);max-height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(26,77,46,0.12);">
+            {% elseif u starts with '/' %}
+                <img src="{{ u }}" alt="Photo signalement" loading="lazy" style="max-width:min(100%,220px);max-height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(26,77,46,0.12);">
+            {% elseif u starts with 'uploads/' or u starts with 'build/' or u starts with 'problemes/' or u starts with 'images/' or u starts with 'media/' or u starts with 'static/' or u starts with 'assets/' or u starts with 'bundles/' %}
+                <img src="{{ asset(u) }}" alt="Photo signalement" loading="lazy" style="max-width:min(100%,220px);max-height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(26,77,46,0.12);">
+            {% elseif u matches '/\\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i' and '..' not in u and '\\' not in u and ':' not in u %}
+                {# Chemins relatifs simples (ex. img/x.png) servis depuis public/ #}
+                <img src="{{ asset(u) }}" alt="Photo signalement" loading="lazy" style="max-width:min(100%,220px);max-height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(26,77,46,0.12);">
+            {% else %}
+                <span class="text-muted" style="font-size:0.88rem;word-break:break-all;">{{ u }}</span>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

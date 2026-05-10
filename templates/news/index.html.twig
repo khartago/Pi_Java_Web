@@ -1,0 +1,33 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}News | FarmTech{% endblock %}
+
+{% block front_content %}
+    <section class="card">
+        <h1>Actualites agriculture</h1>
+        <p class="page-lead">Sources externes en temps reel pour suivre tendances, meteo et innovations.</p>
+    </section>
+
+    <section class="news-grid">
+        {% for article in articles|slice(0, 9) %}
+            <article class="card news-card">
+                {% if article.urlToImage %}
+                    <img
+                        src="{{ article.urlToImage }}"
+                        alt="{{ article.title }}"
+                        class="news-card__img"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='{{ asset('images/thumb-placeholder.svg') }}';"
+                    >
+                {% endif %}
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.description ?: 'Aucune description disponible.' }}</p>
+                <a class="btn btn-primary btn-sm" href="{{ article.url }}" target="_blank" rel="noopener">Lire plus</a>
+            </article>
+        {% else %}
+            <article class="card">
+                <p>Aucune actualite disponible pour le moment. Verifiez NEWS_API_KEY dans .env.</p>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}

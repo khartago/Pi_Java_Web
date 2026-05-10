@@ -1,0 +1,15 @@
+{# Libellés français pour les états stockés en base #}
+{% macro etat_label(code) %}
+    {% set labels = {
+        'EN_ATTENTE': 'En attente',
+        'DIAGNOSTIQUE_DISPONIBLE': 'Diagnostic disponible',
+        'REOUVERT': 'Réouvert',
+        'CLOTURE': 'Clôturé',
+    } %}
+    {{ labels[code]|default(code) }}
+{% endmacro %}
+
+{% macro role_label(code) %}
+    {% set labels = { 'ADMIN': 'Administrateur', 'FARMER': 'Agriculteur' } %}
+    {{ labels[code]|default(code) }}
+{% endmacro %}

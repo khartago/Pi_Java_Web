@@ -1,0 +1,85 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Produits | FarmTech{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Stock produits</h1>
+            <a href="{{ path('app_produit_new') }}" class="btn btn-primary">Nouveau produit</a>
+        </div>
+
+        <form method="get" class="filters-inline">
+            <input type="search" class="form-control" name="recherche" value="{{ recherche }}" placeholder="Recherche nom">
+            <select name="unite" class="form-control">
+                <option value="">Toutes unites</option>
+                {% for item in unites %}
+                    <option value="{{ item }}" {{ unite == item ? 'selected' }}>{{ item }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Filtrer</button>
+            <a href="{{ path('app_produit_index') }}" class="btn btn-ghost">Reset</a>
+        </form>
+
+        <p class="text-muted" style="margin:0.5rem 0 1rem;font-size:0.9rem;">
+            {% if pagination.total_filtered == 0 %}
+                Aucun résultat.
+            {% else %}
+                Affichés {{ pagination.range_start }}–{{ pagination.range_end }} sur {{ pagination.total_filtered }}{% if pagination.page_count > 1 %} · page {{ pagination.page }}/{{ pagination.page_count }}{% endif %}
+            {% endif %}
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Quantite</th>
+                    <th>Unite</th>
+                    <th>Expiration</th>
+                    <th>Prix</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for produit in produits %}
+                    <tr>
+                        <td>{{ produit.nom }}</td>
+                        <td>{{ produit.quantite }}</td>
+                        <td>{{ produit.unite }}</td>
+                        <td>{{ produit.dateExpirationLabel }}</td>
+                        <td>{{ produit.prix is not null ? produit.prix|number_format(2, ',', ' ') ~ ' TND' : '-' }}</td>
+                        <td>
+                            <a href="{{ path('app_produit_edit', { idProduit: produit.idProduit }) }}">Modifier</a>
+                            |
+                            <a target="_blank" href="{{ path('app_produit_qr_code', { idProduit: produit.idProduit }) }}">QR</a>
+                            <form method="post" action="{{ path('app_produit_delete', { idProduit: produit.idProduit }) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-produit-' ~ produit.idProduit) }}">
+                                <button type="submit" class="btn-link">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">Aucun produit.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if pagination.page_count > 1 %}
+            <nav class="admin-pagination" aria-label="Pagination des produits" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:0.75rem 0;">
+                {% if pagination.prev_url %}
+                    <a href="{{ pagination.prev_url }}" class="btn btn-secondary btn-sm">Précédent</a>
+                {% else %}
+                    <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Précédent</span>
+                {% endif %}
+                <span class="text-muted" style="font-size:0.9rem;">Page {{ pagination.page }} / {{ pagination.page_count }} ({{ pagination.limit }} par page)</span>
+                {% if pagination.next_url %}
+                    <a href="{{ pagination.next_url }}" class="btn btn-secondary btn-sm">Suivant</a>
+                {% else %}
+                    <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Suivant</span>
+                {% endif %}
+            </nav>
+        {% endif %}
+    </section>
+{% endblock %}

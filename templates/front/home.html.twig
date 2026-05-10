@@ -1,0 +1,80 @@
+{% extends 'front/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Accueil — FARMTECH{% endblock %}
+
+{% block front_content %}
+{% set byE = stats.byEtat %}
+{% set en_attente = byE['EN_ATTENTE']|default(0) %}
+{% set diag_ok = byE['DIAGNOSTIQUE_DISPONIBLE']|default(0) %}
+{% set rouv = byE['REOUVERT']|default(0) %}
+{% set clot = byE['CLOTURE']|default(0) %}
+
+<div class="farmer-dashboard">
+    {% if stats.total == 0 %}
+    <section class="farmer-home-zero">
+        <h1 class="farmer-home-zero__title">Bienvenue</h1>
+        <p class="farmer-home-zero__lead">Quand vous voyez un souci sur la parcelle, décrivez-le et ajoutez une photo : nous vous répondons à travers le dossier.</p>
+        <div class="farmer-home-zero__art" aria-hidden="true">
+            {% include '_includes/app_hero_image.html.twig' %}
+        </div>
+        <a href="{{ path('app_problemes_new') }}" class="btn btn-primary farmer-home-zero__btn">Faire un premier signalement</a>
+    </section>
+    {% else %}
+
+    <article class="farmer-home-card">
+        <div class="farmer-home-card__intro">
+            <header class="farmer-home-card__head">
+                <h1 class="farmer-home-card__title">{{ app.user.nom ?? 'Agriculteur' }}</h1>
+                <p class="farmer-home-card__lead">Photo et quelques lignes suffisent pour ouvrir un dossier — suivez la réponse ici.</p>
+            </header>
+            <div class="farmer-home-card__actions">
+                <a href="{{ path('app_problemes_new') }}" class="btn btn-primary">Nouveau signalement</a>
+                <a href="{{ path('app_problemes_index') }}" class="btn btn-ghost">Mes dossiers</a>
+            </div>
+        </div>
+        <div class="farmer-home-card__visual" aria-hidden="true">
+            {% include '_includes/app_hero_image.html.twig' %}
+        </div>
+    </article>
+
+    <div class="farmer-home-summary">
+        <p class="farmer-home-summary__p">
+            Sur vos <strong>{{ stats.total }}</strong> dossier{{ stats.total > 1 ? 's' : '' }} :
+            <strong>{{ en_attente }}</strong> en attente de réponse,
+            <strong>{{ diag_ok }}</strong> avec une réponse à lire{% if clot > 0 %},
+            <strong>{{ clot }}</strong> terminé{{ clot > 1 ? 's' : '' }}{% endif %}.
+        </p>
+        <a href="{{ path('app_problemes_index') }}" class="farmer-home-summary__link">Voir tous les dossiers</a>
+    </div>
+
+    {% if etatDistribution.items is not empty %}
+    <section class="farmer-home-follow" aria-label="Répartition par état">
+        <h2 class="farmer-home-follow__h">Par état</h2>
+        <ul class="farmer-home-follow__list">
+            {% for label, row in etatDistribution.items %}
+            {% if row.count > 0 %}
+            <li class="farmer-home-follow__item">
+                <span class="farmer-status-row__dot" data-etat="{{ label }}" aria-hidden="true"></span>
+                <span class="farmer-home-follow__lbl">{{ pl.etat_label(label) }}</span>
+                <span class="farmer-home-follow__n">{{ row.count }}</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if rouv > 0 %}
+    <p class="farmer-home-note">
+        {% if rouv == 1 %}
+            <strong>1</strong> dossier est réouvert : une nouvelle réponse peut arriver.
+        {% else %}
+            <strong>{{ rouv }}</strong> dossiers sont réouverts : une nouvelle réponse peut arriver.
+        {% endif %}
+    </p>
+    {% endif %}
+
+    {% endif %}
+</div>
+{% endblock %}

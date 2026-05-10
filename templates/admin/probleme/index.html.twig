@@ -1,0 +1,151 @@
+{% extends 'admin/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Signalements — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-crud-page">
+    <header class="admin-crud-head">
+        <div>
+            <span class="page-eyebrow">Administration</span>
+            <h1>Signalements</h1>
+            <p class="page-lead">Consultez les signalements et ouvrez le diagnostic associé depuis la colonne Actions.</p>
+        </div>
+        <a href="{{ path('admin_problemes_new') }}" class="btn btn-ghost">Créer un signalement</a>
+    </header>
+
+    <div class="admin-crud-panel">
+        <div class="admin-stat-strip" role="list">
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Total</span>
+                <span class="admin-stat-strip__val">{{ stats.total }}</span>
+            </div>
+            {% for etat, cnt in stats.byEtat %}
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">{{ pl.etat_label(etat) }}</span>
+                <span class="admin-stat-strip__val">{{ cnt }}</span>
+            </div>
+            {% endfor %}
+            <div class="admin-stat-strip__item" role="listitem">
+                <span class="admin-stat-strip__lbl">Affichés</span>
+                <span class="admin-stat-strip__val">{% if pagination.total_filtered == 0 %}0{% else %}{{ pagination.range_start }}–{{ pagination.range_end }}{% endif %}</span>
+                <span class="admin-stat-strip__sub">sur {{ pagination.total_filtered }} filtré(s){% if pagination.page_count > 1 %} · p. {{ pagination.page }}/{{ pagination.page_count }}{% endif %}</span>
+            </div>
+        </div>
+
+        <form method="get" class="filters-bar" action="{{ path('admin_problemes_index') }}" data-live-filter="1">
+            <div class="filters-bar__row">
+                <div class="filter-field form-row filter-field--grow" style="margin:0;">
+                    <label for="pq">Recherche</label>
+                    <input class="form-control" id="pq" name="q" value="{{ filters.q|default('') }}" maxlength="200" placeholder="Description, type…" autocomplete="off">
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="petat">État</label>
+                    <select class="form-control" id="petat" name="etat">
+                        <option value="">Tous</option>
+                        {% for label, val in constant('App\\Form\\ProblemeType::ETATS') %}
+                            <option value="{{ val }}" {{ filters.etat == val ? 'selected' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pgrav">Gravité</label>
+                    <select class="form-control" id="pgrav" name="gravite">
+                        <option value="">Toutes</option>
+                        {% for label, val in constant('App\\Form\\ProblemeType::GRAVITES') %}
+                            <option value="{{ val }}" {{ filters.gravite == val ? 'selected' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="psort">Tri</label>
+                    <select class="form-control" id="psort" name="sort">
+                        <option value="dateDetection" {{ filters.sort == 'dateDetection' ? 'selected' }}>Date</option>
+                        <option value="id" {{ filters.sort == 'id' ? 'selected' }}>N°</option>
+                        <option value="type" {{ filters.sort == 'type' ? 'selected' }}>Type</option>
+                        <option value="gravite" {{ filters.sort == 'gravite' ? 'selected' }}>Gravité</option>
+                        <option value="etat" {{ filters.sort == 'etat' ? 'selected' }}>État</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdir">Ordre</label>
+                    <select class="form-control" id="pdir" name="dir">
+                        <option value="DESC" {{ filters.dir == 'DESC' ? 'selected' }}>Décroissant</option>
+                        <option value="ASC" {{ filters.dir == 'ASC' ? 'selected' }}>Croissant</option>
+                    </select>
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdf">Du</label>
+                    <input class="form-control" type="date" id="pdf" name="date_from" value="{{ filters.date_from|default('') }}">
+                </div>
+                <div class="filter-field form-row" style="margin:0;">
+                    <label for="pdt">Au</label>
+                    <input class="form-control" type="date" id="pdt" name="date_to" value="{{ filters.date_to|default('') }}">
+                </div>
+                <div class="filters-bar__actions">
+                    <button type="submit" class="btn btn-secondary btn-sm">Filtrer</button>
+                    <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost btn-sm">Réinit.</a>
+                </div>
+            </div>
+        </form>
+
+        {% if problemes is empty %}
+            <div class="empty-state" style="margin:0;border:none;border-radius:0;border-top:1px solid rgba(26,77,46,0.08);">
+                <strong>Aucun problème</strong>
+                <p>Élargissez la recherche ou les filtres.</p>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Utilisateur</th><th>Type</th><th>Gravité</th><th>État</th><th>Assigné</th><th>Date</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in problemes %}
+                        <tr>
+                            <td>{{ p.utilisateur ? p.utilisateur.email : '—' }}</td>
+                            <td>{{ p.type }}</td>
+                            <td><span class="badge badge-warn">{{ p.gravite }}</span></td>
+                            <td><span class="badge badge-info">{{ pl.etat_label(p.etat) }}</span></td>
+                            <td>{{ p.adminAssignee ? p.adminAssignee.nom ~ ' — ' ~ p.adminAssignee.email : '—' }}</td>
+                            <td>{{ p.dateDetection|date('d/m/Y') }}</td>
+                            <td class="table-actions">
+                                {% set latest = latestDiagnosticByProbleme[p.id] ?? null %}
+                                {% if latest %}
+                                    <a href="{{ path('admin_diagnostics_edit', {id: latest.id}) }}">Diagnostic</a>
+                                {% else %}
+                                    <a href="{{ path('admin_diagnostics_new', {probleme: p.id}) }}">Diagnostic</a>
+                                {% endif %}
+                                {% if p.etat == 'REOUVERT' %}
+                                    <a href="{{ path('admin_diagnostics_new_revision', {probleme: p.id}) }}">Nouvelle révision</a>
+                                {% endif %}
+                                <a href="{{ path('admin_problemes_edit', {id: p.id}) }}">Éditer</a>
+                                <form method="post" action="{{ path('admin_problemes_delete', {id: p.id}) }}" onsubmit="return confirm('Supprimer ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ p.id) }}">
+                                    <button type="submit" class="btn btn-danger-soft btn-sm" aria-label="Supprimer">Suppr.</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pagination.page_count > 1 %}
+                <nav class="admin-pagination" aria-label="Pagination des signalements" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:0.75rem 0;border-top:1px solid rgba(26,77,46,0.08);">
+                    {% if pagination.prev_url %}
+                        <a href="{{ pagination.prev_url }}" class="btn btn-secondary btn-sm">Précédent</a>
+                    {% else %}
+                        <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Précédent</span>
+                    {% endif %}
+                    <span class="text-muted" style="font-size:0.9rem;">Page {{ pagination.page }} / {{ pagination.page_count }} ({{ pagination.limit }} par page)</span>
+                    {% if pagination.next_url %}
+                        <a href="{{ pagination.next_url }}" class="btn btn-secondary btn-sm">Suivant</a>
+                    {% else %}
+                        <span class="btn btn-secondary btn-sm" style="opacity:0.5;pointer-events:none;" aria-disabled="true">Suivant</span>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

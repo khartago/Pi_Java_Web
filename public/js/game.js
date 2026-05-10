@@ -1,0 +1,123 @@
+(() => {
+    const root = document.getElementById('farm-game-root');
+    if (!root) return;
+
+    const cells = Array.from(root.querySelectorAll('.game-cell'));
+    const toolButtons = Array.from(root.querySelectorAll('[data-tool]'));
+    const status = document.getElementById('game-status');
+    let selectedTool = null;
+
+    const plants = cells.map(() => ({
+        timer: 30,
+        level: 1,
+        waterCount: 0,
+        alive: true,
+    }));
+
+    const setStatus = (msg) => {
+        if (status) status.textContent = msg;
+    };
+
+    const render = () => {
+        cells.forEach((cell, i) => {
+            const plant = plants[i];
+            const img = cell.querySelector('[data-plant]');
+            const timer = cell.querySelector('[data-timer]');
+            if (!img || !timer) return;
+
+            if (!plant.alive) {
+                img.src = '/images/dead.png';
+                timer.textContent = 'DEAD';
+                cell.classList.add('is-dead');
+                return;
+            }
+
+            cell.classList.remove('is-dead');
+            const stageImg = plant.level >= 3 ? 'tommato.3.png' : plant.level === 2 ? 'tommato.2.png' : 'tommato.1.png';
+            img.src = '/images/' + stageImg;
+            timer.textContent = plant.timer + 's';
+        });
+    };
+
+    const markDead = async (index, reason) => {
+        try {
+            await fetch('/plant/dead', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    plantName: 'Parcelle ' + (index + 1),
+                    reason,
+                }),
+            });
+        } catch (_e) {}
+    };
+
+    toolButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            selectedTool = btn.getAttribute('data-tool');
+            toolButtons.forEach((b) => b.classList.remove('btn-primary'));
+            btn.classList.add('btn-primary');
+            setStatus('Outil selectionne: ' + selectedTool);
+        });
+    });
+
+    cells.forEach((cell) => {
+        cell.addEventListener('click', () => {
+            const i = Number(cell.getAttribute('data-index'));
+            const plant = plants[i];
+            if (!selectedTool || !plant) return;
+
+            if (!plant.alive && selectedTool === 'manure') {
+                // Allow engrais to replant/revive dead parcels
+                plant.alive = true;
+                plant.level = 1;
+                plant.waterCount = 0;
+                plant.timer = 25;
+                setStatus('Engrais applique: parcelle replantee (25s)');
+                render();
+                return;
+            }
+
+            if (!plant.alive) return;
+
+            if (selectedTool === 'shovel') {
+                plant.alive = false;
+                setStatus('Parcelle retiree.');
+            } else if (selectedTool === 'manure') {
+                // Engrais gives a clearly visible bonus
+                plant.timer += 20;
+                if (plant.timer > 99) {
+                    plant.timer = 99;
+                }
+                setStatus('Engrais applique: +' + 20 + 's (timer=' + plant.timer + 's)');
+            } else if (selectedTool === 'water') {
+                plant.timer = 30;
+                plant.waterCount += 1;
+                if (plant.waterCount >= 3 && plant.level < 3) {
+                    plant.level += 1;
+                    plant.waterCount = 0;
+                }
+                setStatus('Arrosage applique: timer remis a 30s');
+            }
+
+            render();
+        });
+    });
+
+    setInterval(() => {
+        plants.forEach((plant, index) => {
+            if (!plant.alive) return;
+            plant.timer -= 1;
+            if (plant.timer <= 0) {
+                plant.alive = false;
+                markDead(index, 'timeout');
+            }
+        });
+        render();
+    }, 1000);
+
+    render();
+})();

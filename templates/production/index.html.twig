@@ -1,0 +1,63 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Productions{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <p class="page-eyebrow">Production</p>
+        <div class="admin-card-header">
+            <h1>Suivi des productions</h1>
+        </div>
+        <p class="page-lead">Consultez les recoltes issues des plantations acceptees, avec edition rapide.</p>
+
+        <form method="get" class="filters-inline">
+            <input type="number" name="q" class="form-control" value="{{ keyword }}" placeholder="Recherche par ID">
+            <select name="sort" class="form-control">
+                <option value="">Tri par defaut</option>
+                <option value="quantite" {{ sort == 'quantite' ? 'selected' }}>Quantite</option>
+                <option value="date" {{ sort == 'date' ? 'selected' }}>Date</option>
+            </select>
+            <button type="submit" class="btn">Filtrer</button>
+            <a href="{{ path('app_production_index') }}" class="btn btn-ghost">Reset</a>
+        </form>
+
+        <div class="stats-grid stats-grid--compact">
+            <article class="stat-card"><span class="lbl">Total</span><span class="val">{{ stats.total }}</span></article>
+            <article class="stat-card"><span class="lbl">Recoltees</span><span class="val">{{ stats.recoltee }}</span></article>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Quantite</th>
+                    <th>Date</th>
+                    <th>Qualite</th>
+                    <th>Etat</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for production in productions %}
+                    <tr>
+                        <td>{{ production.idProduction }}</td>
+                        <td>{{ production.quantiteProduite }}</td>
+                        <td>{{ production.dateRecolte|date('Y-m-d') }}</td>
+                        <td>{{ production.qualite }}</td>
+                        <td><span class="badge badge-info">{{ production.etat }}</span></td>
+                        <td class="actions-inline">
+                            <a href="{{ path('app_production_edit', {'id': production.idProduction}) }}" class="btn btn-sm btn-ghost">Modifier</a>
+                            <form method="post" action="{{ path('app_production_delete', {'id': production.idProduction}) }}" style="display:inline;">
+                                <button type="submit" class="btn-link" onclick="return confirm('Supprimer cette production ?');">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="text-muted">Aucune production pour ce filtre.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

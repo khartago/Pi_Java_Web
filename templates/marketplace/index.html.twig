@@ -1,0 +1,89 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}Marketplace | FarmTech{% endblock %}
+
+{% block front_content %}
+    <section class="farm-card marketplace-layout">
+        <header class="page-hero">
+            <p class="page-eyebrow">Marketplace</p>
+            <h1>Catalogue produits</h1>
+            <p class="page-lead">Catalogue produits avec categories et materiels associes.</p>
+            <p class="page-lead">{{ total_matching }} resultat(s) - page {{ current_page }}/{{ total_pages }}</p>
+            <p><a class="btn btn-ghost" href="{{ path('app_favoris_index') }}">Mes favoris ({{ favorites_count }})</a></p>
+        </header>
+
+        <form method="get" class="market-filters">
+            <input type="search" name="recherche" class="form-control" value="{{ recherche }}" placeholder="Recherche">
+            <select name="unite" class="form-control">
+                <option value="">Toutes unites</option>
+                {% for item in unites %}
+                    <option value="{{ item }}" {{ unite == item ? 'selected' }}>{{ item }}</option>
+                {% endfor %}
+            </select>
+            <select name="categorie" class="form-control">
+                <option value="">Toutes categories</option>
+                {% for facet in category_facets %}
+                    <option value="{{ facet.name }}" {{ categorie == facet.name ? 'selected' }}>{{ facet.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Filtrer</button>
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-ghost">Reset</a>
+        </form>
+
+        <div class="market-grid-simple">
+            {% for card in cards %}
+                <article class="market-card-simple">
+                    <img
+                        src="{{ asset(card.produit.imageAssetPath) }}"
+                        alt="{{ card.produit.nom }}"
+                        class="market-card-simple__img"
+                        onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
+                    >
+                    <p class="market-card-simple__category">{{ card.category }}</p>
+                    <h3 class="market-card-simple__title">{{ card.produit.nom }}</h3>
+                    <p>{{ card.produit.quantite }} {{ card.produit.unite }}</p>
+                    <p>{{ card.materielCount }} materiel(s)</p>
+                    {% if card.produit.prix is not null %}
+                        {% if card.bestPromotion %}
+                            <p>
+                                <span class="badge badge-warn">{{ card.bestPromotion.label }}</span>
+                                <strong>{{ card.promoPrice|number_format(2, ',', ' ') }} TND</strong>
+                                <small style="text-decoration:line-through;color:var(--color-muted);">{{ card.produit.prix|number_format(2, ',', ' ') }} TND</small>
+                            </p>
+                        {% elseif card.linkedPromotion %}
+                            <p>
+                                <span class="badge badge-info">Promo choisie: {{ card.linkedPromotion.label }}</span>
+                            </p>
+                        {% else %}
+                            <p><strong>{{ card.produit.prix|number_format(2, ',', ' ') }} TND</strong></p>
+                        {% endif %}
+                    {% endif %}
+                    <form method="post" action="{{ path('app_favoris_toggle', { idProduit: card.produit.idProduit }) }}" style="margin-bottom:.75rem;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_favorite_' ~ card.produit.idProduit) }}">
+                        <input type="hidden" name="_redirect" value="{{ app.request.uri }}">
+                        <button type="submit" class="btn {{ card.isFavorite ? 'btn-secondary' : 'btn-ghost' }}">
+                            {{ card.isFavorite ? 'Retirer favori' : 'Ajouter favori' }}
+                        </button>
+                    </form>
+                    <a href="{{ path('app_marketplace_show', { idProduit: card.produit.idProduit }) }}" class="btn btn-primary">Voir fiche</a>
+                </article>
+            {% else %}
+                <p>Aucun produit a afficher.</p>
+            {% endfor %}
+        </div>
+        {% if total_pages > 1 %}
+            <nav aria-label="Pagination marketplace" style="display:flex;gap:.5rem;align-items:center;justify-content:center;margin-top:1.1rem;flex-wrap:wrap;">
+                {% set query = app.request.query.all %}
+                {% if current_page > 1 %}
+                    <a class="btn btn-ghost" href="{{ path('app_marketplace_index', query|merge({'page': current_page - 1})) }}">Precedent</a>
+                {% endif %}
+                {% for p in 1..total_pages %}
+                    <a class="btn {{ p == current_page ? 'btn-primary' : 'btn-ghost' }}" href="{{ path('app_marketplace_index', query|merge({'page': p})) }}">{{ p }}</a>
+                {% endfor %}
+                {% if current_page < total_pages %}
+                    <a class="btn btn-ghost" href="{{ path('app_marketplace_index', query|merge({'page': current_page + 1})) }}">Suivant</a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    </section>
+{% endblock %}

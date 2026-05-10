@@ -1,0 +1,28 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouveau problème — Admin{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero">
+    <span class="page-eyebrow">Création</span>
+    <h1>Nouveau problème</h1>
+    <p class="page-lead">Création d’un signalement depuis l’administration.</p>
+</section>
+<div class="card form-card form-card--wide">
+    {{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.gravite) }}
+        {{ form_row(form.dateDetection) }}
+        {{ form_row(form.etat) }}
+        {% if form.idPlantation is defined %}{{ form_row(form.idPlantation) }}{% endif %}
+        {% if form.idProduit is defined %}{{ form_row(form.idProduit) }}{% endif %}
+        {% if form.adminAssignee is defined %}{{ form_row(form.adminAssignee) }}{% endif %}
+        {{ form_row(form.photoFiles) }}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Créer</button>
+            <a href="{{ path('admin_problemes_index') }}" class="btn btn-ghost">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

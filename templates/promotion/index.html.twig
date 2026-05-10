@@ -1,0 +1,54 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Promotions{% endblock %}
+
+{% block admin_content %}
+    <section class="admin-card">
+        <div class="admin-card-header">
+            <h1>Promotions</h1>
+            <a href="{{ path('app_promotion_new') }}" class="btn btn-primary">Nouvelle promotion</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Reduction</th>
+                    <th>Periode</th>
+                    <th>Etat</th>
+                    <th>Produits</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in promotions %}
+                    <tr>
+                        <td>{{ p.nom }}</td>
+                        <td>{{ p.label }}</td>
+                        <td>{{ p.dateDebut|date('d/m/Y') }} → {{ p.dateFin|date('d/m/Y') }}</td>
+                        <td>{{ p.isCurrentlyActive ? 'Active' : (p.isUpcoming ? 'A venir' : 'Expiree') }}</td>
+                        <td>{{ p.produits|length }}</td>
+                        <td>
+                            <div style="display:flex;gap:.45rem;flex-wrap:wrap;">
+                                <a href="{{ path('app_promotion_edit', { idPromotion: p.idPromotion }) }}" class="btn btn-ghost">Modifier</a>
+                                <form method="post" action="{{ path('app_promotion_toggle', { idPromotion: p.idPromotion }) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_promotion_' ~ p.idPromotion) }}">
+                                    <button type="submit" class="btn {{ p.actif ? 'btn-secondary' : 'btn-primary' }}">
+                                        {{ p.actif ? 'Desactiver' : 'Activer' }}
+                                    </button>
+                                </form>
+                                <form method="post" action="{{ path('app_promotion_delete', { idPromotion: p.idPromotion }) }}" onsubmit="return confirm('Supprimer cette promotion ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_promotion_' ~ p.idPromotion) }}">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6">Aucune promotion.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

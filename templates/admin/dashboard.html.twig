@@ -1,0 +1,107 @@
+{% extends 'admin/layout.html.twig' %}
+{% import '_macros/probleme_labels.html.twig' as pl %}
+
+{% block title %}Admin — Tableau de bord{% endblock %}
+
+{% block admin_content %}
+<section class="page-hero hero-grid admin-dashboard-intro">
+    <div class="admin-dashboard-intro__copy">
+        <span class="page-eyebrow">Vue globale</span>
+        <h1>Tableau de bord</h1>
+        <p class="page-lead">Pilotage centralisé de la plateforme FarmTech : comptes utilisateurs, signalements des exploitants et cycle des diagnostics — pour une vision claire de l’activité et du suivi agricole.</p>
+        <div class="quick-links">
+            <a href="{{ path('admin_users_index') }}">Utilisateurs</a>
+            <a href="{{ path('admin_problemes_index') }}">Signalements</a>
+        </div>
+    </div>
+    <div class="admin-dashboard-hero" aria-hidden="true">
+        <div class="admin-dashboard-hero__frame">
+            <img
+                src="{{ asset('images/farmtech-admin.png') }}"
+                alt=""
+                width="960"
+                height="320"
+                class="admin-dashboard-hero__img"
+                loading="eager"
+                decoding="async"
+            >
+        </div>
+    </div>
+</section>
+
+<div class="stats-grid">
+    <div class="kpi-tile">
+        <div class="lbl">Problèmes</div>
+        <div class="val">{{ problemeStats.total }}</div>
+        <div class="kpi-sub">Tous les signalements</div>
+    </div>
+    <div class="kpi-tile">
+        <div class="lbl">Diagnostics</div>
+        <div class="val">{{ diagnosticStats.total }}</div>
+        <div class="kpi-sub">{{ diagnosticStats.approved }} approuvés · {{ diagnosticStats.pendingApproval }} en attente</div>
+    </div>
+    <div class="kpi-tile">
+        <div class="lbl">En attente approb.</div>
+        <div class="val">{{ diagnosticStats.pendingApproval }}</div>
+        <div class="kpi-sub">{{ diagnosticStats.pctPending }}% du total diagnostics</div>
+    </div>
+    <div class="kpi-tile">
+        <div class="lbl">Utilisateurs</div>
+        <div class="val">{{ userStats.total }}</div>
+        <div class="kpi-sub">Comptes enregistrés</div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 class="font-display" style="margin-top:0;">Répartition des diagnostics</h3>
+    <p style="color:var(--color-muted);font-size:0.9rem;margin-top:0;">Total : {{ diagnosticStats.total }}</p>
+    {% if diagnosticStats.total > 0 %}
+        <div class="bar-row">
+            <span class="bar-label">Approuvés</span>
+            <span class="bar-meta"><strong>{{ diagnosticStats.approved }}</strong><span class="bar-pct">({{ diagnosticStats.pctApproved }}%)</span></span>
+            <div class="bar-bg" role="presentation"><div class="bar-fill" style="width: {{ diagnosticStats.pctApproved < 2 and diagnosticStats.approved > 0 ? 2 : diagnosticStats.pctApproved }}%"></div></div>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label">En attente</span>
+            <span class="bar-meta"><strong>{{ diagnosticStats.pendingApproval }}</strong><span class="bar-pct">({{ diagnosticStats.pctPending }}%)</span></span>
+            <div class="bar-bg" role="presentation"><div class="bar-fill" style="width: {{ diagnosticStats.pctPending < 2 and diagnosticStats.pendingApproval > 0 ? 2 : diagnosticStats.pctPending }}%"></div></div>
+        </div>
+    {% else %}
+        <p style="color:var(--color-muted);">Aucun diagnostic.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3 class="font-display" style="margin-top:0;">Problèmes par état</h3>
+    {% if problemeByEtat.items is not empty %}
+        <p style="color:var(--color-muted);font-size:0.9rem;margin-top:0;">Répartition : {{ problemeByEtat.total }} problème(s)</p>
+        {% for label, row in problemeByEtat.items %}
+            {% set w = row.count > 0 and row.pct < 2 ? 2 : row.pct %}
+            <div class="bar-row">
+                <span class="bar-label">{{ pl.etat_label(label) }}</span>
+                <span class="bar-meta"><strong>{{ row.count }}</strong><span class="bar-pct">({{ row.pct }}%)</span></span>
+                <div class="bar-bg" role="presentation"><div class="bar-fill" style="width: {{ w }}%"></div></div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:var(--color-muted);">Aucune donnée.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3 class="font-display" style="margin-top:0;">Utilisateurs par rôle</h3>
+    {% if usersByRole.items is not empty %}
+        <p style="color:var(--color-muted);font-size:0.9rem;margin-top:0;">Répartition : {{ usersByRole.total }} utilisateur(s)</p>
+        {% for label, row in usersByRole.items %}
+            {% set w = row.count > 0 and row.pct < 2 ? 2 : row.pct %}
+            <div class="bar-row">
+                <span class="bar-label">{{ pl.role_label(label) }}</span>
+                <span class="bar-meta"><strong>{{ row.count }}</strong><span class="bar-pct">({{ row.pct }}%)</span></span>
+                <div class="bar-bg" role="presentation"><div class="bar-fill" style="width: {{ w }}%"></div></div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:var(--color-muted);">Aucun utilisateur.</p>
+    {% endif %}
+</div>
+{% endblock %}

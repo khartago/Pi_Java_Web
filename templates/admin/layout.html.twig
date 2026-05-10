@@ -1,0 +1,256 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin-live-filters.js') }}" defer></script>
+{% endblock %}
+
+{% block body_class %}theme-admin{% endblock %}
+
+{# Les flashes sont dans la colonne principale pour ne pas chevaucher la sidebar #}
+{% block flashes %}{% endblock %}
+
+{% set _admin_route = app.request.attributes.get('_route') %}
+{% set _nav_signalements_active = _admin_route starts with 'admin_problemes' or _admin_route starts with 'admin_diagnostics' %}
+{% set _nav_analytics_active = _admin_route starts with 'admin_analytics' %}
+{% set admin_page_title = 'Administration' %}
+{% set admin_page_desc = 'Gestion de la plateforme FarmTech.' %}
+{% if _admin_route == 'admin_dashboard' %}
+    {% set admin_page_title = 'Tableau de bord' %}
+    {% set admin_page_desc = 'Vue synthétique : comptes, signalements et diagnostics.' %}
+{% elseif _admin_route starts with 'admin_users' %}
+    {% set admin_page_title = 'Utilisateurs' %}
+    {% set admin_page_desc = 'Comptes enregistrés, rôles et accès à l’application.' %}
+{% elseif _nav_signalements_active %}
+    {% set admin_page_title = 'Signalements' %}
+    {% set admin_page_desc = 'Signalements des agriculteurs et suivi des diagnostics.' %}
+{% elseif _admin_route starts with 'admin_analytics' %}
+    {% set admin_page_title = 'Analytics diagnostics' %}
+    {% set admin_page_desc = 'Indicateurs de résolution, délais et répartition des signalements.' %}
+{% elseif _admin_route starts with 'app_plantation_' %}
+    {% set admin_page_title = 'Plantations' %}
+    {% set admin_page_desc = 'Suivi des cultures, états de plantation et validation vers production.' %}
+{% elseif _admin_route starts with 'app_production_' %}
+    {% set admin_page_title = 'Productions' %}
+    {% set admin_page_desc = 'Récoltes validées, quantités produites et qualité des lots.' %}
+{% endif %}
+
+{% block body %}
+<div class="admin-app">
+    <aside class="admin-sidebar" aria-label="Navigation administration">
+        <a href="{{ path('admin_dashboard') }}" class="admin-sidebar-brand" aria-label="FarmTech — tableau de bord admin">
+            <span class="admin-sidebar-logo-wrap">{{ icons.brand_logo('site-logo site-logo--admin') }}</span>
+            <span class="admin-sidebar-brand-sub">Administration</span>
+        </a>
+        <nav class="admin-sidebar-nav" aria-label="Menu principal">
+            <a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
+                {{ icons.dashboard(20) }} Tableau de bord
+            </a>
+            <a href="{{ path('admin_users_index') }}" class="{{ app.request.attributes.get('_route') starts with 'admin_users' ? 'active' : '' }}">
+                {{ icons.users(20) }} Utilisateurs
+            </a>
+            <a href="{{ path('admin_problemes_index') }}" class="{{ _nav_signalements_active ? 'active' : '' }}">
+                {{ icons.flag(20) }} Signalements
+            </a>
+            <a href="{{ path('admin_analytics_diagnostics') }}" class="{{ _nav_analytics_active ? 'active' : '' }}">
+                {{ icons.dashboard(20) }} Analytics diagnostics
+            </a>
+            <a href="{{ path('app_produit_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_produit_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Stock interne
+            </a>
+            <a href="{{ path('app_assistant_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_assistant_' ? 'active' : '' }}">
+                {{ icons.users(20) }} Assistant IA
+            </a>
+            <a href="{{ path('app_promotion_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_promotion_' ? 'active' : '' }}">
+                {{ icons.gift(20) }} Promotions
+            </a>
+            <a href="{{ path('app_recommandation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_recommandation_' ? 'active' : '' }}">
+                {{ icons.star(20) }} Recommandations
+            </a>
+            <a href="{{ path('app_affectation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_affectation_' or app.request.attributes.get('_route') starts with 'app_employe_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Affectations
+            </a>
+            <a href="{{ path('app_stats_produits') }}" class="{{ app.request.attributes.get('_route') starts with 'app_stats_' ? 'active' : '' }}">
+                {{ icons.chart(20) }} Statistiques
+            </a>
+            <a href="{{ path('app_alerts_index') }}" class="{{ app.request.attributes.get('_route') == 'app_alerts_index' ? 'active' : '' }}">
+                {{ icons.bell(20) }} Alertes
+            </a>
+            <a href="{{ path('app_plantation_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_plantation_' ? 'active' : '' }}">
+                {{ icons.clipboard(20) }} Plantations
+            </a>
+            <a href="{{ path('app_production_index') }}" class="{{ app.request.attributes.get('_route') starts with 'app_production_' ? 'active' : '' }}">
+                {{ icons.chart(20) }} Productions
+            </a>
+        </nav>
+        <footer class="admin-sidebar-footer">
+            {% set admin_nom = app.user.nom ?? app.user.userIdentifier %}
+            {% set admin_email = app.user.email ?? '' %}
+            <div class="admin-sidebar-profile">
+                <span class="admin-sidebar-avatar" aria-hidden="true">{{ admin_nom|slice(0, 1)|upper }}</span>
+                <div class="admin-sidebar-profile-text">
+                    <span class="admin-sidebar-profile-name" title="{{ admin_nom }}">{{ admin_nom }}</span>
+                    {% if admin_email %}
+                        <span class="admin-sidebar-profile-email" title="{{ admin_email }}">{{ admin_email }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{{ path('app_logout') }}" class="admin-sidebar-logout">{{ icons.log_out(18) }} Déconnexion</a>
+        </footer>
+    </aside>
+
+    <div class="admin-workspace">
+        <header class="admin-topbar">
+            <div class="admin-topbar-start">
+                <div class="admin-topbar-icon" aria-hidden="true">
+                    {% if _admin_route == 'admin_dashboard' %}
+                        {{ icons.dashboard(22) }}
+                    {% elseif _admin_route starts with 'admin_users' %}
+                        {{ icons.users(22) }}
+                    {% elseif _nav_analytics_active %}
+                        {{ icons.dashboard(22) }}
+                    {% elseif _admin_route starts with 'app_plantation_' %}
+                        {{ icons.clipboard(22) }}
+                    {% elseif _admin_route starts with 'app_production_' %}
+                        {{ icons.chart(22) }}
+                    {% elseif _nav_signalements_active %}
+                        {{ icons.flag(22) }}
+                    {% else %}
+                        {{ icons.dashboard(22) }}
+                    {% endif %}
+                </div>
+                <div class="admin-topbar-copy">
+                    <p class="admin-topbar-kicker">
+                        <span class="admin-topbar-badge">Console admin</span>
+                        <span class="admin-topbar-kicker-sep" aria-hidden="true">·</span>
+                        <span>FarmTech</span>
+                    </p>
+                    <p class="admin-topbar-title">{{ admin_page_title }}</p>
+                    <p class="admin-topbar-desc">{{ admin_page_desc }}</p>
+                </div>
+            </div>
+            <div class="admin-topbar-end">
+                <div class="alerts-dropdown" data-alerts-dropdown>
+                    <button
+                        type="button"
+                        class="btn btn-ghost alerts-dropdown__toggle"
+                        aria-label="Notifications alertes"
+                        aria-expanded="false"
+                        aria-controls="alerts-dropdown-menu"
+                        data-alerts-dropdown-toggle
+                    >
+                        {{ icons.bell(18) }} Alertes
+                        <span class="alerts-dropdown__count" data-alerts-dropdown-count hidden>0</span>
+                    </button>
+                    <div class="alerts-dropdown__menu" id="alerts-dropdown-menu" data-alerts-dropdown-menu hidden>
+                        <p class="alerts-dropdown__title">Alertes critiques</p>
+                        <p class="alerts-dropdown__loading" data-alerts-dropdown-loading>Chargement...</p>
+                        <div class="alerts-dropdown__content" data-alerts-dropdown-content hidden>
+                            <p class="alerts-dropdown__summary">
+                                Stock bas: <strong data-alerts-dropdown-low>0</strong> ·
+                                Pannes: <strong data-alerts-dropdown-broken>0</strong>
+                            </p>
+                            <ul class="alerts-dropdown__list" data-alerts-dropdown-list></ul>
+                        </div>
+                        <a href="{{ path('app_alerts_index') }}" class="alerts-dropdown__footer">Voir toutes les alertes →</a>
+                    </div>
+                </div>
+                <time class="admin-topbar-time" datetime="{{ 'now'|date('c') }}">{{ 'now'|date('d/m/Y') }}<span class="admin-topbar-time-sep">·</span>{{ 'now'|date('H:i') }}</time>
+            </div>
+        </header>
+        <main id="main-content" class="admin-main" tabindex="-1">
+            {% include '_flash.html.twig' %}
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+<style>
+.alerts-dropdown { position: relative; }
+.alerts-dropdown__toggle { display: inline-flex; align-items: center; gap: .4rem; }
+.alerts-dropdown__count { min-width: 1.15rem; height: 1.15rem; border-radius: 999px; background: #b91c1c; color: #fff; font-size: .7rem; line-height: 1.15rem; text-align: center; padding: 0 .2rem; }
+.alerts-dropdown__menu { position: absolute; right: 0; top: calc(100% + .45rem); width: 320px; max-height: 380px; overflow: auto; background: #fff; border: 1px solid rgba(15,23,42,.12); border-radius: 12px; box-shadow: 0 14px 35px rgba(15,23,42,.16); padding: .75rem; z-index: 80; }
+.alerts-dropdown__title { margin: 0 0 .35rem; font-weight: 700; color: #0f172a; }
+.alerts-dropdown__loading, .alerts-dropdown__summary { margin: 0 0 .5rem; color: #475569; font-size: .9rem; }
+.alerts-dropdown__list { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.alerts-dropdown__list li { font-size: .85rem; color: #1e293b; padding: .45rem .5rem; border-radius: 8px; background: #f8fafc; }
+.alerts-dropdown__footer { display: inline-block; margin-top: .6rem; font-size: .85rem; color: #0f766e; text-decoration: none; font-weight: 600; }
+.alerts-dropdown__footer:hover { text-decoration: underline; }
+</style>
+<script>
+(function () {
+    var root = document.querySelector('[data-alerts-dropdown]');
+    if (!root) return;
+    var toggle = root.querySelector('[data-alerts-dropdown-toggle]');
+    var menu = root.querySelector('[data-alerts-dropdown-menu]');
+    var loading = root.querySelector('[data-alerts-dropdown-loading]');
+    var content = root.querySelector('[data-alerts-dropdown-content]');
+    var lowEl = root.querySelector('[data-alerts-dropdown-low]');
+    var brokenEl = root.querySelector('[data-alerts-dropdown-broken]');
+    var listEl = root.querySelector('[data-alerts-dropdown-list]');
+    var countEl = root.querySelector('[data-alerts-dropdown-count]');
+    var loaded = false;
+
+    function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+        });
+    }
+
+    async function loadAlerts() {
+        if (loaded) return;
+        try {
+            var response = await fetch('{{ path('api_alerts_summary') }}');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            var data = await response.json();
+            var low = data.low_stock_count || 0;
+            var broken = data.broken_count || 0;
+            var total = low + broken;
+            lowEl.textContent = String(low);
+            brokenEl.textContent = String(broken);
+            if (total > 0) {
+                countEl.hidden = false;
+                countEl.textContent = String(total);
+            } else {
+                countEl.hidden = true;
+            }
+
+            var lines = [];
+            (data.low_stock_products || []).slice(0, 3).forEach(function (p) {
+                lines.push('<li>Stock bas: ' + esc(p.nom) + ' (' + esc(p.quantite) + ' ' + esc(p.unite) + ')</li>');
+            });
+            (data.broken_materiels || []).slice(0, 3).forEach(function (m) {
+                var product = m.produit ? ' - ' + esc(m.produit) : '';
+                lines.push('<li>Panne: ' + esc(m.nom) + product + '</li>');
+            });
+            listEl.innerHTML = lines.length ? lines.join('') : '<li>Aucune alerte critique.</li>';
+            loading.hidden = true;
+            content.hidden = false;
+            loaded = true;
+        } catch (error) {
+            loading.textContent = 'Impossible de charger les alertes.';
+        }
+    }
+
+    function closeMenu() {
+        menu.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function () {
+        var opening = menu.hidden;
+        menu.hidden = !menu.hidden;
+        toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        if (opening) {
+            loadAlerts();
+        }
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!root.contains(event.target)) {
+            closeMenu();
+        }
+    });
+})();
+</script>
+{% endblock %}
