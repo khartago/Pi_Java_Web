@@ -22,19 +22,19 @@ class Probleme
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $type = null;
+    private string $type = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private string $description = '';
 
     #[ORM\Column(length: 50)]
-    private ?string $gravite = null;
+    private string $gravite = '';
 
     #[ORM\Column(name: 'date_detection', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $dateDetection = null;
+    private \DateTimeImmutable $dateDetection;
 
     #[ORM\Column(length: 50)]
-    private ?string $etat = null;
+    private string $etat = 'EN_ATTENTE';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $photos = null;
@@ -53,7 +53,7 @@ class Probleme
     private ?Utilisateur $adminAssignee = null;
 
     /** @var Collection<int, Diagnostique> */
-    #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'probleme', cascade: ['persist', 'remove'], orphanRemoval: false)]
+    #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'probleme', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $diagnostiques;
 
     public function __construct()
@@ -79,60 +79,60 @@ class Probleme
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType(?string $type): static
+    public function setType(string $type): static
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getGravite(): ?string
+    public function getGravite(): string
     {
         return $this->gravite;
     }
 
-    public function setGravite(?string $gravite): static
+    public function setGravite(string $gravite): static
     {
         $this->gravite = $gravite;
 
         return $this;
     }
 
-    public function getDateDetection(): ?\DateTimeInterface
+    public function getDateDetection(): \DateTimeImmutable
     {
         return $this->dateDetection;
     }
 
-    public function setDateDetection(?\DateTimeInterface $dateDetection): static
+    public function setDateDetection(\DateTimeImmutable $dateDetection): static
     {
         $this->dateDetection = $dateDetection;
 
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): string
     {
         return $this->etat;
     }
 
-    public function setEtat(?string $etat): static
+    public function setEtat(string $etat): static
     {
         $this->etat = $etat;
 
@@ -233,9 +233,7 @@ class Probleme
 
     public function removeDiagnostique(Diagnostique $d): static
     {
-        if ($this->diagnostiques->removeElement($d) && $d->getProbleme() === $this) {
-            $d->setProbleme(null);
-        }
+        $this->diagnostiques->removeElement($d);
 
         return $this;
     }

@@ -1,0 +1,50 @@
+# Copier ce fichier vers config.properties (à la racine du module ou dans ce dossier)
+# si le vôtre manque : le dépôt ignore config.properties pour éviter de committer des secrets.
+# Renseignez les vraies clés localement (voir farmtech-web/.env pour la parité Symfony).
+
+# --- IA : Hugging Face Inference (Qwen) ---
+hf.api.key=REPLACE_ME_HUGGINGFACE_TOKEN
+hf.model=Qwen/Qwen3.5-397B-A17B
+
+# --- Météo (Open-Meteo, Tunisie — aligné farmtech WEATHER_DEFAULT_*) ---
+meteo.default.latitude=36.8065
+meteo.default.longitude=10.1815
+
+# --- OpenWeatherMap (jeu Java — aligné farmtech WEATHER_API_KEY) ---
+openweather.api.key=REPLACE_ME_OPENWEATHER_KEY
+
+# --- SMTP Gmail (aligné farmtech MAILER_DSN) ---
+smtp.gmail.address=votre_compte@gmail.com
+smtp.gmail.app.password=REPLACE_ME_16_CHAR_APP_PASSWORD
+
+# --- OpenRouter (parité farmtech OPENROUTER_*) ---
+openrouter.api.key=REPLACE_ME_OPENROUTER_KEY
+openrouter.model=google/gemma-4-26b-a4b-it
+openrouter.chat.url=https://openrouter.ai/api/v1/chat/completions
+
+# --- Assistant / Emna (parité farmtech ASSISTANT_*) ---
+assistant.api.key=REPLACE_ME_ASSISTANT_KEY
+assistant.base.url=https://ollama.com/v1
+assistant.model=gpt-oss:20b-cloud
+
+# --- News API (parité farmtech NEWS_API_KEY) ---
+news.api.key=REPLACE_ME_NEWSAPI_KEY
+
+# --- PDF distant (parité farmtech PDF_REMOTE_URL) ---
+pdf.remote.url=https://html2pdf.fly.dev/api/generate
+
+# --- OpenAI Chat API (marketplace Java — priorité env OPENAI_API_KEY) ---
+openai.api.base.url=https://api.openai.com/v1
+openai.model=gpt-4o-mini
+openai.api.key=
+
+# --- Alertes & jeu (parité STOCK_ALERT_THRESHOLD, ALERT_EMAIL_*, GAME_MAIL_*) ---
+stock.alert.threshold=5
+alert.email.from=alerts@farmtech.local
+alert.email.to=admin@farmtech.local
+game.mail.from=alerts@farmtech.local
+game.mail.to=admin@farmtech.local
+
+# --- Référence web (Symfony) ---
+app.public.base.url=http://localhost:8000
+product.upload.path=uploads/products

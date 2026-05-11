@@ -84,7 +84,7 @@ public class Main {
                 "Farmer One",
                 "farmer1@example.com",
                 "password123",
-                "FERMIER"
+                "FARMER"
         );
         userService.ajouterUser(nouveauUser);
 
@@ -99,7 +99,7 @@ public class Main {
                 "Farmer One Modifie",
                 "farmer1@example.com",
                 "password123",
-                "FERMIER"
+                "FARMER"
         );
         userService.modifierUser(userModifie);
 

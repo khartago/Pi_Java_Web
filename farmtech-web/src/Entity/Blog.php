@@ -16,17 +16,17 @@ class Blog
     private ?int $idBlog = null;
 
     #[ORM\Column(name: 'TitleBlog', length: 255)]
-    private ?string $titleBlog = null;
+    private string $titleBlog = '';
 
     #[ORM\Column(name: 'BlogTag', length: 255)]
-    private ?string $blogTag = null;
+    private string $blogTag = '';
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'idutilisateur', referencedColumnName: 'id', nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(name: 'DateBlog', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $dateBlog = null;
+    private \DateTimeImmutable $dateBlog;
 
 
 
@@ -40,24 +40,24 @@ class Blog
         return $this->idBlog;
     }
 
-    public function getTitleBlog(): ?string
+    public function getTitleBlog(): string
     {
         return $this->titleBlog;
     }
 
-    public function setTitleBlog(?string $titleBlog): static
+    public function setTitleBlog(string $titleBlog): static
     {
         $this->titleBlog = $titleBlog;
 
         return $this;
     }
 
-    public function getBlogTag(): ?string
+    public function getBlogTag(): string
     {
         return $this->blogTag;
     }
 
-    public function setBlogTag(?string $blogTag): static
+    public function setBlogTag(string $blogTag): static
     {
         $this->blogTag = $blogTag;
 
@@ -76,10 +76,15 @@ class Blog
         return $this;
     }
 
-    public function getDateBlog(): ?\DateTimeInterface
+    public function getDateBlog(): \DateTimeImmutable
     {
         return $this->dateBlog;
     }
 
+    public function setDateBlog(\DateTimeImmutable $dateBlog): static
+    {
+        $this->dateBlog = $dateBlog;
 
+        return $this;
+    }
 }

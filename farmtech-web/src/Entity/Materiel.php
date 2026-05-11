@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MaterielRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -25,13 +26,13 @@ class Materiel
     #[Assert\NotBlank]
     private string $etat = '';
 
-    #[ORM\Column(name: 'dateAchat', type: 'date_immutable')]
-    private ?\DateTimeImmutable $dateAchat = null;
+    #[ORM\Column(name: 'dateAchat', type: Types::DATE_IMMUTABLE)]
+    private \DateTimeImmutable $dateAchat;
 
-    #[ORM\Column(name: 'cout', type: 'float')]
+    #[ORM\Column(name: 'cout', type: Types::FLOAT)]
     #[Assert\NotNull]
     #[Assert\PositiveOrZero]
-    private ?float $cout = null;
+    private float $cout = 0.0;
 
     #[ORM\ManyToOne(targetEntity: Produit::class, inversedBy: 'materiels')]
     #[ORM\JoinColumn(name: 'idProduit', referencedColumnName: 'idProduit', nullable: false, onDelete: 'CASCADE')]
@@ -46,6 +47,7 @@ class Materiel
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
+        $this->dateAchat = new \DateTimeImmutable('today');
     }
 
     public function getIdMateriel(): ?int
@@ -75,23 +77,23 @@ class Materiel
         return $this;
     }
 
-    public function getDateAchat(): ?\DateTimeImmutable
+    public function getDateAchat(): \DateTimeImmutable
     {
         return $this->dateAchat;
     }
 
-    public function setDateAchat(?\DateTimeImmutable $dateAchat): self
+    public function setDateAchat(\DateTimeImmutable $dateAchat): self
     {
         $this->dateAchat = $dateAchat;
         return $this;
     }
 
-    public function getCout(): ?float
+    public function getCout(): float
     {
         return $this->cout;
     }
 
-    public function setCout(?float $cout): self
+    public function setCout(float $cout): self
     {
         $this->cout = $cout;
         return $this;

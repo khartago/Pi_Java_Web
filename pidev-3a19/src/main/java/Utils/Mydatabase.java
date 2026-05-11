@@ -12,7 +12,10 @@ public class Mydatabase {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/3a19","root","");
+            con = DriverManager.getConnection(
+                    DatabaseConfig.getJdbcUrl(),
+                    DatabaseConfig.getUser(),
+                    DatabaseConfig.getPassword());
             System.out.println("connexion etablie");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Driver MySQL manquant. Verifiez que le projet est bien un projet Maven et que les dependances sont chargees (clic droit sur pom.xml -> Maven -> Reload Project).", e);

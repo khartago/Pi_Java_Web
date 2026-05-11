@@ -22,7 +22,7 @@ public class CriticalAlertNotifier {
     /**
      * Envoie les alertes critiques (stock faible + matériels en panne)
      */
-    public Map<String, Object> sendCriticalAlerts(String fromEmail, String toEmail, int stockThreshold) throws Exception {
+    public Map<String, Object> sendCriticalAlerts(String fromEmail, String toEmail, int stockThreshold) {
         List<Produit> lowStockProducts = getLowStockProducts(stockThreshold);
         List<Materiel> brokenMateriels = getBrokenMateriels();
 
@@ -45,7 +45,6 @@ public class CriticalAlertNotifier {
         } catch (Exception e) {
             result.put("sent", false);
             result.put("error", e.getMessage());
-            throw e;
         }
 
         return result;

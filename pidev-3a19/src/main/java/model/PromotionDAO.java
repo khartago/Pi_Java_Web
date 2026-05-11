@@ -5,84 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO pour la table {@code promotion} — structure identique à Symfony.
- *
- * Colonnes : idPromotion, nom, description, typeReduction,
- *            valeurReduction, dateDebut, dateFin, quantiteMin,
- *            cumulable, actif, idProduit
- *
- * La table est créée/mise à jour automatiquement au premier accès.
+ * DAO {@code promotion} + table de liaison {@code promotion_produit} — aligné sur Doctrine
+ * ({@code App\Entity\Promotion}, JoinTable {@code promotion_produit} avec {@code promotion_id}, {@code produit_id}).
  */
 public class PromotionDAO {
 
-    // ------------------------------------------------------------------ //
-    //  Auto-création / migration de la table
-    // ------------------------------------------------------------------ //
+    private static volatile boolean schemaChecked = false;
 
-    private static volatile boolean tableEnsured = false;
-
+    /** Vérifie une fois que les tables existent (créées par les migrations Symfony). */
     public static void ensureTableExists() {
-        if (tableEnsured) return;
-        synchronized (PromotionDAO.class) {
-            if (tableEnsured) return;
-            // Crée la table avec la structure exacte Symfony + idProduit pour Java
-            String createSql = """
-                    CREATE TABLE IF NOT EXISTS promotion (
-                        idPromotion     INT AUTO_INCREMENT PRIMARY KEY,
-                        nom             VARCHAR(255) NOT NULL,
-                        description     TEXT         DEFAULT NULL,
-                        typeReduction   VARCHAR(30)  NOT NULL DEFAULT 'pourcentage',
-                        valeurReduction DOUBLE       NOT NULL DEFAULT 0,
-                        dateDebut       DATE         DEFAULT NULL,
-                        dateFin         DATE         DEFAULT NULL,
-                        quantiteMin     INT          NOT NULL DEFAULT 1,
-                        cumulable       TINYINT(1)   NOT NULL DEFAULT 0,
-                        actif           TINYINT(1)   NOT NULL DEFAULT 1,
-                        idProduit       INT          DEFAULT NULL
-                    )
-                    """;
-            try (Connection conn = DBConnection.getConnection();
-                 Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate(createSql);
-                // Ajoute idProduit si la table existait déjà sans cette colonne
-                addColumnIfMissing(conn, "promotion", "idProduit",
-                        "INT DEFAULT NULL");
-                // Ajoute description si manquante (table créée par Symfony sans cette col)
-                addColumnIfMissing(conn, "promotion", "description",
-                        "TEXT DEFAULT NULL");
-                // Ajoute cumulable si manquante
-                addColumnIfMissing(conn, "promotion", "cumulable",
-                        "TINYINT(1) NOT NULL DEFAULT 0");
-                // Ajoute actif si manquante
-                addColumnIfMissing(conn, "promotion", "actif",
-                        "TINYINT(1) NOT NULL DEFAULT 1");
-                System.out.println("[PromotionDAO] Table 'promotion' prête.");
-                tableEnsured = true;
-            } catch (SQLException e) {
-                System.err.println("[PromotionDAO] Erreur init table : " + e.getMessage());
-                tableEnsured = true;
-            }
+        if (schemaChecked) {
+            return;
         }
-    }
-
-    private static void addColumnIfMissing(Connection conn, String table,
-                                            String column, String definition) {
-        String check = "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS "
-                + "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?";
-        try (PreparedStatement ps = conn.prepareStatement(check)) {
-            ps.setString(1, table);
-            ps.setString(2, column);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    String alter = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition;
-                    try (Statement st = conn.createStatement()) {
-                        st.executeUpdate(alter);
-                        System.out.println("[PromotionDAO] Colonne ajoutée : " + column);
-                    }
-                }
+        synchronized (PromotionDAO.class) {
+            if (schemaChecked) {
+                return;
             }
-        } catch (SQLException e) {
-            System.err.println("[PromotionDAO] addColumnIfMissing(" + column + ") : " + e.getMessage());
+            try (Connection conn = DBConnection.getConnection();
+                 Statement st = conn.createStatement()) {
+                st.executeQuery("SELECT 1 FROM promotion LIMIT 1");
+            } catch (SQLException e) {
+                System.err.println("[PromotionDAO] Table promotion introuvable. Exécutez : php bin/console doctrine:migrations:migrate");
+            }
+            schemaChecked = true;
         }
     }
 
@@ -90,52 +35,59 @@ public class PromotionDAO {
         ensureTableExists();
     }
 
-    // ------------------------------------------------------------------ //
-    //  Mapping ResultSet → Promotion
-    // ------------------------------------------------------------------ //
-
     private Promotion mapRow(ResultSet rs) throws SQLException {
         Promotion p = new Promotion();
         p.setIdPromotion(rs.getInt("idPromotion"));
         p.setNom(rs.getString("nom"));
-
-        // description peut être NULL
         p.setDescription(rs.getString("description"));
-
-        // typeReduction : "pourcentage" ou "montant_fixe"
         String type = rs.getString("typeReduction");
         p.setTypeReduction(type != null ? type.toLowerCase() : Promotion.TYPE_POURCENTAGE);
-
         p.setValeurReduction(rs.getDouble("valeurReduction"));
         p.setQuantiteMin(rs.getInt("quantiteMin"));
 
         Date debut = rs.getDate("dateDebut");
         p.setDateDebut(debut != null ? debut.toLocalDate() : null);
-
         Date fin = rs.getDate("dateFin");
         p.setDateFin(fin != null ? fin.toLocalDate() : null);
 
         p.setCumulable(rs.getInt("cumulable") == 1);
         p.setActif(rs.getInt("actif") == 1);
 
-        // idProduit peut être NULL (promo globale)
-        int idProduit = rs.getInt("idProduit");
-        p.setIdProduit(rs.wasNull() ? 0 : idProduit);
-
+        int linked;
+        try {
+            linked = rs.getInt("java_primary_produit");
+            p.setIdProduit(rs.wasNull() ? 0 : linked);
+        } catch (SQLException ex) {
+            p.setIdProduit(0);
+        }
         return p;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Lecture
-    // ------------------------------------------------------------------ //
+    private static String selectPromotionSql() {
+        return "SELECT p.*, "
+                + "(SELECT pp.produit_id FROM promotion_produit pp WHERE pp.promotion_id = p.idPromotion LIMIT 1) "
+                + "AS java_primary_produit FROM promotion p";
+    }
+
+    private static String activeForProductWhere() {
+        return " WHERE p.actif = 1"
+                + " AND (p.dateDebut IS NULL OR p.dateDebut <= CURDATE())"
+                + " AND (p.dateFin IS NULL OR p.dateFin >= CURDATE())"
+                + " AND ("
+                + " NOT EXISTS (SELECT 1 FROM promotion_produit pp0 WHERE pp0.promotion_id = p.idPromotion)"
+                + " OR EXISTS (SELECT 1 FROM promotion_produit pp1 WHERE pp1.promotion_id = p.idPromotion AND pp1.produit_id = ?)"
+                + ")";
+    }
 
     public List<Promotion> getAll() {
         List<Promotion> list = new ArrayList<>();
-        String sql = "SELECT * FROM promotion ORDER BY idPromotion DESC";
+        String sql = selectPromotionSql() + " ORDER BY p.idPromotion DESC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) list.add(mapRow(rs));
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
         } catch (SQLException e) {
             System.err.println("[PromotionDAO.getAll] " + e.getMessage());
             e.printStackTrace();
@@ -143,24 +95,21 @@ public class PromotionDAO {
         return list;
     }
 
-    /**
-     * Promotions actives pour un produit donné.
-     * Inclut les promos globales (idProduit IS NULL).
-     */
     public List<Promotion> findActiveForProduct(int idProduit) {
+        return findActiveForProduct(idProduit, 1);
+    }
+
+    public List<Promotion> findActiveForProduct(int idProduit, int quantity) {
         List<Promotion> list = new ArrayList<>();
-        String sql = "SELECT * FROM promotion"
-                + " WHERE actif = 1"
-                + " AND (idProduit = ? OR idProduit IS NULL)"
-                + " AND (dateDebut IS NULL OR dateDebut <= CURDATE())"
-                + " AND (dateFin   IS NULL OR dateFin   >= CURDATE())"
-                + " AND quantiteMin <= 1"
-                + " ORDER BY valeurReduction DESC";
+        String sql = selectPromotionSql() + activeForProductWhere() + " AND p.quantiteMin <= ? ORDER BY p.valeurReduction DESC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idProduit);
+            stmt.setInt(2, Math.max(1, quantity));
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
             }
         } catch (SQLException e) {
             System.err.println("[PromotionDAO.findActiveForProduct] " + e.getMessage());
@@ -169,39 +118,15 @@ public class PromotionDAO {
         return list;
     }
 
-    /**
-     * Promotions actives pour un produit et une quantité donnée.
-     */
-    public List<Promotion> findActiveForProduct(int idProduit, int quantity) {
-        List<Promotion> list = new ArrayList<>();
-        String sql = "SELECT * FROM promotion"
-                + " WHERE actif = 1"
-                + " AND (idProduit = ? OR idProduit IS NULL)"
-                + " AND (dateDebut IS NULL OR dateDebut <= CURDATE())"
-                + " AND (dateFin   IS NULL OR dateFin   >= CURDATE())"
-                + " AND quantiteMin <= ?"
-                + " ORDER BY valeurReduction DESC";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idProduit);
-            stmt.setInt(2, quantity);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("[PromotionDAO.findActiveForProduct(qty)] " + e.getMessage());
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     public Promotion getById(int id) {
-        String sql = "SELECT * FROM promotion WHERE idPromotion = ?";
+        String sql = selectPromotionSql() + " WHERE p.idPromotion = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return mapRow(rs);
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
             }
         } catch (SQLException e) {
             System.err.println("[PromotionDAO.getById] " + e.getMessage());
@@ -210,30 +135,78 @@ public class PromotionDAO {
         return null;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Écriture
-    // ------------------------------------------------------------------ //
-
-    /** @return null si succès, message d'erreur sinon */
-    public String insertWithError(Promotion p) {
-        String sql = "INSERT INTO promotion"
-                + " (nom, description, typeReduction, valeurReduction,"
-                + "  dateDebut, dateFin, quantiteMin, cumulable, actif, idProduit)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            bindParams(stmt, p);
-            int affected = stmt.executeUpdate();
-            if (affected == 1) {
-                try (ResultSet keys = stmt.getGeneratedKeys()) {
-                    if (keys.next()) p.setIdPromotion(keys.getInt(1));
-                }
-                return null;
+    private void replacePromotionProduits(Connection conn, int promotionId, int idProduit) throws SQLException {
+        try (PreparedStatement del = conn.prepareStatement(
+                "DELETE FROM promotion_produit WHERE promotion_id = ?")) {
+            del.setInt(1, promotionId);
+            del.executeUpdate();
+        }
+        if (idProduit > 0) {
+            try (PreparedStatement ins = conn.prepareStatement(
+                    "INSERT INTO promotion_produit (promotion_id, produit_id) VALUES (?, ?)")) {
+                ins.setInt(1, promotionId);
+                ins.setInt(2, idProduit);
+                ins.executeUpdate();
             }
-            return "Aucune ligne insérée.";
+        }
+    }
+
+    private void bindPromotionColumns(PreparedStatement stmt, Promotion p) throws SQLException {
+        stmt.setString(1, p.getNom());
+        if (p.getDescription() != null && !p.getDescription().isBlank()) {
+            stmt.setString(2, p.getDescription());
+        } else {
+            stmt.setNull(2, Types.VARCHAR);
+        }
+        stmt.setString(3, p.getTypeReduction() != null ? p.getTypeReduction() : Promotion.TYPE_POURCENTAGE);
+        stmt.setDouble(4, p.getValeurReduction());
+        if (p.getDateDebut() != null) {
+            stmt.setDate(5, Date.valueOf(p.getDateDebut()));
+        } else {
+            stmt.setNull(5, Types.DATE);
+        }
+        if (p.getDateFin() != null) {
+            stmt.setDate(6, Date.valueOf(p.getDateFin()));
+        } else {
+            stmt.setNull(6, Types.DATE);
+        }
+        stmt.setInt(7, Math.max(1, p.getQuantiteMin()));
+        stmt.setInt(8, p.isCumulable() ? 1 : 0);
+        stmt.setInt(9, p.isActif() ? 1 : 0);
+    }
+
+    public String insertWithError(Promotion p) {
+        String sql = "INSERT INTO promotion (nom, description, typeReduction, valeurReduction, dateDebut, dateFin, quantiteMin, cumulable, actif) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                bindPromotionColumns(stmt, p);
+                int affected = stmt.executeUpdate();
+                if (affected != 1) {
+                    conn.rollback();
+                    return "Aucune ligne insérée.";
+                }
+                int newId;
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (!keys.next()) {
+                        conn.rollback();
+                        return "Pas d'ID généré.";
+                    }
+                    newId = keys.getInt(1);
+                    p.setIdPromotion(newId);
+                }
+                replacePromotionProduits(conn, newId, p.getIdProduit());
+                conn.commit();
+                return null;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
-            System.err.println("[PromotionDAO.insert] SQLState=" + e.getSQLState()
-                    + " Code=" + e.getErrorCode() + " : " + e.getMessage());
+            System.err.println("[PromotionDAO.insert] " + e.getMessage());
             e.printStackTrace();
             return e.getMessage();
         }
@@ -243,19 +216,27 @@ public class PromotionDAO {
         return insertWithError(p) == null;
     }
 
-    /** @return null si succès, message d'erreur sinon */
     public String updateWithError(Promotion p) {
-        String sql = "UPDATE promotion SET"
-                + " nom = ?, description = ?, typeReduction = ?, valeurReduction = ?,"
-                + " dateDebut = ?, dateFin = ?, quantiteMin = ?, cumulable = ?, actif = ?, idProduit = ?"
-                + " WHERE idPromotion = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            bindParams(stmt, p);
-            stmt.setInt(11, p.getIdPromotion());
-            int affected = stmt.executeUpdate();
-            if (affected == 1) return null;
-            return "Aucune ligne mise à jour (id=" + p.getIdPromotion() + ").";
+        String sql = "UPDATE promotion SET nom = ?, description = ?, typeReduction = ?, valeurReduction = ?, "
+                + "dateDebut = ?, dateFin = ?, quantiteMin = ?, cumulable = ?, actif = ? WHERE idPromotion = ?";
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                bindPromotionColumns(stmt, p);
+                stmt.setInt(10, p.getIdPromotion());
+                if (stmt.executeUpdate() != 1) {
+                    conn.rollback();
+                    return "Aucune ligne mise à jour (id=" + p.getIdPromotion() + ").";
+                }
+                replacePromotionProduits(conn, p.getIdPromotion(), p.getIdProduit());
+                conn.commit();
+                return null;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             System.err.println("[PromotionDAO.update] " + e.getMessage());
             e.printStackTrace();
@@ -268,45 +249,20 @@ public class PromotionDAO {
     }
 
     public boolean delete(int id) {
-        String sql = "DELETE FROM promotion WHERE idPromotion = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() == 1;
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement delLinks = conn.prepareStatement(
+                    "DELETE FROM promotion_produit WHERE promotion_id = ?")) {
+                delLinks.setInt(1, id);
+                delLinks.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM promotion WHERE idPromotion = ?")) {
+                stmt.setInt(1, id);
+                return stmt.executeUpdate() == 1;
+            }
         } catch (SQLException e) {
             System.err.println("[PromotionDAO.delete] " + e.getMessage());
             e.printStackTrace();
         }
         return false;
-    }
-
-    // ------------------------------------------------------------------ //
-    //  Helpers
-    // ------------------------------------------------------------------ //
-
-    private void bindParams(PreparedStatement stmt, Promotion p) throws SQLException {
-        stmt.setString(1, p.getNom());
-
-        if (p.getDescription() != null && !p.getDescription().isBlank())
-            stmt.setString(2, p.getDescription());
-        else stmt.setNull(2, Types.VARCHAR);
-
-        stmt.setString(3, p.getTypeReduction() != null
-                ? p.getTypeReduction() : Promotion.TYPE_POURCENTAGE);
-        stmt.setDouble(4, p.getValeurReduction());
-
-        if (p.getDateDebut() != null) stmt.setDate(5, Date.valueOf(p.getDateDebut()));
-        else stmt.setNull(5, Types.DATE);
-
-        if (p.getDateFin() != null) stmt.setDate(6, Date.valueOf(p.getDateFin()));
-        else stmt.setNull(6, Types.DATE);
-
-        stmt.setInt(7, Math.max(1, p.getQuantiteMin()));
-        stmt.setInt(8, p.isCumulable() ? 1 : 0);
-        stmt.setInt(9, p.isActif() ? 1 : 0);
-
-        // 0 = global → NULL en BDD
-        if (p.getIdProduit() == 0) stmt.setNull(10, Types.INTEGER);
-        else stmt.setInt(10, p.getIdProduit());
     }
 }

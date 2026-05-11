@@ -135,8 +135,10 @@ public class BlogDashboardController implements Initializable {
                 articles = articleService.getAllArticles();
         }*/
 
-        articlesList.setAll(articles);
-        /*statusLabel.setText("Showing " + articles.size() + " articles");*/
+        articlesList.setAll(articleService.afficherArticle());
+        if (totalArticlesLabel != null) {
+            totalArticlesLabel.setText(String.valueOf(articlesList.size()));
+        }
     }
 
     @FXML

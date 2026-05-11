@@ -16,7 +16,7 @@
                 <padding>
                     <Insets top="16.0" right="40.0" bottom="16.0" left="40.0"/>
                 </padding>
-                
+
                 <HBox spacing="12.0" alignment="CENTER_LEFT">
                     <ImageView fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
                         <image>
@@ -25,16 +25,17 @@
                     </ImageView>
                     <Label text="FARMTECH" styleClass="navbar-brand"/>
                 </HBox>
-                
+
                 <Pane HBox.hgrow="ALWAYS"/>
-                
+
                 <Button text="Accueil" onAction="#handleHome" styleClass="navbar-link"/>
-                <Button text="À propos" onAction="#handleAbout" styleClass="navbar-link"/>
-                <Button text="Contact" onAction="#handleContact" styleClass="navbar-link"/>
+                <Button text="Mission" onAction="#handleMissionNav" styleClass="navbar-link"/>
+                <Button text="Fonctionnalités" onAction="#handleFeaturesNav" styleClass="navbar-link"/>
+                <Button text="Société" onAction="#handleOpsNav" styleClass="navbar-link"/>
                 <Button text="Blog" onAction="#handleBlog" styleClass="navbar-link"/>
-                
+
                 <Pane HBox.hgrow="ALWAYS"/>
-                
+
                 <Button text="Connexion" onAction="#handleLogin" styleClass="navbar-button"/>
                 <Button text="Inscription" onAction="#handleRegister" styleClass="navbar-button-primary"/>
             </HBox>
@@ -42,117 +43,209 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
-            <VBox spacing="0.0" alignment="CENTER">
+        <ScrollPane fx:id="mainScroll" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="transparent-scroll">
+            <VBox spacing="0.0" alignment="TOP_CENTER">
                 <VBox spacing="40.0" alignment="CENTER" styleClass="hero-section">
                     <padding>
                         <Insets top="80.0" right="40.0" bottom="80.0" left="40.0"/>
                     </padding>
-                    
+
                     <VBox spacing="24.0" alignment="CENTER" maxWidth="800.0">
                         <ImageView fitHeight="120.0" fitWidth="120.0" preserveRatio="true">
                             <image>
                                 <Image url="@farmtech-logo.png"/>
                             </image>
                         </ImageView>
-                        
+
                         <VBox spacing="12.0" alignment="CENTER">
-                            <Label text="Bienvenue sur FARMTECH" styleClass="hero-title"/>
-                            <Label text="Votre plateforme intelligente de gestion agricole" 
-                                   styleClass="hero-subtitle"/>
+                            <Label text="FarmTech · Tunisie" styleClass="hero-eyebrow"/>
+                            <Label text="Gestion intelligente des exploitations agricoles" styleClass="hero-title" wrapText="true"/>
+                            <Label text="Suite web + desktop Java : dossiers terrain, diagnostics validés, marché en ligne, news, blogs, jeu plantation, alertes, export PDF côté web, et pilotage complet côté société agricole (stocks, production, analytics, assistant IA, QR, traçabilité)." styleClass="hero-description" wrapText="true"/>
+                            <Label text="Une seule vision produit pour les petits exploitants tunisiens, la coopérative et les équipes admin." styleClass="hero-subtitle" wrapText="true"/>
                         </VBox>
-                        
-                        <Label text="Gérez vos problèmes agricoles, obtenez des diagnostics experts et suivez vos cultures en temps réel." 
-                               styleClass="hero-description" wrapText="true"/>
-                        
+
                         <HBox spacing="16.0" alignment="CENTER">
                             <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button"/>
-                            <Button text="En savoir plus" onAction="#handleAbout" styleClass="hero-button-secondary"/>
+                            <Button text="Créer un compte" onAction="#handleRegister" styleClass="hero-button-secondary"/>
                         </HBox>
                     </VBox>
                 </VBox>
-                
-                <VBox spacing="60.0" alignment="CENTER" styleClass="features-section">
+
+                <VBox fx:id="missionSection" spacing="20.0" alignment="CENTER" styleClass="mission-section">
                     <padding>
-                        <Insets top="80.0" right="40.0" bottom="80.0" left="40.0"/>
+                        <Insets top="48.0" right="48.0" bottom="48.0" left="48.0"/>
                     </padding>
-                    
-                    <Label text="Nos fonctionnalités" styleClass="section-title"/>
-                    
-                    <HBox spacing="30.0" alignment="CENTER">
-                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                    <VBox maxWidth="880.0" spacing="16.0" alignment="TOP_LEFT">
+                        <Label text="Une réponse aux réalités du terrain" styleClass="section-title"/>
+                        <Label wrapText="true" styleClass="mission-text"
+                               text="En Tunisie, une grande partie des agriculteurs sont des petits exploitants disposant de parcelles, mais sans ressources suffisantes pour acheter à temps les intrants indispensables (semences, engrais, pesticides, matériel). L'accès au crédit reste limité par les garanties, les délais et les taux d'intérêt."/>
+                        <Label wrapText="true" styleClass="mission-text"
+                               text="FarmTech vise une application desktop et web permettant aux agriculteurs d'obtenir des intrants sans paiement immédiat, avec un remboursement après récolte, tout en assurant une gestion simple, sécurisée et transparente pour la société agricole — en levant la contrainte financière au début de saison pour améliorer production et revenus."/>
+                        <Label wrapText="true" styleClass="mission-accent"
+                               text="En améliorant l'accès aux intrants et le suivi des problèmes sur le terrain, FarmTech participe aussi à la sécurité alimentaire et à une agriculture plus durable, en réduisant le risque de pénurie."/>
+                    </VBox>
+                </VBox>
+
+                <VBox fx:id="featuresSection" spacing="48.0" alignment="CENTER" styleClass="features-section">
+                    <padding>
+                        <Insets top="64.0" right="40.0" bottom="40.0" left="40.0"/>
+                    </padding>
+
+                    <Label text="Filière terrain — le cœur métier" styleClass="section-title"/>
+
+                    <HBox spacing="24.0" alignment="CENTER" styleClass="feature-row">
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="240.0">
                             <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
                             </padding>
-                            <Label text="🔍 Diagnostic" styleClass="feature-icon"/>
-                            <Label text="Problèmes &amp; Diagnostic" styleClass="feature-title"/>
-                            <Label text="Gérez vos problèmes agricoles et obtenez des diagnostics experts." 
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                            <Label text="🌾" styleClass="feature-icon"/>
+                            <Label text="Signalements sur le terrain" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Décrivez le problème observé, joignez des photos et indiquez la gravité : les informations sont structurées pour une prise en charge rapide par l'administration." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
-                        
-                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="240.0">
                             <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
                             </padding>
-                            <Label text="👥 Utilisateurs" styleClass="feature-icon"/>
-                            <Label text="Gestion utilisateurs" styleClass="feature-title"/>
-                            <Label text="Admin : gérez les comptes et rôles utilisateur." 
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                            <Label text="✓" styleClass="feature-icon"/>
+                            <Label text="Diagnostics validés" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Cause, mesures et traitement proposés après validation ; vous pouvez donner votre retour une fois le diagnostic publié — traçabilité et transparence." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
-                        
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="240.0">
+                            <padding>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
+                            </padding>
+                            <Label text="📊" styleClass="feature-icon"/>
+                            <Label text="Historique et pilotage" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Tableau de bord, liste des dossiers et états : vous voyez où en est chaque signalement, au même titre que les indicateurs agrégés côté administration." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label text="Modules web agriculteur" styleClass="section-title"/>
+                    <Label text="Après connexion sur le site : marché, favoris, news, blogs, jeu, alertes, exports PDF et interface multilingue (FR / EN / AR)." styleClass="feature-subheading" wrapText="true"/>
+
+                    <HBox spacing="24.0" alignment="CENTER" styleClass="feature-row">
                         <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
                             <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
                             </padding>
-                            <Label text="📦 Stock" styleClass="feature-icon"/>
-                            <Label text="Produits &amp; Matériels" styleClass="feature-title"/>
-                            <Label text="Gestion du stock : produits et matériels." 
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                            <Label text="🛒" styleClass="feature-icon"/>
+                            <Label text="Marché &amp; promotions" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Catalogue, fiches produit, promotions et liste de favoris pour préparer vos intrants." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
                         <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
                             <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
                             </padding>
-                            <Label text="🎮 Game Mode" styleClass="feature-icon"/>
-                            <Label text="Plant Simulation" styleClass="feature-title"/>
-                            <Label text="Gérez vos plantations comme un jeu interactif."
-                                   styleClass="feature-description" wrapText="true"/>
+                            <Label text="📰" styleClass="feature-icon"/>
+                            <Label text="News &amp; blogs" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Actualités agricoles, articles, commentaires — prolongement collaboratif du diagnostic." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
+                            </padding>
+                            <Label text="🎮" styleClass="feature-icon"/>
+                            <Label text="Jeu &amp; alertes" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Simulation ludique des cultures et vue alertes pour ne pas manquer un signal fort." styleClass="feature-description" wrapText="true"/>
                             <Button text="Jouer" onAction="#handleGame" styleClass="hero-button"/>
                         </VBox>
                         <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
                             <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
                             </padding>
-                            <Label text="📰 News" styleClass="feature-icon"/>
-                            <Label text="News Agricole" styleClass="feature-title"/>
-                            <Label text="Suivez les dernières actualités agricoles en temps réel."
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#openNewsAgricole" styleClass="hero-button"/>
-                        </VBox>
-                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
-                            <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
-                            </padding>
-                            <Label text="🛒 Marketplace" styleClass="feature-icon"/>
-                            <Label text="Catalogue produits" styleClass="feature-title"/>
-                            <Label text="Parcourez le catalogue produits (connexion requise)."
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Voir le catalogue" onAction="#handleLogin" styleClass="hero-button-secondary"/>
-                        </VBox>
-                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
-                            <padding>
-                                <Insets top="30.0" right="20.0" bottom="30.0" left="20.0"/>
-                            </padding>
-                            <Label text="🤖 Assistant" styleClass="feature-icon"/>
-                            <Label text="Assistant IA" styleClass="feature-title"/>
-                            <Label text="Recherche et infos produits (connexion requise)."
-                                   styleClass="feature-description" wrapText="true"/>
-                            <Button text="Accéder" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                            <Label text="📄" styleClass="feature-icon"/>
+                            <Label text="PDF &amp; langues" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Export PDF des dossiers et navigation FR / EN / AR sur le portail web." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
                         </VBox>
                     </HBox>
+
+                    <HBox spacing="24.0" alignment="CENTER" styleClass="feature-row">
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
+                            </padding>
+                            <Label text="🤖" styleClass="feature-icon"/>
+                            <Label text="Assistant IA" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Aide contextuelle sur les fiches produits et recherches (connexion requise)." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Se connecter" onAction="#handleLogin" styleClass="hero-button-secondary"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
+                            </padding>
+                            <Label text="📖" styleClass="feature-icon"/>
+                            <Label text="News agricole (aperçu)" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Ouvrir le flux dans une fenêtre sans compte pour parcourir les titres." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Lire" onAction="#openNewsAgricole" styleClass="hero-button"/>
+                        </VBox>
+                        <VBox spacing="16.0" alignment="CENTER" styleClass="feature-card" prefWidth="220.0">
+                            <padding>
+                                <Insets top="28.0" right="18.0" bottom="28.0" left="18.0"/>
+                            </padding>
+                            <Label text="📝" styleClass="feature-icon"/>
+                            <Label text="Blog public" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Accès direct au tableau de blog depuis cette page d'accueil." styleClass="feature-description" wrapText="true"/>
+                            <Button text="Ouvrir le blog" onAction="#handleBlog" styleClass="hero-button"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="opsSection" spacing="32.0" alignment="CENTER" styleClass="ops-landing-section">
+                    <padding>
+                        <Insets top="56.0" right="40.0" bottom="48.0" left="40.0"/>
+                    </padding>
+                    <Label text="Pilotage société agricole" styleClass="section-title"/>
+                    <Label text="Le rôle administrateur sur le web : validation des diagnostics, IA d'aide à la rédaction, catalogue produits &amp; matériels, promotions, QR codes, productions, plantations, traçabilité, statistiques, assistant conversationnel, recommandations et affectations des équipes." styleClass="feature-subheading" wrapText="true" maxWidth="900"/>
+
+                    <HBox spacing="24.0" alignment="CENTER" styleClass="feature-row">
+                        <VBox spacing="14.0" alignment="TOP_LEFT" styleClass="feature-card" prefWidth="260.0">
+                            <padding>
+                                <Insets top="24.0" right="18.0" bottom="24.0" left="18.0"/>
+                            </padding>
+                            <Label text="🛡️" styleClass="feature-icon"/>
+                            <Label text="Dossiers &amp; diagnostics" styleClass="feature-title" wrapText="true"/>
+                            <Label text="File admin des signalements, révisions de diagnostic, suggestions IA et analytics par pathologie." styleClass="feature-description" wrapText="true"/>
+                        </VBox>
+                        <VBox spacing="14.0" alignment="TOP_LEFT" styleClass="feature-card" prefWidth="260.0">
+                            <padding>
+                                <Insets top="24.0" right="18.0" bottom="24.0" left="18.0"/>
+                            </padding>
+                            <Label text="📦" styleClass="feature-icon"/>
+                            <Label text="Stocks &amp; promotions" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Produits, matériels, promotions actives et QR pour identification rapide." styleClass="feature-description" wrapText="true"/>
+                        </VBox>
+                        <VBox spacing="14.0" alignment="TOP_LEFT" styleClass="feature-card" prefWidth="260.0">
+                            <padding>
+                                <Insets top="24.0" right="18.0" bottom="24.0" left="18.0"/>
+                            </padding>
+                            <Label text="🌱" styleClass="feature-icon"/>
+                            <Label text="Production &amp; traçabilité" styleClass="feature-title" wrapText="true"/>
+                            <Label text="Suivi des productions et des plans de plantation, vues de traçabilité parcelle / lot." styleClass="feature-description" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="12.0" alignment="TOP_LEFT" styleClass="feature-card" maxWidth="920.0">
+                        <padding>
+                            <Insets top="24.0" right="22.0" bottom="24.0" left="22.0"/>
+                        </padding>
+                        <Label text="🖥️ Ce que reprend le client Java" styleClass="feature-title"/>
+                        <Label text="Menu latéral unique : utilisateurs, problèmes &amp; diagnostics, analytics diagnostic, vue fermier « mes problèmes », produits, matériels, production, jeu, actualités, marketplace, favoris, assistant IA, scan QR, statistiques, traçabilité, alertes critiques et encart météo — pour un poste bureau ou atelier aligné sur le même référentiel métier que le web." styleClass="feature-description" wrapText="true"/>
+                    </VBox>
+                </VBox>
+
+                <VBox spacing="20.0" alignment="CENTER" styleClass="landing-cta-bottom">
+                    <padding>
+                        <Insets top="32.0" right="40.0" bottom="80.0" left="40.0"/>
+                    </padding>
+                    <Label text="Rejoindre FarmTech" styleClass="section-title"/>
+                    <Label text="Ouvrez un compte pour le portail web (dossiers, marché, news, blogs, jeu, alertes, exports PDF, multilingue) ou connectez-vous au shell Java pour les équipes société agricole : même logique métier, deux ergonomie." styleClass="hero-description" wrapText="true" maxWidth="620"/>
+                    <Button text="S'inscrire" onAction="#handleRegister" styleClass="hero-button"/>
                 </VBox>
             </VBox>
         </ScrollPane>

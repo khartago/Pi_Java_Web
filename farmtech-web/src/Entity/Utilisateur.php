@@ -27,17 +27,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     #[Assert\Length(max: 100)]
-    private ?string $nom = null;
+    private string $nom = '';
 
     #[ORM\Column(length: 150, unique: true)]
     #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
     #[Assert\Email(message: 'Email invalide.')]
     #[Assert\Length(max: 150)]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column(name: 'mot_de_passe', length: 255)]
     #[Assert\Length(max: 255)]
-    private ?string $motDePasse = null;
+    private string $motDePasse = '';
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
@@ -58,38 +58,38 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->nom;
     }
 
     public function setNom(?string $nom): static
     {
-        $this->nom = $nom;
+        $this->nom = $nom ?? '';
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     public function setEmail(?string $email): static
     {
-        $this->email = $email;
+        $this->email = $email ?? '';
 
         return $this;
     }
 
-    public function getMotDePasse(): ?string
+    public function getMotDePasse(): string
     {
         return $this->motDePasse;
     }
 
     public function setMotDePasse(?string $motDePasse): static
     {
-        $this->motDePasse = $motDePasse;
+        $this->motDePasse = $motDePasse ?? '';
 
         return $this;
     }
@@ -138,6 +138,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
-        return $this->nom ?? $this->email ?? '';
+        return $this->nom !== '' ? $this->nom : $this->email;
     }
 }

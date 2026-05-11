@@ -259,10 +259,16 @@ public class ProduitController {
             String recipient = result.get().trim();
             if (recipient.isEmpty()) { showWarning("Email requis", "Entrez une adresse email."); return; }
 
-            String sender      = "amnafati94@gmail.com";
-            String appPassword = "jcdo lljy fgug omgr";
-            String envPwd      = System.getenv("GMAIL_APP_PASSWORD");
-            if (envPwd != null && !envPwd.isBlank()) appPassword = envPwd;
+            if (!EmailService.isSmtpConfigured()) {
+                showWarning(
+                    "Configuration SMTP",
+                    "Renseignez smtp.gmail.address et smtp.gmail.app.password dans config.properties, puis redémarrez l'application."
+                );
+                return;
+            }
+
+            String sender = EmailService.resolveSmtpUsername();
+            String appPassword = EmailService.resolveSmtpAppPassword();
 
             EmailService emailService = new EmailService(sender, appPassword);
             ExpirationNotifierService notifier = new ExpirationNotifierService(new ProduitDAO(), emailService);

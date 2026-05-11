@@ -31,6 +31,7 @@
                     <Label text="Trier par" styleClass="field-label" minWidth="60"/>
                     <ComboBox fx:id="triCombo" styleClass="modern-input" prefWidth="170" minWidth="160" onAction="#applyFiltersAndSort"/>
                     <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Actualiser" onAction="#handleActualiser" styleClass="secondary-button"/>
                     <Button text="Réinitialiser les filtres" onAction="#handleResetFilters" styleClass="secondary-button"/>
                     <Button text="Éditer diagnostic" onAction="#handleEditDiagnostique" styleClass="secondary-button"/>
                     <Label text="Assigner à" styleClass="field-label"/>

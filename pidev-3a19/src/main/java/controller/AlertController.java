@@ -1,5 +1,6 @@
 package controller;
 
+import Services.AppProperties;
 import Services.CriticalAlertNotifier;
 import Services.EmailService;
 import javafx.fxml.FXML;
@@ -59,8 +60,8 @@ public class AlertController {
             new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, DEFAULT_STOCK_THRESHOLD);
         thresholdSpinner.setValueFactory(valueFactory);
 
-        // Email par défaut
-        emailToField.setText(DEFAULT_ALERT_EMAIL);
+        // Email par défaut (parité farmtech ALERT_EMAIL_TO)
+        emailToField.setText(AppProperties.propertyOrDefault("alert.email.to", DEFAULT_ALERT_EMAIL));
 
         // Colonnes Stock Faible
         idProduitColumn.setCellValueFactory(new PropertyValueFactory<>("idProduit"));
@@ -146,47 +147,55 @@ public class AlertController {
             return;
         }
 
-        try {
-            sendAlertsButton.setDisable(true);
-            sendAlertsButton.setText("Envoi en cours...");
+        if (!EmailService.isSmtpConfigured()) {
+            showWarning(
+                "Configuration SMTP",
+                "Renseignez smtp.gmail.address et smtp.gmail.app.password dans config.properties "
+                    + "(fichier src/main/resources/config.properties ou config.properties à la racine du projet Java), "
+                    + "puis redémarrez l'application."
+            );
+            return;
+        }
 
-            String fromEmail = "amnafati94@gmail.com";
-            String appPassword = "jcdo lljy fgug omgr";
-            String envPassword = System.getenv("GMAIL_APP_PASSWORD");
-            if (envPassword != null && !envPassword.isBlank()) {
-                appPassword = envPassword;
-            }
+        sendAlertsButton.setDisable(true);
+        sendAlertsButton.setText("Envoi en cours...");
+
+        try {
+            String fromEmail = EmailService.resolveSmtpUsername();
+            String appPassword = EmailService.resolveSmtpAppPassword();
 
             EmailService emailService = new EmailService(fromEmail, appPassword);
             alertNotifier = new CriticalAlertNotifier(produitDAO, materielDAO, emailService);
 
             Map<String, Object> result = alertNotifier.sendCriticalAlerts(fromEmail, toEmail, threshold);
 
-            sendAlertsButton.setDisable(false);
-            sendAlertsButton.setText("📤 Envoyer les alertes");
+            int lowStockCount = (int) result.get("low_stock_count");
+            int brokenCount = (int) result.get("panne_count");
+
+            if (lowStockCount == 0 && brokenCount == 0) {
+                showInfo("Aucune alerte", "Aucune alerte critique à envoyer.");
+                return;
+            }
 
             if ((boolean) result.get("sent")) {
-                int lowStockCount = (int) result.get("low_stock_count");
-                int brokenCount = (int) result.get("panne_count");
-
-                if (lowStockCount == 0 && brokenCount == 0) {
-                    showInfo("Aucune alerte", "Aucune alerte critique à envoyer.");
-                } else {
-                    String message = String.format(
-                        "Alertes envoyées vers %s\n\nStock faible: %d produit(s)\nMatériels en panne: %d",
-                        toEmail, lowStockCount, brokenCount
-                    );
-                    showInfo("Succès", message);
-                }
+                String message = String.format(
+                    "Alertes envoyées vers %s\n\nStock faible: %d produit(s)\nMatériels en panne: %d",
+                    toEmail, lowStockCount, brokenCount
+                );
+                showInfo("Succès", message);
             } else {
-                showError("Erreur", "Impossible d'envoyer les alertes: " +
-                    result.getOrDefault("error", "Erreur inconnue"));
+                showError(
+                    "Erreur",
+                    "Impossible d'envoyer les alertes : "
+                        + result.getOrDefault("error", "Erreur inconnue")
+                );
             }
         } catch (Exception e) {
+            showError("Erreur", "Erreur lors de l'envoi : " + e.getMessage());
+            e.printStackTrace();
+        } finally {
             sendAlertsButton.setDisable(false);
             sendAlertsButton.setText("📤 Envoyer les alertes");
-            showError("Erreur", "Erreur lors de l'envoi: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

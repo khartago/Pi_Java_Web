@@ -1,0 +1,8 @@
+# Copier vers database.properties (même dossier) pour surcharger les défauts.
+# Ne pas committer database.properties s'il contient des secrets.
+#
+# Doit correspondre à DATABASE_URL dans farmtech-web/.env (même hôte, port, schéma, user).
+
+jdbc.url=jdbc:mysql://127.0.0.1:3306/3a19?useSSL=false&serverTimezone=UTC
+jdbc.user=root
+jdbc.password=

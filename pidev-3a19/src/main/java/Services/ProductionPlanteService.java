@@ -10,22 +10,19 @@ import java.util.List;
 public class ProductionPlanteService {
 
     public void ajouter(ProductionPlante p) {
-
-        String sql = "INSERT INTO production "
-                + "(idProduction, quantiteProduite, dateRecolte, qualite, etat) "
-                + "VALUES (?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO production (quantiteProduite, dateRecolte, qualite, etat) VALUES (?, ?, ?, ?)";
         try (Connection cnx = DBConnection.getConnection();
-             PreparedStatement ps = cnx.prepareStatement(sql)) {
-
-            ps.setInt(1, p.getIdProduction()); // 🔥 VERY IMPORTANT
-            ps.setFloat(2, p.getQuantiteProduite());
-            ps.setDate(3, p.getDateRecolte());
-            ps.setString(4, p.getQualite());
-            ps.setString(5, p.getEtat());
-
+             PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setFloat(1, p.getQuantiteProduite());
+            ps.setDate(2, p.getDateRecolte());
+            ps.setString(3, p.getQualite());
+            ps.setString(4, p.getEtat());
             ps.executeUpdate();
-
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    p.setIdProduction(keys.getInt(1));
+                }
+            }
         } catch (Exception e) {
             System.err.println("Erreur ajouter ProductionPlante: " + e.getMessage());
         }

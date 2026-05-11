@@ -118,7 +118,7 @@ public class RegisterController {
             return;
         }
 
-        User newUser = new User(nom, email, password, "FERMIER");
+        User newUser = new User(nom, email, password, "FARMER");
         userService.ajouterUser(newUser);
 
         try {

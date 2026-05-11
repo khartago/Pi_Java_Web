@@ -20,16 +20,16 @@ class Diagnostique
     private ?Probleme $probleme = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $cause = null;
+    private string $cause = '';
 
     #[ORM\Column(name: 'solution_proposee', type: Types::TEXT)]
-    private ?string $solutionProposee = null;
+    private string $solutionProposee = '';
 
     #[ORM\Column(name: 'date_diagnostique', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $dateDiagnostique = null;
+    private \DateTimeImmutable $dateDiagnostique;
 
     #[ORM\Column(length: 100)]
-    private ?string $resultat = null;
+    private string $resultat = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $medicament = null;
@@ -47,7 +47,7 @@ class Diagnostique
     private ?string $feedbackCommentaire = null;
 
     #[ORM\Column(name: 'date_feedback', type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateFeedback = null;
+    private ?\DateTimeImmutable $dateFeedback = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'id_admin_diagnostiqueur', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
@@ -75,48 +75,48 @@ class Diagnostique
         return $this;
     }
 
-    public function getCause(): ?string
+    public function getCause(): string
     {
         return $this->cause;
     }
 
-    public function setCause(?string $cause): static
+    public function setCause(string $cause): static
     {
         $this->cause = $cause;
 
         return $this;
     }
 
-    public function getSolutionProposee(): ?string
+    public function getSolutionProposee(): string
     {
         return $this->solutionProposee;
     }
 
-    public function setSolutionProposee(?string $solutionProposee): static
+    public function setSolutionProposee(string $solutionProposee): static
     {
         $this->solutionProposee = $solutionProposee;
 
         return $this;
     }
 
-    public function getDateDiagnostique(): ?\DateTimeInterface
+    public function getDateDiagnostique(): \DateTimeImmutable
     {
         return $this->dateDiagnostique;
     }
 
-    public function setDateDiagnostique(?\DateTimeInterface $dateDiagnostique): static
+    public function setDateDiagnostique(\DateTimeImmutable $dateDiagnostique): static
     {
         $this->dateDiagnostique = $dateDiagnostique;
 
         return $this;
     }
 
-    public function getResultat(): ?string
+    public function getResultat(): string
     {
         return $this->resultat;
     }
 
-    public function setResultat(?string $resultat): static
+    public function setResultat(string $resultat): static
     {
         $this->resultat = $resultat;
 
@@ -183,12 +183,12 @@ class Diagnostique
         return $this;
     }
 
-    public function getDateFeedback(): ?\DateTimeInterface
+    public function getDateFeedback(): ?\DateTimeImmutable
     {
         return $this->dateFeedback;
     }
 
-    public function setDateFeedback(?\DateTimeInterface $dateFeedback): static
+    public function setDateFeedback(?\DateTimeImmutable $dateFeedback): static
     {
         $this->dateFeedback = $dateFeedback;
 

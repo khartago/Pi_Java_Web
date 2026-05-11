@@ -79,7 +79,7 @@ class DiagnostiqueAdminController extends AbstractController
         $revisions = $diagnostiqueRepository->findByProblemeOrderedByRevision($probleme);
         $similaires = [];
         $type = $probleme->getType();
-        if (null !== $type && '' !== $type) {
+        if ('' !== $type) {
             $similaires = $diagnostiqueRepository->findApprovedSimilarByProblemType($type, (int) $probleme->getId(), 5);
         }
 
@@ -148,7 +148,7 @@ class DiagnostiqueAdminController extends AbstractController
         if ($lockedProbleme) {
             $revisions = $diagnostiqueRepository->findByProblemeOrderedByRevision($lockedProbleme);
             $type = $lockedProbleme->getType();
-            if (null !== $type && '' !== $type) {
+            if ('' !== $type) {
                 $similaires = $diagnostiqueRepository->findApprovedSimilarByProblemType($type, (int) $lockedProbleme->getId(), 5);
             }
         }
@@ -228,7 +228,7 @@ class DiagnostiqueAdminController extends AbstractController
         if ($pb) {
             $revisions = $diagnostiqueRepository->findByProblemeOrderedByRevision($pb);
             $type = $pb->getType();
-            if (null !== $type && '' !== $type && null !== $pb->getId()) {
+            if ('' !== $type && null !== $pb->getId()) {
                 $similaires = $diagnostiqueRepository->findApprovedSimilarByProblemType($type, (int) $pb->getId(), 5);
             }
         }

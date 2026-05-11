@@ -1,7 +1,9 @@
 security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-            algorithm: plaintext
+            algorithm: bcrypt
+            migrate_from:
+                - plaintext
 
     providers:
         app_user_provider:
@@ -38,4 +40,6 @@ when@test:
     security:
         password_hashers:
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: plaintext
+                algorithm: bcrypt
+                migrate_from:
+                    - plaintext

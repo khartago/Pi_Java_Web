@@ -24,7 +24,7 @@ class Produit
     #[ORM\Column(name: 'quantite', type: 'integer')]
     #[Assert\NotNull]
     #[Assert\PositiveOrZero]
-    private ?int $quantite = null;
+    private int $quantite = 0;
 
     #[ORM\Column(name: 'unite', length: 50)]
     #[Assert\NotBlank]
@@ -74,14 +74,15 @@ class Produit
         return $this;
     }
 
-    public function getQuantite(): ?int
+    public function getQuantite(): int
     {
         return $this->quantite;
     }
 
     public function setQuantite(?int $quantite): self
     {
-        $this->quantite = $quantite;
+        $this->quantite = (int) $quantite;
+
         return $this;
     }
 

@@ -1,0 +1,90 @@
+# Dev-only: reduce Doctrine Doctor noise on legitimate ORM queries while keeping security + N+1 + slow-query signals.
+# See vendor/ahmed-bhs/doctrine-doctor/docs and Configuration.php for valid keys.
+doctrine_doctor:
+    analyzers:
+        # EXPLAIN on every eligible query floods the toolbar on small dev datasets.
+        missing_index:
+            explain_queries: false
+            slow_query_threshold: 100
+            min_rows_scanned: 5000
+
+        # Heuristic “use DTO / partial” hints fire constantly on normal entity hydration.
+        partial_object:
+            enabled: false
+        dto_hydration:
+            enabled: false
+        missing_embeddable_opportunity:
+            enabled: false
+
+        # Style / schema hints — better suited to static reviews than per-request noise.
+        naming_convention:
+            enabled: false
+        blameable_trait:
+            enabled: false
+
+        # Admin lists often use several intentional joins; relax before treating as critical.
+        join_optimization:
+            max_joins_recommended: 14
+            max_joins_critical: 24
+        eager_loading:
+            join_threshold: 10
+            critical_join_threshold: 16
+
+        # Short lists (dashboards) should not spam hydration warnings.
+        hydration:
+            row_threshold: 800
+            critical_threshold: 8000
+
+        # Heuristics that are useful in audits but duplicate across normal CRUD pages.
+        lazy_loading:
+            enabled: false
+        find_all:
+            enabled: false
+        get_reference:
+            enabled: false
+        entity_manager_clear:
+            enabled: false
+        flush_in_loop:
+            enabled: false
+        bulk_operation:
+            enabled: false
+
+        # Mapping / integrity — better for dedicated schema reviews than the web toolbar.
+        collection_initialization:
+            enabled: false
+        cascade_configuration:
+            enabled: false
+        bidirectional_consistency:
+            enabled: false
+        foreign_key_mapping:
+            enabled: false
+        cascade_all:
+            enabled: false
+        cascade_persist_independent:
+            enabled: false
+        missing_orphan_removal:
+            enabled: false
+        cascade_remove_independent:
+            enabled: false
+        orphan_removal_no_cascade:
+            enabled: false
+        ondelete_mismatch:
+            enabled: false
+
+        # DB / environment hygiene — noisy on local MySQL/MariaDB installs.
+        charset:
+            enabled: false
+        strict_mode:
+            enabled: false
+        inno_db_engine:
+            enabled: false
+        connection_pooling:
+            enabled: false
+        doctrine_cache:
+            enabled: false
+
+        # Serialization scan — high false positives on entities with many fields.
+        sensitive_data_exposure:
+            enabled: false
+        insecure_random:
+            enabled: false

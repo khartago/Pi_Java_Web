@@ -16,10 +16,10 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(name:'Titre',length: 255)]
-    private ?string $title = null;
+    private string $title = '';
 
     #[ORM\Column(name:'texte',type: Types::TEXT)]
-    private ?string $text = null;
+    private string $text = '';
 
     #[ORM\Column(name:'Likes',nullable: true)]
     private ?int $likes = null;
@@ -28,17 +28,16 @@ class Article
     private ?int $dislikes = null;
 
     #[ORM\Column]
-    private ?bool $edited = false;
+    private bool $edited = false;
 
     #[ORM\Column(name: 'BlogID')]
-    private ?int $blogId = null;
+    private int $blogId = 0;
 
     #[ORM\Column(name: 'CreationDate', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
-        // Automatically sets the creation date when the object is instantiated
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -47,24 +46,24 @@ class Article
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle(?string $title): static
+    public function setTitle(string $title): static
     {
         $this->title = $title;
 
         return $this;
     }
 
-    public function getText(): ?string
+    public function getText(): string
     {
         return $this->text;
     }
 
-    public function setText(?string $text): static
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -95,31 +94,31 @@ class Article
         return $this;
     }
 
-    public function isEdited(): ?bool
+    public function isEdited(): bool
     {
         return $this->edited;
     }
 
-    public function setEdited(?bool $edited): static
+    public function setEdited(bool $edited): static
     {
         $this->edited = $edited;
 
         return $this;
     }
 
-    public function getBlogId(): ?int
+    public function getBlogId(): int
     {
         return $this->blogId;
     }
 
-    public function setBlogId(?int $blogId): static
+    public function setBlogId(int $blogId): static
     {
         $this->blogId = $blogId;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }

@@ -45,8 +45,8 @@ public class UserFormController {
 
     @FXML
     private void initialize() {
-        roleCombo.getItems().addAll("FERMIER", "ADMIN");
-        roleCombo.setValue("FERMIER");
+        roleCombo.getItems().addAll("FARMER", "ADMIN");
+        roleCombo.setValue("FARMER");
         applyMaxLength(nomField, MAX_NOM_LENGTH);
         applyMaxLength(emailField, MAX_EMAIL_LENGTH);
         applyMaxLength(passwordField, MAX_PASSWORD_LENGTH);

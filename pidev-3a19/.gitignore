@@ -34,5 +34,8 @@ build/
 ### VS Code ###
 .vscode/
 
+### Local JDBC overrides (see database.properties.example) ###
+src/main/resources/database.properties
+
 ### Mac OS ###
 .DS_Store

@@ -35,10 +35,10 @@ class Promotion
     private float $valeurReduction = 0.0;
 
     #[ORM\Column(name: 'dateDebut', type: 'date_immutable')]
-    private ?\DateTimeImmutable $dateDebut = null;
+    private \DateTimeImmutable $dateDebut;
 
     #[ORM\Column(name: 'dateFin', type: 'date_immutable')]
-    private ?\DateTimeImmutable $dateFin = null;
+    private \DateTimeImmutable $dateFin;
 
     #[ORM\Column(name: 'quantiteMin', type: 'integer', options: ['default' => 1])]
     private int $quantiteMin = 1;
@@ -75,10 +75,10 @@ class Promotion
     public function setTypeReduction(string $typeReduction): self { $this->typeReduction = $typeReduction; return $this; }
     public function getValeurReduction(): float { return $this->valeurReduction; }
     public function setValeurReduction(float $valeurReduction): self { $this->valeurReduction = $valeurReduction; return $this; }
-    public function getDateDebut(): ?\DateTimeImmutable { return $this->dateDebut; }
-    public function setDateDebut(?\DateTimeImmutable $dateDebut): self { $this->dateDebut = $dateDebut; return $this; }
-    public function getDateFin(): ?\DateTimeImmutable { return $this->dateFin; }
-    public function setDateFin(?\DateTimeImmutable $dateFin): self { $this->dateFin = $dateFin; return $this; }
+    public function getDateDebut(): \DateTimeImmutable { return $this->dateDebut; }
+    public function setDateDebut(\DateTimeImmutable $dateDebut): self { $this->dateDebut = $dateDebut; return $this; }
+    public function getDateFin(): \DateTimeImmutable { return $this->dateFin; }
+    public function setDateFin(\DateTimeImmutable $dateFin): self { $this->dateFin = $dateFin; return $this; }
     public function getQuantiteMin(): int { return $this->quantiteMin; }
     public function setQuantiteMin(int $quantiteMin): self { $this->quantiteMin = $quantiteMin; return $this; }
     public function isCumulable(): bool { return $this->cumulable; }
@@ -110,7 +110,7 @@ class Promotion
 
     public function isCurrentlyActive(): bool
     {
-        if (!$this->actif || $this->dateDebut === null || $this->dateFin === null) {
+        if (!$this->actif) {
             return false;
         }
         $today = new \DateTimeImmutable('today');
@@ -119,12 +119,12 @@ class Promotion
 
     public function isUpcoming(): bool
     {
-        return $this->actif && $this->dateDebut !== null && new \DateTimeImmutable('today') < $this->dateDebut;
+        return $this->actif && new \DateTimeImmutable('today') < $this->dateDebut;
     }
 
     public function isExpired(): bool
     {
-        return $this->dateFin !== null && new \DateTimeImmutable('today') > $this->dateFin;
+        return new \DateTimeImmutable('today') > $this->dateFin;
     }
 
     public function getLabel(): string

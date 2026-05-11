@@ -644,6 +644,61 @@
     -fx-line-spacing: 4px;
 }
 
+.hero-eyebrow {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #2D6A4F;
+    -fx-letter-spacing: 0.12em;
+    -fx-text-alignment: center;
+}
+
+.mission-section {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: rgba(26, 77, 46, 0.08);
+    -fx-border-width: 1 0 1 0;
+}
+
+.section-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1A4D2E;
+}
+
+.mission-text {
+    -fx-font-size: 15px;
+    -fx-text-fill: #4B5563;
+    -fx-line-spacing: 3px;
+}
+
+.mission-accent {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1F2937;
+    -fx-border-color: #2D6A4F;
+    -fx-border-width: 0 0 0 3;
+    -fx-padding: 0 0 0 12;
+}
+
+.feature-subheading {
+    -fx-font-size: 15px;
+    -fx-text-fill: #6B7280;
+    -fx-text-alignment: center;
+}
+
+.feature-row {
+    -fx-alignment: center;
+}
+
+.landing-cta-bottom {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F0F7F3 0%, #FFFFFF 100%);
+}
+
+.ops-landing-section {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FFFFFF 0%, #F4FAF6 100%);
+    -fx-border-color: rgba(26, 77, 46, 0.1);
+    -fx-border-width: 1 0 1 0;
+}
+
 .hero-button {
     -fx-background-color: #1A4D2E;
     -fx-text-fill: white;

@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Simple OpenAI chat completion client using environment variable OPENAI_API_KEY.
- * Used by Marketplace chatbot.
+ * Client OpenAI Chat Completions (marketplace).
+ * Priorité : {@code OPENAI_API_KEY} (env), puis {@code openai.api.key} dans {@code config.properties}.
+ * URL et modèle : {@code openai.api.base.url}, {@code openai.model} (parité Symfony ASSISTANT_* / .env).
  */
 public class OpenAiChatService {
 
-    private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final Gson GSON = new Gson();
 
     public static final class Msg {
@@ -32,19 +32,30 @@ public class OpenAiChatService {
     }
 
     /**
-     * Calls OpenAI chat completions API. Blocks until response or error.
-     *
-     * @param messages list of messages (system/user/assistant)
-     * @return assistant reply text, or throws on error
+     * Appelle l’API chat completions (OpenAI-compatible). Bloque jusqu’à la réponse ou une erreur.
      */
     public static String chat(List<Msg> messages) throws Exception {
         String apiKey = System.getenv("OPENAI_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("OPENAI_API_KEY non configurée");
+            String fromFile = AppProperties.property("openai.api.key");
+            if (fromFile != null) {
+                apiKey = fromFile;
+            }
+        }
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException(
+                "Clé OpenAI absente : définissez OPENAI_API_KEY ou openai.api.key dans config.properties."
+            );
         }
 
+        String base = AppProperties.propertyOrDefault("openai.api.base.url", "https://api.openai.com/v1");
+        base = base.replaceAll("/+$", "");
+        String url = base + "/chat/completions";
+
+        String model = AppProperties.propertyOrDefault("openai.model", "gpt-3.5-turbo");
+
         JsonObject root = new JsonObject();
-        root.addProperty("model", "gpt-3.5-turbo");
+        root.addProperty("model", model);
         JsonArray arr = new JsonArray();
         for (Msg m : messages) {
             JsonObject msg = new JsonObject();
@@ -56,7 +67,7 @@ public class OpenAiChatService {
 
         byte[] body = GSON.toJson(root).getBytes(StandardCharsets.UTF_8);
 
-        HttpURLConnection conn = (HttpURLConnection) new URL(API_URL).openConnection();
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Authorization", "Bearer " + apiKey.trim());

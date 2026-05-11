@@ -79,6 +79,8 @@ public class AdminSupportController implements Initializable {
     @FXML
     private Button accepterDiagnosticButton;
 
+    private boolean windowFocusReloadHooked;
+
     private ProblemeService problemeService = new ProblemeService();
     private DiagnostiqueService diagnostiqueService = new DiagnostiqueService();
     private UserService userService = new UserService();
@@ -129,6 +131,25 @@ public class AdminSupportController implements Initializable {
                 handleEditDiagnostique();
             }
         });
+        loadProblemes();
+        hookReloadWhenWindowFocused();
+    }
+
+    private void hookReloadWhenWindowFocused() {
+        problemeTable.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null && newScene.getWindow() != null && !windowFocusReloadHooked) {
+                windowFocusReloadHooked = true;
+                newScene.getWindow().focusedProperty().addListener((o, prev, now) -> {
+                    if (Boolean.TRUE.equals(now)) {
+                        loadProblemes();
+                    }
+                });
+            }
+        });
+    }
+
+    @FXML
+    private void handleActualiser() {
         loadProblemes();
     }
 

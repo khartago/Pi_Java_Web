@@ -15,6 +15,7 @@
         <Label text="Gérez et suivez vos problèmes agricoles" styleClass="hero-subtitle" style="-fx-font-size: 14px;"/>
     </VBox>
     <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 16 24 16 24; -fx-background-color: white; -fx-border-width: 0 0 1 0; -fx-border-color: #E5EDE5;">
+        <Button text="Actualiser" onAction="#handleActualiser" styleClass="secondary-button"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="+ Nouveau problème" onAction="#handleNewProbleme" styleClass="primary-button"/>
     </HBox>

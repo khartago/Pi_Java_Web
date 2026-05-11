@@ -1,32 +1,79 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class HomeController {
 
     @FXML
+    private ScrollPane mainScroll;
+
+    @FXML
+    private Node missionSection;
+
+    @FXML
+    private Node featuresSection;
+
+    @FXML
+    private Node opsSection;
+
+    @FXML
     private void handleHome() {
-        // Déjà sur la page d'accueil
+        scrollToVerticalRatio(0);
     }
 
     @FXML
-    private void handleAbout() {
-        // TODO: Implémenter la page À propos
-        System.out.println("À propos");
+    private void handleMissionNav() {
+        scrollNodeIntoView(missionSection);
     }
 
     @FXML
-    private void handleContact() {
-        // TODO: Implémenter la page Contact
-        System.out.println("Contact");
+    private void handleFeaturesNav() {
+        scrollNodeIntoView(featuresSection);
+    }
+
+    @FXML
+    private void handleOpsNav() {
+        scrollNodeIntoView(opsSection);
+    }
+
+    private void scrollToVerticalRatio(double v) {
+        if (mainScroll == null) {
+            return;
+        }
+        Platform.runLater(() -> mainScroll.setVvalue(Math.max(0, Math.min(1, v))));
+    }
+
+    private void scrollNodeIntoView(Node node) {
+        if (mainScroll == null || node == null) {
+            return;
+        }
+        Platform.runLater(() -> {
+            Node content = mainScroll.getContent();
+            if (content == null) {
+                return;
+            }
+            Bounds cb = content.getBoundsInLocal();
+            double contentH = cb.getHeight();
+            double viewportH = mainScroll.getViewportBounds().getHeight();
+            double maxScroll = contentH - viewportH;
+            if (maxScroll <= 1) {
+                return;
+            }
+            Bounds nb = node.getBoundsInParent();
+            double y = nb.getMinY();
+            mainScroll.setVvalue(Math.max(0, Math.min(1, y / maxScroll)));
+        });
     }
 
     @FXML
@@ -54,7 +101,7 @@ public class HomeController {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setMaximized(true);
-            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
+            Platform.runLater(() -> stage.setMaximized(true));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,7 +116,7 @@ public class HomeController {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setMaximized(true);
-            javafx.application.Platform.runLater(() -> stage.setMaximized(true));
+            Platform.runLater(() -> stage.setMaximized(true));
         } catch (Exception e) {
             e.printStackTrace();
         }

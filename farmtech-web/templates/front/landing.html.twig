@@ -11,7 +11,11 @@
 <header class="topnav landing-topnav">
     <div class="topnav-inner">
         <a href="{{ path('app_landing') }}" class="brand brand--logo" aria-label="FarmTech — accueil">{{ icons.brand_logo('site-logo--nav') }}</a>
-        <nav class="nav-links" aria-label="Navigation publique">
+        <nav class="nav-links nav-links--landing" aria-label="Navigation publique">
+            <a href="#landing-mission" class="nav-links__anchor">Mission</a>
+            <a href="#landing-features" class="nav-links__anchor">Terrain</a>
+            <a href="#landing-farmer" class="nav-links__anchor">Web</a>
+            <a href="#landing-ops" class="nav-links__anchor">Société</a>
             <a href="{{ path('app_login') }}">Connexion</a>
             <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
         </nav>
@@ -25,7 +29,17 @@
         <div class="landing-hero-v2__copy">
             <span class="landing-hero-v2__eyebrow">FarmTech · Tunisie</span>
             <h1 class="landing-hero-v2__title">Gestion intelligente des exploitations agricoles</h1>
-            <p class="landing-hero-v2__lead">Application Java et Web pour organiser, suivre et optimiser les activités agricoles au sein d’une solution numérique centralisée. Elle s’adresse aux petits exploitants qui font face à des contraintes financières — avec, dès aujourd’hui, un module de signalements de terrain et de diagnostics validés par l’administration.</p>
+            <p class="landing-hero-v2__lead">Suite <strong>web + desktop Java</strong> pour le suivi des parcelles, la relation avec la société agricole et la vie du catalogue : signalements structurés, validation des diagnostics, marché en ligne, veille d’actualités, blogs, jeu pédagogique, alertes, export PDF et pilotage admin (stocks, production, analytics, assistant IA).</p>
+            <ul class="landing-hero-highlights" aria-label="Aperçu des modules FarmTech">
+                <li>Signalements &amp; diagnostics</li>
+                <li>Marché &amp; favoris</li>
+                <li>News &amp; blogs</li>
+                <li>Jeu plantation</li>
+                <li>Alertes</li>
+                <li>Export PDF</li>
+                <li>Admin &amp; analytics</li>
+                <li>Desktop Java</li>
+            </ul>
             <div class="landing-hero-v2__actions">
                 <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
                 <a href="{{ path('app_login') }}" class="btn btn-ghost">Se connecter</a>
@@ -36,7 +50,7 @@
         </div>
     </section>
 
-    <section class="landing-mission card" aria-labelledby="landing-mission-title">
+    <section id="landing-mission" class="landing-mission card" aria-labelledby="landing-mission-title">
         <div class="landing-mission__grid">
             <div class="landing-mission__text">
                 <h2 id="landing-mission-title" class="landing-mission__title">Une réponse aux réalités du terrain</h2>
@@ -60,34 +74,137 @@
         </div>
     </section>
 
-    <section class="landing-features" aria-label="Fonctionnalités disponibles">
-        <article class="landing-feature-card">
-            <div class="landing-feature-card__icon" aria-hidden="true">
-                <img src="{{ asset('images/landing-feature-report.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
-            </div>
-            <h2 class="landing-feature-card__title">Signalements sur le terrain</h2>
-            <p class="landing-feature-card__text">Décrivez le problème observé, joignez des photos et indiquez la gravité : les informations sont structurées pour une prise en charge rapide par l’administration.</p>
-        </article>
-        <article class="landing-feature-card">
-            <div class="landing-feature-card__icon" aria-hidden="true">
-                <img src="{{ asset('images/landing-feature-diag.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
-            </div>
-            <h2 class="landing-feature-card__title">Diagnostics validés</h2>
-            <p class="landing-feature-card__text">Cause, mesures et traitement proposés après validation ; vous pouvez donner votre retour une fois le diagnostic publié — traçabilité et transparence.</p>
-        </article>
-        <article class="landing-feature-card">
-            <div class="landing-feature-card__icon" aria-hidden="true">
-                <img src="{{ asset('images/landing-feature-history.png') }}" alt="" width="44" height="44" loading="lazy" decoding="async">
-            </div>
-            <h2 class="landing-feature-card__title">Historique et pilotage</h2>
-            <p class="landing-feature-card__text">Tableau de bord, liste des dossiers et états : vous voyez où en est chaque signalement, au même titre que les indicateurs agrégés côté administration.</p>
-        </article>
+    <section id="landing-features" class="landing-features-core" aria-labelledby="landing-features-title">
+        <div class="landing-features-core__shell">
+            <header class="landing-features-core__intro">
+                <p class="landing-features-core__eyebrow">Parcours dossier</p>
+                <h2 id="landing-features-title" class="landing-features-core__title font-display">Filière terrain — le cœur métier</h2>
+                <p class="landing-features-core__lead">Trois briques qui structurent la relation agriculteur / administration autour d’un même dossier numérique.</p>
+            </header>
+            <ol class="landing-features-core__steps" aria-label="Étapes du parcours terrain">
+                <li class="landing-features-core__step">
+                    <article class="landing-features-core__panel">
+                        <div class="landing-features-core__panel-head">
+                            <span class="landing-features-core__badge" aria-hidden="true">1</span>
+                            <div class="landing-features-core__icon" aria-hidden="true">
+                                <img src="{{ asset('images/landing-feature-report.png') }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                            </div>
+                        </div>
+                        <h3 class="landing-features-core__panel-title">Signalements sur le terrain</h3>
+                        <p class="landing-features-core__panel-text">Décrivez le problème observé, joignez des photos et indiquez la gravité : les informations sont structurées pour une prise en charge rapide par l’administration.</p>
+                    </article>
+                </li>
+                <li class="landing-features-core__step">
+                    <article class="landing-features-core__panel">
+                        <div class="landing-features-core__panel-head">
+                            <span class="landing-features-core__badge" aria-hidden="true">2</span>
+                            <div class="landing-features-core__icon" aria-hidden="true">
+                                <img src="{{ asset('images/landing-feature-diag.png') }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                            </div>
+                        </div>
+                        <h3 class="landing-features-core__panel-title">Diagnostics validés</h3>
+                        <p class="landing-features-core__panel-text">Cause, mesures et traitement proposés après validation ; vous pouvez donner votre retour une fois le diagnostic publié — traçabilité et transparence.</p>
+                    </article>
+                </li>
+                <li class="landing-features-core__step">
+                    <article class="landing-features-core__panel">
+                        <div class="landing-features-core__panel-head">
+                            <span class="landing-features-core__badge" aria-hidden="true">3</span>
+                            <div class="landing-features-core__icon" aria-hidden="true">
+                                <img src="{{ asset('images/landing-feature-history.png') }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                            </div>
+                        </div>
+                        <h3 class="landing-features-core__panel-title">Historique et pilotage</h3>
+                        <p class="landing-features-core__panel-text">Tableau de bord agriculteur, liste des dossiers et états : vous voyez où en est chaque signalement, en parallèle des indicateurs agrégés côté administration.</p>
+                    </article>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="landing-farmer" class="landing-farmer card" aria-labelledby="landing-farmer-title">
+        <h2 id="landing-farmer-title" class="landing-ecosystem__heading font-display">Interface web agriculteur — au-delà du dossier</h2>
+        <p class="landing-ecosystem__intro">Une fois connecté, le même compte ouvre le marché, la veille, les contenus éditoriaux, le ludique et les outils de synthèse. Tout est regroupé dans la barre de navigation (accueil, dossiers, marché, favoris, jeu, news, blogs).</p>
+        <div class="landing-farmer__grid">
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🛒</div>
+                <h3 class="landing-feature-card__title">Marché, fiches produit &amp; promotions</h3>
+                <p class="landing-feature-card__text">Catalogue consultable, fiche détaillée par produit et mises en avant promotionnelles préparées côté société agricole pour guider vos achats d’intrants.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">⭐</div>
+                <h3 class="landing-feature-card__title">Favoris &amp; raccourcis</h3>
+                <p class="landing-feature-card__text">Enregistrez les références utiles sur la saison et retrouvez-les en un clic depuis l’espace marché.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">📰</div>
+                <h3 class="landing-feature-card__title">News agricoles</h3>
+                <p class="landing-feature-card__text">Flux d’actualités pour compléter le terrain : réglementation, pratiques, tendances — configurable côté contenu.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">📝</div>
+                <h3 class="landing-feature-card__title">Blogs, articles &amp; commentaires</h3>
+                <p class="landing-feature-card__text">Carnets de bord, publications thématiques et échanges via commentaires sur les articles — prolongement collaboratif du diagnostic.</p>
+                <p class="landing-ecosystem__cta"><a href="{{ path('app_login') }}" class="btn btn-ghost">Connexion pour les blogs</a></p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🎮</div>
+                <h3 class="landing-feature-card__title">Jeu « plantation »</h3>
+                <p class="landing-feature-card__text">Simulation ludique pour sensibiliser à la gestion des cultures et aux arbitrages de saison, en marge des dossiers réels.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🔔</div>
+                <h3 class="landing-feature-card__title">Alertes &amp; veille</h3>
+                <p class="landing-feature-card__text">Vue dédiée aux alertes et aux signaux forts (seuils, criticité) pour ne pas manquer une action urgente liée aux productions ou au catalogue.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">📄</div>
+                <h3 class="landing-feature-card__title">Export PDF des dossiers</h3>
+                <p class="landing-feature-card__text">Génération d’une synthèse PDF par signalement : utile pour le terrain, les coopératives ou un dossier papier de suivi.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🌍</div>
+                <h3 class="landing-feature-card__title">Interface multilingue</h3>
+                <p class="landing-feature-card__text">Expérience proposée en français, anglais et arabe pour coller aux usages des équipes et des exploitants.</p>
+            </article>
+        </div>
+    </section>
+
+    <section id="landing-ops" class="landing-ops card" aria-labelledby="landing-ops-title">
+        <h2 id="landing-ops-title" class="landing-ecosystem__heading font-display">Pilotage société agricole &amp; client desktop</h2>
+        <p class="landing-ecosystem__intro">Le rôle <strong>administrateur</strong> couvre la validation des diagnostics, le catalogue, les stocks, la production et les leviers d’aide à la décision. Le <strong>client Java</strong> reprend une grande partie de ces écrans pour un usage bureau ou atelier.</p>
+        <div class="landing-ops__grid">
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🛡️</div>
+                <h3 class="landing-feature-card__title">Dossiers, diagnostics &amp; IA admin</h3>
+                <p class="landing-feature-card__text">File des signalements, rédaction et révision des diagnostics, suggestions IA pour accélérer la proposition de mesures, modération et traçabilité des échanges.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">📦</div>
+                <h3 class="landing-feature-card__title">Produits, matériels &amp; QR</h3>
+                <p class="landing-feature-card__text">Gestion du catalogue, des matériels associés, des promotions actives et des QR codes produits pour identification rapide sur la chaîne logistique.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">🌱</div>
+                <h3 class="landing-feature-card__title">Production, plantations &amp; traçabilité</h3>
+                <p class="landing-feature-card__text">Suivi des productions et des plans de plantation, vues de traçabilité pour relier les lots aux parcelles et aux intrants.</p>
+            </article>
+            <article class="landing-feature-card">
+                <div class="landing-feature-card__icon landing-feature-card__icon--glyph" aria-hidden="true">📈</div>
+                <h3 class="landing-feature-card__title">Statistiques, analytics &amp; assistant</h3>
+                <p class="landing-feature-card__text">Indicateurs agrégés sur les produits et les diagnostics, assistant conversationnel côté administration, recommandations et affectations des équipes sur les dossiers.</p>
+            </article>
+        </div>
+        <div class="landing-ops-java">
+            <h3 class="landing-ops-java__title font-display">Application desktop Java</h3>
+            <p class="landing-ops-java__text">Menu latéral unifié&nbsp;: utilisateurs, problèmes &amp; diagnostics, analytics diagnostic, vue agriculteur «&nbsp;mes problèmes&nbsp;», produits &amp; matériels, production, jeu, actualités, marketplace, favoris, assistant IA, scan QR, statistiques, traçabilité, <strong>alertes critiques</strong> et <strong>bloc météo</strong> — pour un poste de travail dédié, avec blog accessible depuis l’accueil public.</p>
+        </div>
     </section>
 
     <section class="landing-bottom-cta card">
         <div class="landing-bottom-cta__inner">
             <h2 class="font-display landing-bottom-cta__title">Rejoindre FarmTech</h2>
-            <p class="landing-bottom-cta__text">Créez un compte agriculteur pour accéder au suivi des signalements et des diagnostics. Les évolutions futures (intrants, financement après récolte) s’appuieront sur cette même base numérique.</p>
+            <p class="landing-bottom-cta__text">Ouvrez un compte pour activer tout le parcours web (dossiers, marché, news, blogs, jeu, alertes, exports) et retrouvez la même logique métier sur le client Java pour vos équipes terrain ou bureau.</p>
             <a href="{{ path('app_register') }}" class="btn btn-primary">S’inscrire</a>
         </div>
     </section>

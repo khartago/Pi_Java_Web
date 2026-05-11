@@ -19,6 +19,11 @@ public class PdfExportService {
 
     private static final String DEFAULT_PDF_API_URL = "https://html2pdf.fly.dev/api/generate";
 
+    private static String pdfApiUrl() {
+        String u = AppProperties.property("pdf.remote.url");
+        return u != null ? u : DEFAULT_PDF_API_URL;
+    }
+
     /**
      * Génère un PDF du rapport (problème + diagnostic si présent).
      *
@@ -32,7 +37,7 @@ public class PdfExportService {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(DEFAULT_PDF_API_URL))
+                .uri(URI.create(pdfApiUrl()))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
                 .build();

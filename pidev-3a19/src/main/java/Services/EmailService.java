@@ -2,32 +2,82 @@ package Services;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
 
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Envoi SMTP Gmail. Identifiants dans {@code config.properties} (voir {@link AppProperties}),
+ * avec repli sur {@code GMAIL_ADDRESS} et {@code GMAIL_APP_PASSWORD}.
+ */
 public class EmailService {
 
     private final String username;
     private final String password;
 
     public EmailService() {
-        this.username = "tahajaballah07@gmail.com";
-        this.password = "nphm ncyy cxlv kwtk";
+        this(resolveSmtpUsername(), resolveSmtpAppPassword());
     }
 
     public EmailService(String username, String appPassword) {
-        this.username = username;
-        this.password = appPassword;
+        this.username = username != null ? username.trim() : "";
+        this.password = normalizeAppPassword(appPassword);
+    }
+
+    private static String firstEnv(String... keys) {
+        for (String key : keys) {
+            String v = System.getenv(key);
+            if (v != null && !v.isBlank()) {
+                return v.trim();
+            }
+        }
+        return "";
+    }
+
+    public static String resolveSmtpUsername() {
+        String fromProp = AppProperties.property("smtp.gmail.address");
+        if (fromProp != null) {
+            return fromProp;
+        }
+        return firstEnv("GMAIL_ADDRESS", "FARMTECH_SMTP_USER", "MAIL_FROM");
+    }
+
+    public static String resolveSmtpAppPassword() {
+        String fromProp = AppProperties.property("smtp.gmail.app.password");
+        if (fromProp != null) {
+            return normalizeAppPassword(fromProp);
+        }
+        return normalizeAppPassword(firstEnv("GMAIL_APP_PASSWORD", "FARMTECH_SMTP_APP_PASSWORD"));
+    }
+
+    public static String normalizeAppPassword(String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw.replaceAll("\\s+", "");
+    }
+
+    /** True si adresse et mot de passe d'application sont renseignés (fichier ou env). */
+    public static boolean isSmtpConfigured() {
+        return !resolveSmtpUsername().isBlank() && !resolveSmtpAppPassword().isBlank();
+    }
+
+    public boolean isConfigured() {
+        return !username.isBlank() && !password.isBlank();
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     private Session createSession() {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-        return Session.getInstance(props, new Authenticator() {
+        java.util.Properties mailProps = new java.util.Properties();
+        mailProps.put("mail.smtp.auth", "true");
+        mailProps.put("mail.smtp.starttls.enable", "true");
+        mailProps.put("mail.smtp.host", "smtp.gmail.com");
+        mailProps.put("mail.smtp.port", "587");
+        mailProps.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        return Session.getInstance(mailProps, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
@@ -35,6 +85,13 @@ public class EmailService {
     }
 
     public void sendHtmlEmail(String to, String subject, String html, String fallbackText) {
+        if (!isConfigured()) {
+            throw new IllegalStateException(
+                "SMTP non configuré : renseignez smtp.gmail.address et smtp.gmail.app.password "
+                    + "dans config.properties (src/main/resources ou à la racine du projet), "
+                    + "ou les variables GMAIL_ADDRESS et GMAIL_APP_PASSWORD."
+            );
+        }
         try {
             Session session = createSession();
             MimeMessage message = new MimeMessage(session);
@@ -50,20 +107,29 @@ public class EmailService {
             multipart.addBodyPart(htmlPart);
             message.setContent(multipart);
             Transport.send(message);
+        } catch (AuthenticationFailedException e) {
+            throw new IllegalStateException(
+                "Gmail a refusé la connexion : vérifiez smtp.gmail.app.password (mot de passe d'application, 16 caractères) "
+                    + "pour le compte indiqué dans smtp.gmail.address.",
+                e
+            );
         } catch (Exception e) {
             throw new RuntimeException("Erreur envoi email: " + e.getMessage(), e);
         }
     }
 
     public void sendPlantDeathMail(String plantName, int slotIndex) {
+        if (!isConfigured()) {
+            System.err.println("Email plante : renseignez SMTP dans config.properties (smtp.gmail.*).");
+            return;
+        }
         try {
             Session session = createSession();
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tahajaballah07@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username));
             message.setSubject("🌱 FARMTECH - Plant Alert");
 
-            // ===== BEAUTIFUL HTML DESIGN =====
             String html =
                     "<div style='font-family: Arial, sans-serif; background-color:#f4f6f9; padding:20px;'>"
                             + "<div style='max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);'>"

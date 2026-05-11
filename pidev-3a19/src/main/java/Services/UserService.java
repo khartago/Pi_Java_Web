@@ -2,6 +2,7 @@ package Services;
 
 import model.User;
 import Iservices.IUserService;
+import Utils.BcryptPasswords;
 import Utils.Mydatabase;
 
 import java.sql.*;
@@ -24,7 +25,7 @@ public class UserService implements IUserService {
             PreparedStatement ste = con.prepareStatement(req);
             ste.setString(1, u.getNom());
             ste.setString(2, u.getEmail());
-            ste.setString(3, u.getMotDePasse());
+            ste.setString(3, hashIfPlain(u.getMotDePasse()));
             ste.setString(4, u.getRole());
             ste.executeUpdate();
             System.out.println("user ajoute");
@@ -41,7 +42,7 @@ public class UserService implements IUserService {
             PreparedStatement ste = con.prepareStatement(req);
             ste.setString(1, u.getNom());
             ste.setString(2, u.getEmail());
-            ste.setString(3, u.getMotDePasse());
+            ste.setString(3, hashIfPlain(u.getMotDePasse()));
             ste.setString(4, u.getRole());
             ste.setInt(5, u.getId());
             ste.executeUpdate();
@@ -106,22 +107,24 @@ public class UserService implements IUserService {
 
     @Override
     public User authentifier(String email, String motDePasse) {
-        String req = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
-
-        try {
-            PreparedStatement ste = con.prepareStatement(req);
-            ste.setString(1, email);
-            ste.setString(2, motDePasse);
-            ResultSet rs = ste.executeQuery();
-
-            if (rs.next()) {
-                return mapRowToUser(rs);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        User u = trouverParEmail(email);
+        if (u == null) {
+            return null;
         }
-
+        if (BcryptPasswords.verify(motDePasse, u.getMotDePasse())) {
+            return u;
+        }
         return null;
+    }
+
+    private static String hashIfPlain(String motDePasse) {
+        if (motDePasse == null) {
+            return null;
+        }
+        if (BcryptPasswords.looksLikeBcryptHash(motDePasse)) {
+            return motDePasse;
+        }
+        return BcryptPasswords.hash(motDePasse);
     }
 
     /** Retourne les utilisateurs avec role ADMIN. */

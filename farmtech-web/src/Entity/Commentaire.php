@@ -16,7 +16,7 @@ class Commentaire
     private ?int $id = null;
 
     #[ORM\Column(name: 'texte' ,type: Types::TEXT)]
-    private ?string $contenu = null;
+    private string $contenu = '';
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'idArticle', referencedColumnName: 'ArticleID', nullable: false)]
@@ -27,7 +27,7 @@ class Commentaire
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(name: 'datecomment', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $dateCommentaire = null;
+    private \DateTimeImmutable $dateCommentaire;
 
     public function __construct()
     {
@@ -39,12 +39,12 @@ class Commentaire
         return $this->id;
     }
 
-    public function getContenu(): ?string
+    public function getContenu(): string
     {
         return $this->contenu;
     }
 
-    public function setContenu(?string $contenu): static
+    public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
 
@@ -75,8 +75,15 @@ class Commentaire
         return $this;
     }
 
-    public function getDateCommentaire(): ?\DateTimeInterface
+    public function getDateCommentaire(): \DateTimeImmutable
     {
         return $this->dateCommentaire;
+    }
+
+    public function setDateCommentaire(\DateTimeImmutable $dateCommentaire): static
+    {
+        $this->dateCommentaire = $dateCommentaire;
+
+        return $this;
     }
 }

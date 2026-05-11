@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProductionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,29 +15,34 @@ class Production
     #[ORM\Column(name: 'idProduction')]
     private ?int $idProduction = null;
 
-    #[ORM\Column(name: 'quantiteProduite')]
-    #[Assert\NotBlank]
+    #[ORM\Column(name: 'quantiteProduite', type: Types::FLOAT)]
     #[Assert\Positive]
-    private ?float $quantiteProduite = null;
+    private float $quantiteProduite = 1.0;
 
-    #[ORM\Column(name: 'dateRecolte', type: 'date')]
+    #[ORM\Column(name: 'dateRecolte', type: Types::DATE_MUTABLE)]
     #[Assert\NotNull]
-    private ?\DateTimeInterface $dateRecolte = null;
+    private \DateTimeInterface $dateRecolte;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    private ?string $qualite = null;
+    private string $qualite = '';
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    private ?string $etat = null;
+    private string $etat = '';
+
+    public function __construct()
+    {
+        $this->dateRecolte = new \DateTimeImmutable('today');
+        $this->quantiteProduite = 1.0;
+    }
 
     public function getIdProduction(): ?int
     {
         return $this->idProduction;
     }
 
-    public function getQuantiteProduite(): ?float
+    public function getQuantiteProduite(): float
     {
         return $this->quantiteProduite;
     }
@@ -47,7 +53,7 @@ class Production
         return $this;
     }
 
-    public function getDateRecolte(): ?\DateTimeInterface
+    public function getDateRecolte(): \DateTimeInterface
     {
         return $this->dateRecolte;
     }
@@ -58,7 +64,7 @@ class Production
         return $this;
     }
 
-    public function getQualite(): ?string
+    public function getQualite(): string
     {
         return $this->qualite;
     }
@@ -69,7 +75,7 @@ class Production
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): string
     {
         return $this->etat;
     }

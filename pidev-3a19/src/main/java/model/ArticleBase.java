@@ -13,6 +13,8 @@ public class ArticleBase {
         private int like;
         private int dislike;
 
+    /** Nom affiché (ex. auteur via blog → utilisateur) ; non persisté dans article seul. */
+    private String authorName = "";
 
 public ArticleBase() {}
     public ArticleBase(int id, String title, String texte, LocalDate creationDate, int like, int dislike) {
@@ -20,10 +22,8 @@ public ArticleBase() {}
         this.title = title;
         this.texte = texte;
         this.creationDate = creationDate;
-        this.like = 0;
-        this.dislike = 0;
-
-
+        this.like = like;
+        this.dislike = dislike;
     }
 
     public int getId() {
@@ -63,6 +63,12 @@ public ArticleBase() {}
             this.dislike = dislike;
     }
 
+    public String getAuthorName() {
+        return authorName != null ? authorName : "";
+    }
 
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName != null ? authorName : "";
+    }
 
 }

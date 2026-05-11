@@ -249,7 +249,6 @@ public class ProductionController {
 
                         productionPlanteService.ajouter(
                                 new ProductionPlante(
-                                        selected.getId(), // 🔥 THIS IS THE FIX
                                         (float) selected.getQuantite(),
                                         new Date(System.currentTimeMillis()),
                                         "Bonne",

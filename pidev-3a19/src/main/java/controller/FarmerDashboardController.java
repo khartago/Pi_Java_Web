@@ -26,11 +26,32 @@ public class FarmerDashboardController implements Initializable {
     @FXML
     private FlowPane problemeCardsContainer;
 
+    private boolean windowFocusReloadHooked;
+
     private ProblemeService problemeService = new ProblemeService();
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadProblemes();
+        hookReloadWhenWindowFocused();
+    }
+
+    private void hookReloadWhenWindowFocused() {
+        problemeCardsContainer.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null && newScene.getWindow() != null && !windowFocusReloadHooked) {
+                windowFocusReloadHooked = true;
+                newScene.getWindow().focusedProperty().addListener((o, prev, now) -> {
+                    if (Boolean.TRUE.equals(now)) {
+                        loadProblemes();
+                    }
+                });
+            }
+        });
+    }
+
+    @FXML
+    private void handleActualiser() {
         loadProblemes();
     }
 
