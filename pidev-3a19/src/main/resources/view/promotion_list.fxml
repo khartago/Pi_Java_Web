@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.PromotionController"
+      spacing="0"
+      stylesheets="@../css/style.css">
+
+    <!-- Hero -->
+    <VBox styleClass="hero-section"
+          style="-fx-background-color: #1A4D2E; -fx-padding: 20 24 16 24;">
+        <Label text="🏷️ Gestion des Promotions"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Créez et gérez les promotions appliquées aux produits du marketplace"
+               style="-fx-font-size: 13px; -fx-text-fill: #c8e6c9;"/>
+    </VBox>
+
+    <!-- Toolbar -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-padding: 12 20; -fx-background-color: white;
+                 -fx-border-width: 0 0 1 0; -fx-border-color: #E5EDE5;">
+        <Button text="+ Nouvelle promotion" onAction="#handleNew" styleClass="primary-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="labelTotal" style="-fx-text-fill: #555; -fx-font-size: 13px;"/>
+        <Button text="← Retour" onAction="#handleBack" styleClass="secondary-button"/>
+    </HBox>
+
+    <!-- Table -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-padding: 16;">
+        <TableView fx:id="tablePromotions" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: white; -fx-background-radius: 8;
+                          -fx-border-color: #E5EDE5; -fx-border-radius: 8;">
+            <columns>
+                <TableColumn fx:id="colNom"           text="Nom"           prefWidth="160"/>
+                <TableColumn fx:id="colType"          text="Type"          prefWidth="120"/>
+                <TableColumn fx:id="colValeur"        text="Remise"        prefWidth="110"/>
+                <TableColumn fx:id="colQuantiteMin"   text="Qté min"       prefWidth="70"/>
+                <TableColumn fx:id="colDateDebut"     text="Début"         prefWidth="100"/>
+                <TableColumn fx:id="colDateFin"       text="Fin"           prefWidth="100"/>
+                <TableColumn fx:id="colProduit"       text="Produit"       prefWidth="160"/>
+                <TableColumn fx:id="colStatut"        text="Statut"        prefWidth="100"/>
+                <TableColumn fx:id="colActions"       text="Actions"       prefWidth="180"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucune promotion enregistrée."
+                       style="-fx-text-fill: #999; -fx-font-size: 14px;"/>
+            </placeholder>
+        </TableView>
+    </ScrollPane>
+</VBox>

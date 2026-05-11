@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.PromotionFormController"
+      spacing="14" prefWidth="480"
+      stylesheets="@../css/style.css"
+      style="-fx-background-color: white;">
+
+    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+    <!-- Titre -->
+    <Label text="🏷️ Promotion"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A4D2E;"/>
+
+    <!-- Erreur -->
+    <Label fx:id="labelError" text="" visible="false" managed="false"
+           wrapText="true"
+           style="-fx-text-fill: #DC2626; -fx-font-size: 12px;
+                  -fx-background-color: #FEF2F2; -fx-padding: 8 12;
+                  -fx-background-radius: 6;"/>
+
+    <!-- Grille -->
+    <GridPane hgap="12" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints minWidth="150" prefWidth="150"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <!-- Nom -->
+        <Label text="Nom *" styleClass="field-label"
+               GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="fieldNom" promptText="ex. Black Friday"
+                   GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <!-- Description -->
+        <Label text="Description" styleClass="field-label"
+               GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextArea fx:id="fieldDescription" promptText="Description optionnelle..."
+                  prefRowCount="2" wrapText="true"
+                  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <!-- Type -->
+        <Label text="Type *" styleClass="field-label"
+               GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="comboType" maxWidth="Infinity"
+                  GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <!-- Valeur -->
+        <Label fx:id="labelValeur" text="Remise (%) *" styleClass="field-label"
+               GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="fieldValeur" promptText="ex. 20"
+                   GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <!-- Quantité min -->
+        <Label text="Quantité min *" styleClass="field-label"
+               GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Spinner fx:id="spinnerQuantiteMin" editable="true" maxWidth="Infinity"
+                 GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <!-- Date début -->
+        <Label text="Date début" styleClass="field-label"
+               GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dateDebut" maxWidth="Infinity"
+                    GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <!-- Date fin -->
+        <Label text="Date fin" styleClass="field-label"
+               GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dateFin" maxWidth="Infinity"
+                    GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <!-- Produit -->
+        <Label text="Produit" styleClass="field-label"
+               GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="comboProduit" maxWidth="Infinity"
+                  GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+        <!-- Options -->
+        <Label text="Options" styleClass="field-label"
+               GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <HBox spacing="20" GridPane.rowIndex="8" GridPane.columnIndex="1">
+            <CheckBox fx:id="checkActif"    text="Active"    selected="true"/>
+            <CheckBox fx:id="checkCumulable" text="Cumulable"/>
+        </HBox>
+
+    </GridPane>
+
+    <Separator/>
+
+    <!-- Boutons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler"      onAction="#handleCancel" styleClass="secondary-button"/>
+        <Button text="Enregistrer"  onAction="#handleSave"   styleClass="primary-button"/>
+    </HBox>
+</VBox>

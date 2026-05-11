@@ -7,32 +7,46 @@ import java.util.List;
 
 public class ProduitDAO {
 
-    private volatile Boolean imagePathSupportedCache = null;
+    // ------------------------------------------------------------------ //
+    //  Cache de détection des colonnes optionnelles
+    // ------------------------------------------------------------------ //
 
-    private boolean isImagePathSupported(Connection conn) throws SQLException {
-        Boolean cached = imagePathSupportedCache;
-        if (cached != null) return cached;
+    private volatile Boolean imagePathSupportedCache    = null;
+    private volatile Boolean prixUnitaireSupportedCache = null;
 
+    private boolean isColumnSupported(Connection conn, String table, String column) throws SQLException {
         String sql = """
                 SELECT 1
                 FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = ?
-                  AND COLUMN_NAME = ?
+                  AND TABLE_NAME   = ?
+                  AND COLUMN_NAME  = ?
                 LIMIT 1
                 """;
-        boolean supported;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "produit");
-            stmt.setString(2, "imagePath");
+            stmt.setString(1, table);
+            stmt.setString(2, column);
             try (ResultSet rs = stmt.executeQuery()) {
-                supported = rs.next();
+                return rs.next();
             }
         }
-
-        imagePathSupportedCache = supported;
-        return supported;
     }
+
+    private boolean isImagePathSupported(Connection conn) throws SQLException {
+        if (imagePathSupportedCache == null)
+            imagePathSupportedCache = isColumnSupported(conn, "produit", "imagePath");
+        return imagePathSupportedCache;
+    }
+
+    private boolean isPrixUnitaireSupported(Connection conn) throws SQLException {
+        if (prixUnitaireSupportedCache == null)
+            prixUnitaireSupportedCache = isColumnSupported(conn, "produit", "prixUnitaire");
+        return prixUnitaireSupportedCache;
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Mapping ResultSet → Produit
+    // ------------------------------------------------------------------ //
 
     private Produit mapRow(ResultSet rs) throws SQLException {
         Produit p = new Produit();
@@ -44,27 +58,40 @@ public class ProduitDAO {
         Date exp = rs.getDate("dateExpiration");
         p.setDateExpiration(exp != null ? exp.toLocalDate() : null);
 
-        try {
-            p.setImagePath(rs.getString("imagePath"));
-        } catch (SQLException ignored) {
-            p.setImagePath(null);
-        }
+        try { p.setImagePath(rs.getString("imagePath")); }
+        catch (SQLException ignored) { p.setImagePath(null); }
+
+        try { p.setPrixUnitaire(rs.getDouble("prixUnitaire")); }
+        catch (SQLException ignored) { p.setPrixUnitaire(0.0); }
 
         return p;
     }
 
+    // ------------------------------------------------------------------ //
+    //  Construction dynamique des colonnes SELECT
+    // ------------------------------------------------------------------ //
+
+    private String buildSelectCols(boolean hasImage, boolean hasPrix) {
+        StringBuilder sb = new StringBuilder(
+                "idProduit, nom, quantite, unite, dateExpiration");
+        if (hasImage) sb.append(", imagePath");
+        if (hasPrix)  sb.append(", prixUnitaire");
+        return sb.toString();
+    }
+
+    // ------------------------------------------------------------------ //
+    //  CRUD
+    // ------------------------------------------------------------------ //
+
     public List<Produit> getAll() {
         List<Produit> produits = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = hasImagePath
-                    ? "SELECT idProduit, nom, quantite, unite, dateExpiration, imagePath FROM produit"
-                    : "SELECT idProduit, nom, quantite, unite, dateExpiration FROM produit";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+            String sql = "SELECT " + buildSelectCols(hasImg, hasPrix) + " FROM produit";
             try (PreparedStatement stmt = conn.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
-
                 while (rs.next()) produits.add(mapRow(rs));
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,25 +101,28 @@ public class ProduitDAO {
 
     public boolean insert(Produit p) {
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = hasImagePath
-                    ? "INSERT INTO produit (nom, quantite, unite, dateExpiration, imagePath) VALUES (?, ?, ?, ?, ?)"
-                    : "INSERT INTO produit (nom, quantite, unite, dateExpiration) VALUES (?, ?, ?, ?)";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+
+            StringBuilder cols = new StringBuilder("nom, quantite, unite, dateExpiration");
+            StringBuilder vals = new StringBuilder("?, ?, ?, ?");
+            if (hasImg)  { cols.append(", imagePath");    vals.append(", ?"); }
+            if (hasPrix) { cols.append(", prixUnitaire"); vals.append(", ?"); }
+
+            String sql = "INSERT INTO produit (" + cols + ") VALUES (" + vals + ")";
             try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-                stmt.setString(1, p.getNom());
-                stmt.setInt(2, p.getQuantite());
-                stmt.setString(3, p.getUnite());
-
-                if (p.getDateExpiration() != null) stmt.setDate(4, Date.valueOf(p.getDateExpiration()));
-                else stmt.setNull(4, Types.DATE);
-
-                if (hasImagePath) {
-                    if (p.getImagePath() != null && !p.getImagePath().trim().isEmpty())
-                        stmt.setString(5, p.getImagePath().trim());
-                    else
-                        stmt.setNull(5, Types.VARCHAR);
+                int idx = 1;
+                stmt.setString(idx++, p.getNom());
+                stmt.setInt(idx++, p.getQuantite());
+                stmt.setString(idx++, p.getUnite());
+                if (p.getDateExpiration() != null) stmt.setDate(idx++, Date.valueOf(p.getDateExpiration()));
+                else stmt.setNull(idx++, Types.DATE);
+                if (hasImg) {
+                    if (p.getImagePath() != null && !p.getImagePath().isBlank())
+                        stmt.setString(idx++, p.getImagePath().trim());
+                    else stmt.setNull(idx++, Types.VARCHAR);
                 }
+                if (hasPrix) stmt.setDouble(idx, p.getPrixUnitaire());
 
                 int affected = stmt.executeUpdate();
                 if (affected == 1) {
@@ -110,34 +140,30 @@ public class ProduitDAO {
 
     public boolean update(Produit p) {
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = hasImagePath
-                    ? "UPDATE produit SET nom = ?, quantite = ?, unite = ?, dateExpiration = ?, imagePath = ? WHERE idProduit = ?"
-                    : "UPDATE produit SET nom = ?, quantite = ?, unite = ?, dateExpiration = ? WHERE idProduit = ?";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+
+            StringBuilder set = new StringBuilder(
+                    "nom = ?, quantite = ?, unite = ?, dateExpiration = ?");
+            if (hasImg)  set.append(", imagePath = ?");
+            if (hasPrix) set.append(", prixUnitaire = ?");
+
+            String sql = "UPDATE produit SET " + set + " WHERE idProduit = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, p.getNom());
-                stmt.setInt(2, p.getQuantite());
-                stmt.setString(3, p.getUnite());
-
-                if (p.getDateExpiration() != null) stmt.setDate(4, Date.valueOf(p.getDateExpiration()));
-                else stmt.setNull(4, Types.DATE);
-
-                int idIndex;
-                if (hasImagePath) {
-                    if (p.getImagePath() != null && !p.getImagePath().trim().isEmpty())
-                        stmt.setString(5, p.getImagePath().trim());
-                    else
-                        stmt.setNull(5, Types.VARCHAR);
-                    idIndex = 6;
-                } else {
-                    idIndex = 5;
+                int idx = 1;
+                stmt.setString(idx++, p.getNom());
+                stmt.setInt(idx++, p.getQuantite());
+                stmt.setString(idx++, p.getUnite());
+                if (p.getDateExpiration() != null) stmt.setDate(idx++, Date.valueOf(p.getDateExpiration()));
+                else stmt.setNull(idx++, Types.DATE);
+                if (hasImg) {
+                    if (p.getImagePath() != null && !p.getImagePath().isBlank())
+                        stmt.setString(idx++, p.getImagePath().trim());
+                    else stmt.setNull(idx++, Types.VARCHAR);
                 }
-
-                stmt.setInt(idIndex, p.getIdProduit());
-
+                if (hasPrix) stmt.setDouble(idx++, p.getPrixUnitaire());
+                stmt.setInt(idx, p.getIdProduit());
                 return stmt.executeUpdate() == 1;
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -149,10 +175,8 @@ public class ProduitDAO {
         String sql = "DELETE FROM produit WHERE idProduit = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
             return stmt.executeUpdate() == 1;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -161,10 +185,10 @@ public class ProduitDAO {
 
     public Produit getById(int id) {
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = hasImagePath
-                    ? "SELECT idProduit, nom, quantite, unite, dateExpiration, imagePath FROM produit WHERE idProduit = ?"
-                    : "SELECT idProduit, nom, quantite, unite, dateExpiration FROM produit WHERE idProduit = ?";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+            String sql = "SELECT " + buildSelectCols(hasImg, hasPrix)
+                    + " FROM produit WHERE idProduit = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -180,16 +204,13 @@ public class ProduitDAO {
     public List<Produit> getExpiringBetween(LocalDate start, LocalDate end) {
         List<Produit> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = (hasImagePath
-                    ? "SELECT idProduit, nom, quantite, unite, dateExpiration, imagePath "
-                    : "SELECT idProduit, nom, quantite, unite, dateExpiration ")
-                    + "FROM produit WHERE dateExpiration IS NOT NULL AND dateExpiration BETWEEN ? AND ?";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+            String sql = "SELECT " + buildSelectCols(hasImg, hasPrix)
+                    + " FROM produit WHERE dateExpiration IS NOT NULL AND dateExpiration BETWEEN ? AND ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
                 stmt.setDate(1, Date.valueOf(start));
                 stmt.setDate(2, Date.valueOf(end));
-
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) list.add(mapRow(rs));
                 }
@@ -203,15 +224,12 @@ public class ProduitDAO {
     public List<Produit> getExpiredBefore(LocalDate date) {
         List<Produit> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = (hasImagePath
-                    ? "SELECT idProduit, nom, quantite, unite, dateExpiration, imagePath "
-                    : "SELECT idProduit, nom, quantite, unite, dateExpiration ")
-                    + "FROM produit WHERE dateExpiration IS NOT NULL AND dateExpiration < ?";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+            String sql = "SELECT " + buildSelectCols(hasImg, hasPrix)
+                    + " FROM produit WHERE dateExpiration IS NOT NULL AND dateExpiration < ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
                 stmt.setDate(1, Date.valueOf(date));
-
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) list.add(mapRow(rs));
                 }
@@ -229,11 +247,10 @@ public class ProduitDAO {
         if (q.isEmpty()) return produits;
 
         try (Connection conn = DBConnection.getConnection()) {
-            boolean hasImagePath = isImagePathSupported(conn);
-            String sql = (hasImagePath
-                    ? "SELECT idProduit, nom, quantite, unite, dateExpiration, imagePath "
-                    : "SELECT idProduit, nom, quantite, unite, dateExpiration ")
-                    + "FROM produit WHERE LOWER(nom) LIKE ? ORDER BY nom LIMIT ?";
+            boolean hasImg  = isImagePathSupported(conn);
+            boolean hasPrix = isPrixUnitaireSupported(conn);
+            String sql = "SELECT " + buildSelectCols(hasImg, hasPrix)
+                    + " FROM produit WHERE LOWER(nom) LIKE ? ORDER BY nom LIMIT ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, "%" + q + "%");
                 stmt.setInt(2, Math.max(1, limit));
@@ -244,7 +261,6 @@ public class ProduitDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return produits;
     }
 }

@@ -1,0 +1,262 @@
+/* =====================================================
+   MARKETPLACE CSS — style identique Symfony FarmTech
+   ===================================================== */
+
+/* ── Fond général ── */
+.root {
+    -fx-background-color: #F5F5F0;
+}
+
+/* ── Champ de recherche ── */
+.mk-search {
+    -fx-background-color: white;
+    -fx-border-color: #D0D0C8;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 9 14;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #aaa;
+}
+
+.mk-search:focused {
+    -fx-border-color: #1A4D2E;
+    -fx-border-width: 2px;
+}
+
+/* ── ComboBox filtres ── */
+.mk-combo {
+    -fx-background-color: white;
+    -fx-border-color: #D0D0C8;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+}
+
+.mk-combo .list-cell {
+    -fx-font-size: 13px;
+}
+
+/* ── Bouton sombre (Filtrer) ── */
+.mk-btn-dark {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 9 22;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.mk-btn-dark:hover {
+    -fx-background-color: #333;
+}
+
+/* ── Bouton contour (Reset, Favoris, Retour) ── */
+.mk-btn-outline {
+    -fx-background-color: white;
+    -fx-text-fill: #333;
+    -fx-border-color: #C8C8C0;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+
+.mk-btn-outline:hover {
+    -fx-background-color: #F0F0E8;
+    -fx-border-color: #999;
+}
+
+/* ── Carte produit ── */
+.mk-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #E8E8E0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.mk-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.14), 12, 0, 0, 4);
+    -fx-border-color: #C8C8C0;
+}
+
+/* ── Image placeholder ── */
+.mk-card-image {
+    -fx-background-color: #E8F0E8;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+/* ── Catégorie (petit texte gris majuscule) ── */
+.mk-category {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #888;
+    -fx-padding: 10 12 2 12;
+}
+
+/* ── Nom du produit ── */
+.mk-product-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 0 12 4 12;
+    -fx-wrap-text: true;
+}
+
+/* ── Méta (quantité, matériels) ── */
+.mk-meta {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
+    -fx-padding: 1 12;
+}
+
+/* ── Prix normal ── */
+.mk-price {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 4 12 2 12;
+}
+
+/* ── Prix barré ── */
+.mk-price-original {
+    -fx-font-size: 12px;
+    -fx-text-fill: #aaa;
+    -fx-strikethrough: true;
+    -fx-padding: 4 12 0 12;
+}
+
+/* ── Prix promo ── */
+.mk-price-promo {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 0 12 2 12;
+}
+
+/* ── Badge promo (vert Symfony) ── */
+.mk-promo-badge {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 10;
+    -fx-background-radius: 4px;
+}
+
+/* ── Bouton Ajouter aux favoris ── */
+.mk-btn-fav {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0;
+    -fx-background-radius: 0 0 8px 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+.mk-btn-fav:hover {
+    -fx-background-color: #333;
+}
+
+.mk-btn-fav-active {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0;
+    -fx-background-radius: 0 0 8px 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+/* ── Boutons admin sur carte (Modifier / Supprimer) ── */
+.mk-btn-edit {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 5 12;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.mk-btn-delete {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 5 12;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+/* ── Pagination ── */
+.mk-page-btn {
+    -fx-background-color: white;
+    -fx-text-fill: #333;
+    -fx-border-color: #D0D0C8;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-min-width: 36px;
+    -fx-min-height: 34px;
+    -fx-cursor: hand;
+}
+
+.mk-page-btn:hover {
+    -fx-background-color: #F0F0E8;
+}
+
+.mk-page-btn:disabled {
+    -fx-opacity: 0.35;
+}
+
+.mk-page-btn-active {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-border-color: #1a1a1a;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-min-width: 36px;
+    -fx-min-height: 34px;
+}
+
+/* ── Carte info détail produit (Quantité / Expiration / Prix / Promo) ── */
+.detail-card {
+    -fx-background-color: white;
+    -fx-border-color: #E0E0D8;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 4, 0, 0, 1);
+}
+
+/* ── Bouton "Voir fiche" sur les cartes marketplace ── */
+.mk-btn-detail {
+    -fx-background-color: #1A4D2E;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 7 0;
+    -fx-background-radius: 0 0 8px 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+.mk-btn-detail:hover {
+    -fx-background-color: #245326;
+}

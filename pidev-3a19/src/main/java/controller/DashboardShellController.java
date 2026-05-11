@@ -53,6 +53,7 @@ public class DashboardShellController {
     @FXML private Button btnQrScan;
     @FXML private Button btnStatistics;
     @FXML private Button btnTraceabilite;
+    @FXML private Button btnAlertes;
     @FXML private Label weatherTempLabel;
     @FXML private Label weatherDescLabel;
 
@@ -106,6 +107,8 @@ public class DashboardShellController {
         btnStatistics.setManaged(!isAdmin);
         btnTraceabilite.setVisible(!isAdmin);
         btnTraceabilite.setManaged(!isAdmin);
+        btnAlertes.setVisible(isAdmin);
+        btnAlertes.setManaged(isAdmin);
 
         loadWeatherAsync();
 
@@ -361,6 +364,16 @@ public class DashboardShellController {
                 }
                 if (btnCollapseSidebar != null) btnCollapseSidebar.setText("≡");
             }
+        }
+    }
+
+    @FXML
+    private void showAlertes() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/alerts.fxml"));
+            setContent(root);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

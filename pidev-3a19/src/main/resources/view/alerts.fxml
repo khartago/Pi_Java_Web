@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AlertController"
+            stylesheets="@../css/style.css"
+            style="-fx-background-color: #F0F4F0;">
+
+    <!-- ═══════════════════════════════════════════
+         TOP : Header
+    ═══════════════════════════════════════════ -->
+    <top>
+        <VBox style="-fx-background-color: #1A4D2E; -fx-padding: 16 24;">
+            <Label text="🚨 Gestion des Alertes Critiques"
+                   style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Label text="Stock faible et matériels en panne"
+                   style="-fx-text-fill: #c8e6c9; -fx-font-size: 12px;"/>
+        </VBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════
+         CENTER : Contenu principal
+    ═══════════════════════════════════════════ -->
+    <center>
+        <VBox spacing="16" style="-fx-padding: 20 24; -fx-background-color: #F0F4F0;">
+
+            <!-- Section Résumé et Contrôles -->
+            <HBox spacing="20" alignment="TOP_LEFT">
+                <!-- Résumé -->
+                <VBox spacing="8" style="-fx-border-color: #D8E8D8;
+                                          -fx-border-width: 1;
+                                          -fx-border-radius: 8;
+                                          -fx-background-color: white;
+                                          -fx-padding: 16;">
+                    <Label fx:id="summaryLabel" text="📊 Chargement des alertes..."
+                           style="-fx-font-size: 13px; -fx-text-fill: #1A4D2E;"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Panneaux de contrôle -->
+                <VBox spacing="12" style="-fx-border-color: #D8E8D8;
+                                           -fx-border-width: 1;
+                                           -fx-border-radius: 8;
+                                           -fx-background-color: white;
+                                           -fx-padding: 16;
+                                           -fx-min-width: 350;">
+
+                    <!-- Seuil de stock -->
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Seuil de stock:" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Spinner fx:id="thresholdSpinner" prefWidth="80" editable="true"/>
+                        <Label text="unités" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                    </HBox>
+
+                    <!-- Email destinataire -->
+                    <VBox spacing="4">
+                        <Label text="Email destinataire:" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="emailToField" promptText="admin@example.com"
+                                   style="-fx-padding: 8; -fx-font-size: 11px;"/>
+                    </VBox>
+
+                    <!-- Boutons d'actions -->
+                    <HBox spacing="8">
+                        <Button fx:id="refreshButton" text="🔄 Actualiser"
+                                style="-fx-padding: 8 16; -fx-font-size: 11px;
+                                       -fx-background-color: #4B5563; -fx-text-fill: white;
+                                       -fx-background-radius: 6; -fx-cursor: hand;"/>
+                        <Button fx:id="sendAlertsButton" text="📤 Envoyer les alertes"
+                                style="-fx-padding: 8 16; -fx-font-size: 11px;
+                                       -fx-background-color: #DC2626; -fx-text-fill: white;
+                                       -fx-background-radius: 6; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- Onglets avec les alertes -->
+            <TabPane fx:id="alertTabPane" tabClosingPolicy="UNAVAILABLE"
+                     style="-fx-background-color: white;
+                            -fx-border-radius: 8;
+                            -fx-border-color: #D8E8D8;
+                            -fx-border-width: 1;">
+
+                <!-- Onglet Stock Faible -->
+                <Tab fx:id="lowStockTab" text="📦 Produits en Stock Faible" closable="false">
+                    <VBox spacing="12" style="-fx-padding: 16;">
+                        <Label text="Produits avec quantité inférieure ou égale au seuil défini"
+                               style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                        <TableView fx:id="lowStockTable" VBox.vgrow="ALWAYS"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #D8E8D8;
+                                          -fx-border-width: 1;
+                                          -fx-border-radius: 6;">
+                            <columns>
+                                <TableColumn fx:id="idProduitColumn" text="ID" prefWidth="50"
+                                            style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="nomProduitColumn" text="Nom du produit" prefWidth="250"/>
+                                <TableColumn fx:id="quantiteColumn" text="Quantité" prefWidth="100"
+                                            style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="uniteColumn" text="Unité" prefWidth="100"
+                                            style="-fx-alignment: CENTER;"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="✅ Aucun produit en stock faible"
+                                       style="-fx-text-fill: #16A34A; -fx-font-size: 14px;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+                </Tab>
+
+                <!-- Onglet Matériels en Panne -->
+                <Tab fx:id="brokenMaterielsTab" text="🔧 Matériels en Panne" closable="false">
+                    <VBox spacing="12" style="-fx-padding: 16;">
+                        <Label text="Matériels actuellement en état de panne"
+                               style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                        <TableView fx:id="brokenMaterielsTable" VBox.vgrow="ALWAYS"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #D8E8D8;
+                                          -fx-border-width: 1;
+                                          -fx-border-radius: 6;">
+                            <columns>
+                                <TableColumn fx:id="idMaterielColumn" text="ID" prefWidth="50"
+                                            style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="nomMaterielColumn" text="Nom du matériel" prefWidth="200"/>
+                                <TableColumn fx:id="etatColumn" text="État" prefWidth="100"
+                                            style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="produitColumn" text="Produit lié" prefWidth="200"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="✅ Aucun matériel en panne"
+                                       style="-fx-text-fill: #16A34A; -fx-font-size: 14px;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+                </Tab>
+            </TabPane>
+        </VBox>
+    </center>
+
+</BorderPane>
+

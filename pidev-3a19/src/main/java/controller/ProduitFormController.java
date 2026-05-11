@@ -24,6 +24,7 @@ public class ProduitFormController {
     @FXML private TextField uniteField;
     @FXML private DatePicker dateExpirationPicker;
     @FXML private TextField imagePathField;
+    @FXML private TextField prixUnitaireField;
 
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
@@ -49,8 +50,11 @@ public class ProduitFormController {
             }
 
             imagePathField.setText(produit.getImagePath());
+            prixUnitaireField.setText(produit.getPrixUnitaire() > 0
+                    ? String.valueOf(produit.getPrixUnitaire()) : "");
         } else {
             imagePathField.clear();
+            prixUnitaireField.clear();
         }
     }
 
@@ -65,8 +69,16 @@ public class ProduitFormController {
         produit.setQuantite(Integer.parseInt(quantiteField.getText().trim()));
         produit.setUnite(uniteField.getText().trim());
         produit.setDateExpiration(dateExpirationPicker.getValue());
-
         produit.setImagePath(imagePathField.getText() == null ? null : imagePathField.getText().trim());
+
+        // Prix unitaire
+        String prixText = prixUnitaireField.getText();
+        if (prixText != null && !prixText.isBlank()) {
+            try { produit.setPrixUnitaire(Double.parseDouble(prixText.trim())); }
+            catch (NumberFormatException ignored) { produit.setPrixUnitaire(0); }
+        } else {
+            produit.setPrixUnitaire(0);
+        }
 
         boolean success = isNew
                 ? produitDAO.insert(produit)
@@ -161,6 +173,16 @@ public class ProduitFormController {
             String lower = img.trim().toLowerCase();
             if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg"))) {
                 errors.append("- L'image doit être au format png/jpg/jpeg.\n");
+            }
+        }
+
+        String prixText = prixUnitaireField.getText();
+        if (prixText != null && !prixText.isBlank()) {
+            try {
+                double prix = Double.parseDouble(prixText.trim());
+                if (prix < 0) errors.append("- Le prix unitaire doit être positif ou nul.\n");
+            } catch (NumberFormatException e) {
+                errors.append("- Le prix unitaire doit être un nombre décimal (ex. 12.50).\n");
             }
         }
 

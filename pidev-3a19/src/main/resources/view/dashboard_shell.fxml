@@ -46,6 +46,7 @@
             <Button fx:id="btnQrScan" text="QR Scan" onAction="#showQrScan" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnStatistics" text="Statistiques" onAction="#showStatistics" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button fx:id="btnTraceabilite" text="Traçabilité" onAction="#showTraceabilite" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button fx:id="btnAlertes" text="🚨 Alertes critiques" onAction="#showAlertes" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Region VBox.vgrow="ALWAYS"/>
             <VBox spacing="4" style="-fx-padding: 12 0 12 0;">
                 <Label text="Météo" styleClass="section-title" style="-fx-padding: 0 0 4 0;"/>

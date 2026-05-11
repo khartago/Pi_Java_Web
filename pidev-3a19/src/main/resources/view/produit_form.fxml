@@ -37,8 +37,11 @@
                 <Label text="Date d'expiration :" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="field-label"/>
                 <DatePicker fx:id="dateExpirationPicker" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="Sélectionnez une date"/>
 
-                <Label text="Image :" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="field-label"/>
-                <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <Label text="Prix unitaire (TND) :" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="field-label"/>
+                <TextField fx:id="prixUnitaireField" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="ex. 12.50"/>
+
+                <Label text="Image :" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="field-label"/>
+                <HBox spacing="10" GridPane.rowIndex="5" GridPane.columnIndex="1">
                     <TextField fx:id="imagePathField" promptText="Chemin image (png/jpg)..." HBox.hgrow="ALWAYS"/>
                     <Button text="Choisir" onAction="#handleChooseImage" styleClass="secondary-button"/>
                 </HBox>

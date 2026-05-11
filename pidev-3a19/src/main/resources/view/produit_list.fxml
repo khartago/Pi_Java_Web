@@ -8,65 +8,129 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.ProduitController"
-            styleClass="root"
-            stylesheets="@../css/style.css">
+            stylesheets="@../css/style.css"
+            style="-fx-background-color: #F0F4F0;">
 
+    <!-- ═══════════════════════════════════════════
+         TOP : Header + Barre de navigation
+    ═══════════════════════════════════════════ -->
     <top>
         <VBox>
-            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="main-header">
-                <ImageView fx:id="logoImage" fitHeight="35" fitWidth="35" preserveRatio="true">
-                    <image>
-                        <Image url="@farmtech-logo.png"/>
-                    </image>
+            <!-- Header principal -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #1A4D2E; -fx-padding: 14 24;">
+                <ImageView fitHeight="32" fitWidth="32" preserveRatio="true">
+                    <image><Image url="@farmtech-logo.png"/></image>
                 </ImageView>
-                <Label text="FARMTECH" styleClass="app-title" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Label text="Backoffice Admin" styleClass="header-section" />
-                <Label text="Accueil" styleClass="header-section" />
-                <Button text="Se déconnecter" styleClass="logout-button" />
+                <Label text="FARMTECH"
+                       style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Separator orientation="VERTICAL"
+                           style="-fx-background-color: rgba(255,255,255,0.3);"
+                           prefHeight="20"/>
+                <Label text="Backoffice Admin"
+                       style="-fx-text-fill: #c8e6c9; -fx-font-size: 13px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🚪 Déconnexion" onAction="#handleDeconnexion"
+                        style="-fx-background-color: rgba(255,255,255,0.15);
+                               -fx-text-fill: white; -fx-border-color: rgba(255,255,255,0.4);
+                               -fx-border-radius: 6; -fx-background-radius: 6;
+                               -fx-padding: 6 16; -fx-cursor: hand;"/>
             </HBox>
 
-            <HBox spacing="0" styleClass="navigation-bar">
-                <Button text="Produits" styleClass="nav-tab, nav-tab-active" />
-                <Button text="Matériels" onAction="#handleVoirMateriels" styleClass="nav-tab" />
+            <!-- Onglets de navigation -->
+            <HBox spacing="0"
+                  style="-fx-background-color: #163D24; -fx-padding: 0 24;">
+                <Button text="📦 Produits"
+                        style="-fx-background-color: white; -fx-text-fill: #1A4D2E;
+                               -fx-font-weight: bold; -fx-font-size: 13px;
+                               -fx-padding: 10 22; -fx-background-radius: 0;
+                               -fx-border-width: 0; -fx-cursor: hand;"/>
+                <Button text="🔧 Matériels" onAction="#handleVoirMateriels"
+                        style="-fx-background-color: transparent; -fx-text-fill: #c8e6c9;
+                               -fx-font-size: 13px; -fx-padding: 10 22;
+                               -fx-background-radius: 0; -fx-border-width: 0;
+                               -fx-cursor: hand;"/>
             </HBox>
         </VBox>
     </top>
 
+    <!-- ═══════════════════════════════════════════
+         CENTER : Contenu principal
+    ═══════════════════════════════════════════ -->
     <center>
-        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" styleClass="transparent-scroll">
-        <VBox spacing="15" styleClass="content-area" style="-fx-background-color: transparent;">
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label text="Gestion des Produits" styleClass="page-title" />
-                <Region HBox.hgrow="ALWAYS" />
+        <VBox spacing="0" style="-fx-background-color: #F0F4F0;">
 
-                <FlowPane hgap="10" vgap="10" alignment="CENTER_RIGHT" prefWrapLength="720">
-                    <Button text="Statistiques" onAction="#handleOpenStatistics" styleClass="info-button" />
-                    <Button text="Assistant IA" onAction="#handleOpenAssistant" styleClass="info-button" />
-                    <Button text="Traçabilité" onAction="#handleTraceabilite" styleClass="secondary-button" />
-                    <Button text="Scanner QR" onAction="#handleScanQr" styleClass="secondary-button" />
-                    <Button text="Marketplace" onAction="#handleOpenMarketplace" styleClass="secondary-button" />
-                    <Button text="Ajouter" onAction="#handleAjouter" styleClass="primary-button" />
-                    <Button text="Modifier" onAction="#handleModifier" styleClass="secondary-button" />
-                    <Button text="Supprimer" onAction="#handleSupprimer" styleClass="danger-button" />
-                    <Button text="Notifier expirations" onAction="#handleNotifierExpiration" styleClass="secondary-button" />
-                </FlowPane>
+            <!-- Barre d'actions -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-padding: 16 24 12 24; -fx-background-color: #F0F4F0;">
+
+                <!-- Titre + compteur -->
+                <VBox spacing="2">
+                    <Label text="Gestion des Produits"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1A4D2E;"/>
+                    <Label fx:id="labelCount" text=""
+                           style="-fx-font-size: 12px; -fx-text-fill: #888;"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Groupe : Outils -->
+                <HBox spacing="6" alignment="CENTER">
+                    <Button text="📊 Statistiques"   onAction="#handleOpenStatistics"
+                            styleClass="action-btn-tool"/>
+                    <Button text="🤖 Assistant IA"   onAction="#handleOpenAssistant"
+                            styleClass="action-btn-tool"/>
+                    <Button text="🔍 Traçabilité"    onAction="#handleTraceabilite"
+                            styleClass="action-btn-tool"/>
+                    <Button text="📷 Scanner QR"     onAction="#handleScanQr"
+                            styleClass="action-btn-tool"/>
+                    <Button text="📧 Notifier exp."  onAction="#handleNotifierExpiration"
+                            styleClass="action-btn-tool"/>
+                    <Button text="🏷️ Promotions"    onAction="#handleOpenPromotions"
+                            styleClass="action-btn-tool"/>
+                </HBox>
+
+                <!-- Séparateur visuel -->
+                <Separator orientation="VERTICAL" prefHeight="30"
+                           style="-fx-padding: 0 4;"/>
+
+                <!-- Groupe : CRUD -->
+                <HBox spacing="6" alignment="CENTER">
+                    <Button text="＋ Ajouter"   onAction="#handleAjouter"
+                            styleClass="action-btn-add"/>
+                    <Button text="✏ Modifier"  onAction="#handleModifier"
+                            styleClass="action-btn-edit"/>
+                    <Button text="🗑 Supprimer" onAction="#handleSupprimer"
+                            styleClass="action-btn-delete"/>
+                </HBox>
             </HBox>
 
-            <TableView fx:id="produitTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
-                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="250" />
-                    <TableColumn fx:id="quantiteColumn" text="Quantité" prefWidth="150" />
-                    <TableColumn fx:id="uniteColumn" text="Unité" prefWidth="150" />
-                    <TableColumn fx:id="dateExpColumn" text="Date d'expiration" prefWidth="200" />
-                </columns>
-            </TableView>
+            <!-- Tableau -->
+            <VBox VBox.vgrow="ALWAYS"
+                  style="-fx-padding: 0 24 20 24; -fx-background-color: #F0F4F0;">
+                <TableView fx:id="produitTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white;
+                                  -fx-background-radius: 10;
+                                  -fx-border-radius: 10;
+                                  -fx-border-color: #D8E8D8;
+                                  -fx-border-width: 1;
+                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+                    <columns>
+                        <TableColumn fx:id="idColumn"       text="ID"               prefWidth="55"  style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="nomColumn"      text="Nom du produit"   prefWidth="220"/>
+                        <TableColumn fx:id="quantiteColumn" text="Quantité"         prefWidth="90"  style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="uniteColumn"    text="Unité"            prefWidth="90"  style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="prixColumn"     text="Prix (TND)"       prefWidth="110" style="-fx-alignment: CENTER_RIGHT;"/>
+                        <TableColumn fx:id="dateExpColumn"  text="Date d'expiration" prefWidth="160" style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="statutColumn"   text="Statut"           prefWidth="110" style="-fx-alignment: CENTER;"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucun produit enregistré."
+                               style="-fx-text-fill: #aaa; -fx-font-size: 14px;"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
         </VBox>
-        </ScrollPane>
     </center>
 
-    <padding>
-        <Insets top="0" right="0" bottom="0" left="0"/>
-    </padding>
 </BorderPane>
